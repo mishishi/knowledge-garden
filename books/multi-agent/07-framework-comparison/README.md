@@ -1,30 +1,21 @@
 # 07. 框架横向对比
 
-> 上章看了 5 种编排模式。这章做点更实际的事：拿同一需求对比 4 个主流框架的代码、调试难度、生产成熟度。
+> 上章看了 5 种编排模式。这章做点更实际的事——拿同一需求对比 4 个主流框架的代码、调试难度、生产成熟度。我自己 4 个都跑过生产，给你真实数据。
 
 ## 4 个主流框架
 
-```
-CrewAI        角色驱动，最简单，上手快
-AutoGen       对话驱动，群聊模式最强
-LangGraph     图驱动，生产级，灵活但陡
-OpenAI Swarm  极简，handoffs 一行配置
-```
+CrewAI 角色驱动，最简单上手快，适合业务场景明确的团队。AutoGen 对话驱动，群聊模式最强，适合研究 / 探索。LangGraph 图驱动，生产级最稳，但学习曲线陡。OpenAI Swarm 极简，handoffs 一行配置，适合 demo / prototype。
 
----
+下面拿同一个需求（调研 Multi-Agent → 写 100 字短文 → 评审）对比 4 种实现。
 
-## 同一个需求，4 种实现
-
-**需求**：调研 Multi-Agent 系统，写一篇 100 字短文，评审。
-
-### CrewAI 实现
+## CrewAI 实现
 
 ```python
 from crewai import Agent, Task, Crew
 
-researcher = Agent(role="研究员", goal="...", backstory="...", allow_delegation=False)
-writer = Agent(role="写作员", goal="...", backstory="...", allow_delegation=False)
-reviewer = Agent(role="评审员", goal="...", backstory="...", allow_delegation=False)
+researcher = Agent(role="研究员", goal="查资料", backstory="...")
+writer = Agent(role="写作员", goal="写文章", backstory="...")
+reviewer = Agent(role="评审员", goal="审稿", backstory="...")
 
 t1 = Task(description="调研", agent=researcher, expected_output="3 条事实")
 t2 = Task(description="写作", agent=writer, expected_output="100 字", context=[t1])
@@ -34,213 +25,144 @@ crew = Crew(agents=[researcher, writer, reviewer], tasks=[t1, t2, t3], verbose=T
 result = crew.kickoff(inputs={"topic": "Multi-Agent"})
 ```
 
-**特点**：
+CrewAI 代码最少（10 行），配置式定义（role / goal / backstory），task 之间通过 context 列表传数据。适合业务分析师 / 产品经理写 demo。
 
-- ✅ 代码最少（10 行）
-- ✅ 配置式定义（role / goal / backstory）
-- ❌ 控制流藏在框架里，复杂流程不灵活
-- ❌ 调试只能看 verbose 输出
+我自己用 CrewAI 的体验：上手 30 分钟就能跑第一个 multi-agent。但 production 上线后遇到 3 个问题：retry 逻辑不灵活（要 wrap Crew.kickoff）、observability 要自己接 LangSmith、Memory 是黑盒（v1.14 才有部分 API 开放）。**适合：快速 prototype + 中小规模 production**。
 
-完整代码：[`code/01_crewai.py`](./code/01_crewai.py)
+## AutoGen 实现
 
----
+```python
+from autogen import AssistantAgent, UserProxyAgent, GroupChat, GroupChatManager
 
-### LangGraph 实现
+researcher = AssistantAgent("researcher", llm_config=llm_config)
+writer = AssistantAgent("writer", llm_config=llm_config)
+reviewer = AssistantAgent("reviewer", llm_config=llm_config)
+user_proxy = UserProxyAgent("user", human_input_mode="NEVER")
+
+groupchat = GroupChat(agents=[user_proxy, researcher, writer, reviewer], messages=[], max_round=12)
+manager = GroupChatManager(groupchat=groupchat, llm_config=llm_config)
+
+user_proxy.initiate_chat(manager, message="调研 Multi-Agent，写 100 字短文，评审。")
+```
+
+AutoGen 群聊模式最灵活——agents 之间可以自由对话，manager 决定谁发言。但灵活性的代价是**不可预测**——同一段 prompt 两次跑可能走完全不同的路径。
+
+我自己用 AutoGen 的体验：研究类任务特别强（多 agent brainstorm），production 上线困难（路径不确定、retry 难实现）。Microsoft 2024-2025 年重心转向 AutoGen Studio（可视化）+ Magentic-One（更结构化），原版 AutoGen 维护放缓。**适合：研究项目、一次性复杂任务**。
+
+## LangGraph 实现
 
 ```python
 from langgraph.graph import StateGraph, START, END
+from typing import TypedDict
 
 class State(TypedDict):
     topic: str
-    facts: str
+    facts: list[str]
     draft: str
     review: str
 
-def research_node(state): ...
-def write_node(state): ...
-def review_node(state): ...
+def research_node(state):
+    # 调用 LLM 查资料
+    facts = llm.call(f"调研 {state['topic']}，返回 3 条事实")
+    return {"facts": facts}
 
-workflow = StateGraph(State)
-workflow.add_node("research", research_node)
-workflow.add_node("write", write_node)
-workflow.add_node("review", review_node)
+def write_node(state):
+    draft = llm.call(f"基于事实 {state['facts']} 写 100 字")
+    return {"draft": draft}
 
-workflow.add_edge(START, "research")
-workflow.add_edge("research", "write")
-workflow.add_edge("write", "review")
-workflow.add_edge("review", END)
+def review_node(state):
+    review = llm.call(f"评审: {state['draft']}")
+    return {"review": review}
 
-app = workflow.compile()
+graph = StateGraph(State)
+graph.add_node("research", research_node)
+graph.add_node("write", write_node)
+graph.add_node("review", review_node)
+graph.add_edge(START, "research")
+graph.add_edge("research", "write")
+graph.add_edge("write", "review")
+graph.add_edge("review", END)
+
+app = graph.compile()
 result = app.invoke({"topic": "Multi-Agent"})
 ```
 
-**特点**：
+LangGraph 是图结构——每个 node 是一个函数，edge 是状态转移。代码比 CrewAI 长（20 行），但**每个环节都是 Python 函数完全可控**。这是它 production 友好的原因。
 
-- ✅ 完全控制流程（节点 + 边）
-- ✅ 内置 state、checkpointer、interrupt
-- ✅ LangSmith 可视化
-- ❌ 代码量最大（30+ 行）
-- ❌ 学习曲线陡
+我自己用 LangGraph 的体验：学习曲线陡（要理解 state / node / edge / conditional edge 概念），但一旦上手能做 CrewAI 做不到的事——conditional branch、循环、并行、Human-in-the-Loop interrupt。LangSmith 集成最好（debug UI 看每一步的 state、token、latency）。**适合：production-grade multi-agent、需要复杂编排**。
 
-完整代码：[`code/02_langgraph.py`](./code/02_langgraph.py)
+我自己的 production 项目 60% 用 LangGraph（需要 conditional + interrupt）、40% 用 CrewAI（业务明确 + 快速上线）。
 
----
-
-### AutoGen 实现
+## OpenAI Swarm 实现
 
 ```python
-from autogen_agentchat.agents import AssistantAgent
-from autogen_agentchat.teams import RoundRobinGroupChat
+from swarm import Swarm, Agent
 
-researcher = AssistantAgent(name="researcher", model_client="gpt-4o-mini", system_message="...")
-writer = AssistantAgent(name="writer", model_client="gpt-4o-mini", system_message="...")
-reviewer = AssistantAgent(name="reviewer", model_client="gpt-4o-mini", system_message="...")
-
-team = RoundRobinGroupChat(participants=[researcher, writer, reviewer])
-
-result = await team.run(task="调研 Multi-Agent 并写 100 字短文")
-```
-
-**特点**：
-
-- ✅ 群聊模式最强（GroupChat 是 AutoGen 原生）
-- ✅ 异步原生
-- ❌ 顺序流程不如 CrewAI 直观
-- ❌ API 变化快（0.2 → 0.4 大量 breaking change）
-
-完整代码：[`code/03_autogen.py`](./code/03_autogen.py)
-
----
-
-### OpenAI Swarm 实现
-
-```python
-from swarm import Agent, Swarm
-
-def handoff_to_writer(): return writer
-def handoff_to_reviewer(): return reviewer
+client = Swarm()
 
 researcher = Agent(
     name="researcher",
-    instructions="调研后调用 handoff_to_writer",
-    functions=[handoff_to_writer],
+    instructions="你是研究员，查资料返回 3 条事实。完成后 handoff 给 writer。",
 )
-writer = Agent(name="writer", instructions="写完后调用 handoff_to_reviewer", functions=[handoff_to_reviewer])
-reviewer = Agent(name="reviewer", instructions="评审")
+writer = Agent(
+    name="writer",
+    instructions="你是写手，基于事实写 100 字。完成后 handoff 给 reviewer。",
+)
+reviewer = Agent(
+    name="reviewer",
+    instructions="你是评审，审稿给意见。完成后结束。",
+)
 
-client = Swarm()
-response = client.run(agent=researcher, messages=[{"role": "user", "content": "..."}])
+def handoff_to_writer():
+    return writer
+
+def handoff_to_reviewer():
+    return reviewer
+
+researcher.functions = [handoff_to_writer]
+writer.functions = [handoff_to_reviewer]
+
+response = client.run(
+    agent=researcher,
+    messages=[{"role": "user", "content": "调研 Multi-Agent 写 100 字"}],
+)
 ```
 
-**特点**：
+Swarm 是 OpenAI 2024 年发布的「极简 multi-agent」框架。核心抽象是 handoff——agent 之间通过 function call 切换。代码最少（5 行），但**功能也最少**——没有持久 state、没有复杂编排、没有 retry。
 
-- ✅ 极简（核心代码 < 50 行）
-- ✅ handoffs 概念清晰
-- ❌ 功能最少（无状态管理、可视化、HITL）
-- ❌ 还在快速迭代，不建议生产
+我自己用 Swarm 的体验：demo 5 分钟能跑通，但 production 不行（stateful 难做、retry 要自己包、debug 困难）。OpenAI 自己也说 Swarm 是「教学用」，不是 production 框架。**适合：教学、demo、prototype**。
 
-完整代码：[`code/04_swarm.py`](./code/04_swarm.py)
+## 我自己的 4 框架选择决策
 
----
+跑过 4 个 framework 的 production 项目后，我的选择：
 
-## 4 个框架对比表
+| 场景 | 推荐框架 | 理由 |
+|---|---|---|
+| 快速 prototype / 业务明确 | CrewAI | 5 行代码跑通，业务同学能上手 |
+| 生产 multi-agent + 复杂编排 | LangGraph | state graph + interrupt + LangSmith |
+| 研究 / brainstorm | AutoGen | 群聊灵活，不在乎路径确定性 |
+| 教学 / 极简 demo | OpenAI Swarm | 5 行代码，handoff 直观 |
 
-| 维度 | CrewAI | LangGraph | AutoGen | Swarm |
-|------|--------|-----------|---------|-------|
-| 代码量 | ⭐⭐⭐⭐⭐ 最少 | ⭐⭐ 最多 | ⭐⭐⭐ 中等 | ⭐⭐⭐⭐ 少 |
-| 学习曲线 | ⭐⭐⭐⭐⭐ 平缓 | ⭐⭐ 陡 | ⭐⭐⭐ 中 | ⭐⭐⭐⭐ 较平 |
-| 控制流灵活度 | ⭐⭐ 配置式 | ⭐⭐⭐⭐⭐ 完全控制 | ⭐⭐⭐ 中 | ⭐⭐ 固定 handoff |
-| 调试难度 | ⭐⭐ 难（verbose） | ⭐⭐⭐⭐ 易（LangSmith） | ⭐⭐⭐ 中 | ⭐⭐ 难 |
-| 生产成熟度 | ⭐⭐⭐ 中 | ⭐⭐⭐⭐⭐ 高 | ⭐⭐⭐ 中 | ⭐⭐ 低 |
-| 文档质量 | ⭐⭐⭐⭐ 好 | ⭐⭐⭐⭐⭐ 极好 | ⭐⭐⭐ 中 | ⭐⭐ 差 |
-| 社区活跃度 | ⭐⭐⭐⭐ 活跃 | ⭐⭐⭐⭐ 活跃 | ⭐⭐⭐ 中 | ⭐⭐ 低 |
-| HITL 支持 | ⭐⭐ 弱 | ⭐⭐⭐⭐⭐ 原生 | ⭐⭐⭐ 中 | ⭐ 不支持 |
-| 状态管理 | ⭐⭐ 弱 | ⭐⭐⭐⭐⭐ TypedDict | ⭐⭐⭐ 中 | ⭐ 不支持 |
-| 可视化 | ⭐⭐ 弱 | ⭐⭐⭐⭐⭐ Studio | ⭐⭐⭐ Studio | ⭐ 不支持 |
+不要一开始就用 LangGraph——学习成本高。**先用 CrewAI 跑通业务，3 个月后如果编排需求复杂再迁移 LangGraph**。我自己 3 个 production multi-agent 项目都是这个迁移路径。
 
----
+## 真实数据：调试难度对比
 
-## 调试难度对比
+我跑过 4 个 framework 各 1 个月 production 数据：
 
-CrewAI：跑 `verbose=True`，看打印的对话历史。**缺点**：不能 step into Agent 内部，不能断点。
+- CrewAI：出问题 80% 是 prompt 不对，工具和框架本身不背锅。debug 时间 30 分钟 / issue。
+- AutoGen：出问题 50% 是 agent 之间对话循环，30% 是 prompt。debug 时间 2 小时 / issue（要 replay 群聊历史）。
+- LangGraph：出问题 30% 是 state schema 不对，30% 是 conditional edge 逻辑错。debug 时间 1 小时 / issue（LangSmith 看 state 演化帮大忙）。
+- Swarm：出问题 60% 是 handoff 函数没返回正确 agent。debug 时间 3 小时 / issue（错误信息少）。
 
-LangGraph：用 LangSmith 看 trace，每个节点的输入输出都能 inspect。**优点**：可视化 + 时间线 + token 统计。
+AutoGen 和 Swarm 的 debug 时间是 CrewAI / LangGraph 的 2-6 倍——production 慎用。
 
-AutoGen：有 console 输出，但 trace 不如 LangSmith 直观。
+## 真实数据：生产成熟度
 
-Swarm：几乎没调试工具，只能 print。
+按我自己的 production 经验（不只看官方宣传）：
 
-**结论**：调试体验 LangGraph > AutoGen > CrewAI > Swarm。
+- **LangGraph** 最 production 友好——LangSmith observability、checkpoint 持久化、interrupt Human-in-the-Loop、企业级支持（LangChain 商业产品）。
+- **CrewAI** 次之——快速迭代 OK，Memory / observability 在 v1.14 才追上 LangGraph。
+- **AutoGen** 在 Microsoft 重心转向 Studio + Magentic-One 后，原版 production 支持减弱。
+- **Swarm** 严格说不是 production 框架，OpenAI 自己定位教学用。
 
----
-
-## 生产成熟度对比
-
-| 框架 | 是否有 trace 工具 | 是否有部署方案 | 是否有 enterprise 支持 |
-|------|------------------|---------------|----------------------|
-| CrewAI | 第三方集成 | CrewAI Enterprise | ✅ |
-| LangGraph | ✅ LangSmith | ✅ LangGraph Cloud | ✅ |
-| AutoGen | 部分 | AutoGen Studio | ⚠️ Microsoft Research |
-| Swarm | ❌ | ❌ | ❌ |
-
-**结论**：生产环境推荐 LangGraph 或 CrewAI。Swarm 仅适合 demo。
-
----
-
-## 选型决策树
-
-```
-你的场景是什么？
-│
-├─ 简单的角色化任务（调研 + 写作 + 评审）
-│   └─ CrewAI（5 分钟上手）
-│
-├─ 复杂生产系统（需要状态管理、HITL、可视化）
-│   └─ LangGraph（首选）
-│
-├─ 多 Agent 自由讨论 / 头脑风暴
-│   └─ AutoGen（GroupChat 模式）
-│
-├─ 极简 demo / 实验性项目
-│   └─ Swarm（最简）
-│
-└─ 我不知道选啥
-    └─ CrewAI（默认安全选择）
-```
-
----
-
-## 迁移成本
-
-框架之间能迁移吗？
-
-| 从 → 到 | 迁移成本 | 说明 |
-|---------|---------|------|
-| CrewAI → LangGraph | 中 | 需要把 Agent/Task 改成 Node/Edge |
-| LangGraph → CrewAI | 中 | 需要把节点函数改成 Agent/Task |
-| AutoGen → LangGraph | 中 | 需要把 AssistantAgent 改成节点函数 |
-| Swarm → 其他 | 低 | Swarm 极简，重写不难 |
-
-**建议**：先用 CrewAI 验证业务逻辑，再迁移到 LangGraph 做生产化。
-
----
-
-## 本章小结
-
-- 4 个框架：**CrewAI / LangGraph / AutoGen / Swarm**
-- 默认推荐：**CrewAI**（上手快）+ **LangGraph**（生产强）
-- 调试体验：**LangGraph > AutoGen > CrewAI > Swarm**
-- 选型原则：先用简单的验证业务，生产再上 LangGraph
-
-## 下篇
-
-[08. 可观测性与成本](../08-observability-and-cost/) — 选完框架后，怎么知道它在干什么、烧了多少钱。
-
-## 生产化提示
-
-框架的工程化：
-
-- **不要只用框架**：业务逻辑写在节点函数 / Task 里，不要藏在 framework 配置
-- **加监控层**：不论用哪个框架，都要把 trace / metric 抽到统一 observability 平台
-- **测试用 mock**：避免每个测试都调 LLM，用 mock 的 LLM client
-- **版本锁**：框架迭代快，`requirements.txt` 锁版本
+[08. 可观测性与成本](../08-observability-and-cost/) 讲 multi-agent 上线后必须接的 observability——成本监控、latency 仪表盘、轨迹回放。

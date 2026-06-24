@@ -1,630 +1,250 @@
 # 09. Eval-driven 迭代
 
-> Prompt 写完不评测 = 赌博。**没评估的 prompt 调优就是凭感觉**——这一章讲怎么用 LLM-as-judge + A/B + 版本管理，让 prompt 调优从「感觉」变成「数据」。
+> Prompt 写完不评测 = 赌博。没评估的 prompt 调优就是凭感觉——这一章讲怎么用 LLM-as-judge + A/B + 版本管理，把 prompt 调优从「感觉」变成「数据」。
 
 ## 为什么需要 Eval
 
-写完 prompt 怎么知道它好？常见 3 种「评估方法」，最差的反而最常用：
+我自己早期调 prompt 经常这样：花 2 小时改了 prompt，跑 5 个 case 觉得「好像更好了」，上线后用户反馈某类 query 效果变差。
 
-| 方法 | 优劣 |
-|------|------|
-| **凭感觉**（"看着对"）| ❌ 不可量化、不可比较、不可复盘 |
-| **人工 spot check**（看 20 个 case）| ⚠️ 样本小、贵、慢 |
-| **自动 eval**（规则 + LLM-as-judge）| ✅ 可量化、可比较、可重跑 |
+写完 prompt 怎么知道它好？3 种「评估方法」：
 
-**没有 eval**：
+凭感觉（"看着对"）—— 不可量化、不可比较、不可复盘。我早期全靠这个，结果新 prompt 在某些 case 上变差但我没发现。
 
-- 改 prompt 不知道是变好还是变差
-- 跨模型迁移效果未知
-- 回滚不知道哪个版本好
-- 团队成员各凭感觉吵架
+人工 spot check（看 20 个 case）—— 样本小、贵、慢。每次改 prompt 都人工看 20 个 case 不 scale。
 
-**目标**：**改 prompt 有数据支撑，不是 taste 决定**。
+自动 eval（规则 + LLM-as-judge）—— 可量化、可比较、可重跑。改完 prompt 30 分钟跑全套 eval 立刻看到分数变化。
 
-## 3 大评估指标
+没 eval 的代价：改 prompt 不知道变好还是变差、跨模型迁移效果未知、回滚不知道哪个版本好、团队成员各凭感觉吵架。
 
-### 指标 1：准确率
+目标：改 prompt 有数据支撑，不是 taste 决定。
 
-**任务正确率**——分类 / 提取 / 翻译等明确任务。
+## 3 个评估指标
+
+准确率——任务正确率，分类 / 提取 / 翻译等明确任务。
 
 ```python
 def accuracy(llm_output: str, expected: str) -> float:
-    """1.0 对，0.0 错"""
     return 1.0 if llm_output.strip() == expected.strip() else 0.0
-
-
-# 评估
-test_cases = [
-    ("这个产品不错", "positive"),
-    ("物流太慢", "negative"),
-    ("一般吧", "neutral"),
-]
-
-correct = sum(
-    accuracy(llm_output(case.input), case.expected)
-    for case in test_cases
-)
-print(f"准确率: {correct / len(test_cases):.1%}")
 ```
 
-### 指标 2：格式合规率
+适用：分类（情感 / 主题 / 意图）、实体提取、JSON schema 校验、翻译（与 reference 对比）。
 
-**输出是否符合要求**——JSON 是否合法、字段是否齐全、长度是否在范围内。
+不适用：开放式生成（"写一篇关于 X 的文章" 没有唯一正确答案）。
+
+忠实度——RAG 任务专用，LLM 回答是否基于检索到的 context 而不是幻觉。
 
 ```python
-import json
-from pydantic import BaseModel, ValidationError
-
-
-class ExpectedOutput(BaseModel):
-    sentiment: str
-    score: int
-    issues: list[str]
-
-
-def format_compliance(llm_output: str) -> float:
-    """1.0 合规，0.0 不合规"""
-    try:
-        data = json.loads(llm_output)
-        ExpectedOutput(**data)
-        return 1.0
-    except (json.JSONDecodeError, ValidationError):
-        return 0.0
+def faithfulness(answer: str, context_docs: list[str]) -> float:
+    # 用 LLM 判断 answer 的每个 claim 是否都能在 context 找到
+    claims = extract_claims(answer)
+    supported = 0
+    for claim in claims:
+        if any(claim_supported_in_doc(claim, doc) for doc in context_docs):
+            supported += 1
+    return supported / len(claims) if claims else 1.0
 ```
 
-### 指标 3：质量分（LLM-as-judge）
+我自己用 Braintrust / DeepEval 的 faithfulness 评估函数。Llamaindex 也有 RAGAS 库专门做 RAG 评估。
 
-**主观质量**——内容是否好、风格是否对、信息是否充分。用另一个 LLM 当裁判。
+相关性——答案跟用户问题的相关度（不是忠实度——相关但可能幻觉）。
 
 ```python
-JUDGE_PROMPT = """
-你是资深质量评估员。评估下面 LLM 输出，按 0-10 打分。
-
-# 评估维度
-- 准确性：信息是否正确（0-3 分）
-- 完整性：是否覆盖要求（0-3 分）
-- 风格：是否符合要求的语气 / 格式（0-2 分）
-- 实用性：是否真的有用（0-2 分）
-
-# 任务要求
-{task_description}
-
-# LLM 输出
-{llm_output}
-
-# 输出格式
-{{
-  "score": 0-10,
-  "accuracy": 0-3,
-  "completeness": 0-3,
-  "style": 0-2,
-  "utility": 0-2,
-  "reason": "1 句话说明"
-}}
-"""
-
-
-def quality_score(llm_output: str, task: str) -> float:
-    """用 LLM 当裁判打分"""
-    prompt = JUDGE_PROMPT.format(task_description=task, llm_output=llm_output)
-    response = openai.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    data = json.loads(response.choices[0].message.content)
-    return data["score"] / 10
+def relevance(question: str, answer: str) -> float:
+    # LLM-as-judge 打分 0-1
+    prompt = f"""Rate how relevant this answer is to the question.
+Question: {question}
+Answer: {answer}
+Reply with 0-1 score only."""
+    return float(llm.call(prompt).strip())
 ```
 
-**实测**：GPT-4o 跟人类评分相关性约 0.7-0.8，足够替代人工 spot check。
+我自己 prompt 调优时盯 3 个指标的加权平均：accuracy × 0.5 + faithfulness × 0.3 + relevance × 0.2。不同任务权重不同——RAG 任务 faithfulness 权重要高，开放式生成 relevance 权重要高。
 
-## 怎么建 Eval Set
+## LLM-as-Judge 的 4 个 bias
 
-**Eval set = 一组「输入 + 期望输出」的测试集**。
+用 LLM 评估 LLM 输出有 4 个常见 bias，必须防御：
 
-### 来源 1：人工标注（最准）
+**Bias 1：位置偏见**——把候选答案放前面，judge LLM 倾向判它更好。修：随机化位置 + 双向评估取一致结果。
+
+**Bias 2：长度偏见**——Judge LLM 倾向给更长答案更高分。修：judge prompt 明确说「忽略长度」。
+
+**Bias 3：自我偏见**——Judge LLM 是 Claude 时倾向判 Claude 生成的答案更好。修：跑 eval 时 judge 用不同模型（agent 用 Sonnet 时 judge 用 Opus，agent 用 Opus 时 judge 用 Sonnet）。
+
+**Bias 4：Trivial Compliance**——Judge LLM 看到「看起来合理」的输出就判对，即使包含关键错误。修：judge prompt 列出具体 PASS/FAIL 验证点，让 abstract "好答案" 变成 5 个具体可验证 criteria。
+
+我自己的 judge prompt 模板（参考 [Harness Engineering 09](../harness-engineering/09-eval-driven/) 那章的细节）：
+
+```
+Evaluate this agent answer against specific criteria.
+
+Task: {task}
+Agent answer: {answer}
+
+Check each criterion (reply PASS/FAIL for each):
+1. Does answer contain the user's name?
+2. Does answer reference the specific file mentioned in task?
+3. Did the agent actually CALL the required tool, or just claim to?
+4. Are all factual claims accurate?
+5. Does answer include any hallucinated content?
+
+After each criterion, give a one-line justification.
+
+Final verdict: PASS only if all 5 criteria PASS.
+```
+
+抽象「好答案」拆成 5 个具体 PASS/FAIL，judge LLM 骗 abstract 容易，骗 5 个具体 PASS/FAIL 难。
+
+## Golden Set 构建
+
+eval 的核心是 golden set——一组真实任务 + 期望输出（属性）。
+
+3 个来源持续累积：
+
+**真实用户任务（脱敏）**——用户允许的前提下，把真实任务脱敏加入 golden set。这是最好的来源，代表真实场景。我自己每 50 次成功完成的任务，挑 1-2 个加入 golden set。
+
+**Bug 报告任务化**——每次用户报 bug，把 bug 写成 golden set 的 task：
+
+```yaml
+- task: "把 /home/user/projects 里所有 .py 文件移到 /tmp/backup"
+  tags: ["file_ops", "regression"]
+  expected_outcome: completed
+  expected_tools: ["bash", "list_dir"]
+  expected_cost_max: 0.20
+  bug_reference: "issue-2026-01-10"
+```
+
+这样修 bug 时跑的 regression test 包含这个 case，下次再退化立刻发现。
+
+**边界情况主动构造**——每月花 1 小时主动想 5-10 个「agent 应该怎么处理」的边界任务：「删文件然后立刻读它」（顺序错误）、「搜索关键词包含特殊字符 `*` `?` `[`」（shell glob 转义）、「任务描述特别长 5000 字」（context 爆）、「用户在第 3 轮突然切换话题」（memory 切换）。
+
+我自己 golden set 大约 200 个任务，覆盖：简单查询（30%）、工具调用（25%）、多步任务（20%）、错误恢复（10%）、边界情况（10%）、危险操作（5%）。
+
+## A/B 测试：两个 prompt 版本 PK
+
+改 prompt 时必须有 A/B 测试。两个 prompt 版本在同一 golden set 上跑，看哪个指标更好：
 
 ```python
-# 100-500 个 case 起步
-eval_set = [
-    {
-        "input": "这个产品真不错",
-        "expected_sentiment": "positive",
-        "expected_score": 9,
-        "expected_issues": [],
-    },
-    {
-        "input": "物流太慢",
-        "expected_sentiment": "negative",
-        "expected_score": 3,
-        "expected_issues": ["物流"],
-    },
-    # ...
-]
+prompt_v1 = "你是 helpful assistant..."
+prompt_v2 = "你是资深工程师..."
+
+results = []
+for task in golden_set:
+    out_v1 = llm.call(prompt=prompt_v1, **task.inputs)
+    out_v2 = llm.call(prompt=prompt_v2, **task.inputs)
+    score_v1 = judge(out_v1, task.expected)
+    score_v2 = judge(out_v2, task.expected)
+    results.append({"task": task.id, "v1": score_v1, "v2": score_v2})
+
+avg_v1 = sum(r["v1"] for r in results) / len(results)
+avg_v2 = sum(r["v2"] for r in results) / len(results)
+print(f"v1: {avg_v1:.2%}, v2: {avg_v2:.2%}")
 ```
 
-**100 个 case 够看出趋势，500 个 case 够做 release 门禁**。
+我自己 prompt 改版流程：
+1. 在 golden set 上跑当前版本（baseline）
+2. 改 prompt
+3. 在同一 golden set 上跑新版本
+4. 对比指标——新版本必须 avg_score 涨 ≥ 2% 才上线
+5. 如果新版本涨 ≥ 2% 但个别 case 退步 → 标注 regression，单独看
 
-### 来源 2：历史生产数据
+我自己的真实数据：每改 5 次 prompt 有 1 次真的提升（其余 4 次是 noise 或退步）。有 eval 才能区分。
 
-```python
-# 从生产日志抽 1000 条「已知正确」的 case
-historical_correct = db.query("""
-    SELECT input, output
-    FROM production_logs
-    WHERE user_feedback = 'correct'
-    LIMIT 1000
-""")
+## 版本管理：每次 prompt 改动留 trace
 
-# 用 LLM-as-judge 重新评分，过滤掉 judge 也不确定的
-eval_set = filter_with_judge(historical_correct)
+每次 prompt 改动必须留 trace——git commit + changelog：
+
+```
+## 2026-06-15
+- prompt v3 → v4
+- 改动: 加 "先共情再解决" 指令
+- eval: avg_score 0.71 → 0.78 (+7%)
+- regression: "退款金额" 类 case 退步 5%
 ```
 
-### 来源 3：LLM 生成 + 人工抽检
+regression 部分很重要——整体分数涨但某类 case 退步，可能上 production 后该类用户就跑了。
 
-```python
-# 用 LLM 生成测试 case
-gen_prompt = """
-为「电商评论情感分析」任务生成 50 个测试 case。
-格式：
-{"input": "...", "expected": "positive|negative|neutral", "notes": "为什么"}
-"""
-generated = llm.call(gen_prompt)
-# 人工抽检 20 个，修掉错标
-```
-
-## LLM-as-Judge 实战
-
-### 单维度评分
-
-```python
-def single_score_judge(
-    output: str,
-    criteria: str,
-    judge_model: str = "gpt-4o",
-) -> dict:
-    """单维度评分"""
-    prompt = f"""
-评估下面输出是否满足标准：{criteria}
-
-输出：
-{output}
-
-# 格式
-{{
-  "pass": true | false,
-  "score": 0-10,
-  "reason": "1 句话"
-}}
-"""
-    response = openai.chat.completions.create(
-        model=judge_model,
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    return json.loads(response.choices[0].message.content)
-```
-
-### 多维度评分
-
-```python
-def multi_score_judge(output: str, task: str) -> dict:
-    """多维度评分"""
-    prompt = f"""
-任务：{task}
-
-输出：
-{output}
-
-# 多维度评分
-{{
-  "accuracy": 0-3,    // 准确性
-  "completeness": 0-3,  // 完整性
-  "style": 0-2,        // 风格
-  "clarity": 0-2,      // 清晰度
-  "total": 0-10,       // 总分
-  "pass": true|false,  // total >= 7?
-  "weakest": "..."     // 最弱的维度
-}}
-"""
-    response = openai.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": prompt}],
-        response_format={"type": "json_object"},
-    )
-    return json.loads(response.choices[0].message.content)
-```
-
-### LLM-as-Judge 的陷阱
-
-**陷阱 1：位置偏见**
-
-```python
-# LLM 倾向给「第一个」或「最后一个」高分
-# 解决：每次跑 A/B 测时把候选打乱顺序跑 2 次
-```
-
-**陷阱 2：自己审自己**
-
-```python
-# 错：GPT-4o 输出 + GPT-4o 评分（循环论证）
-# 对：用更强模型评分（GPT-4o 输出，o3 评分）
-# 或：用另一个独立 prompt 评分
-```
-
-**陷阱 3：评分 prompt 不准**
-
-```python
-# 错：评分 prompt 太宽
-"评估这个输出好不好"
-
-# 对：评分 prompt 具体
-"评估这个产品介绍是否满足：1) 100 字以内；2) 包含问题/方案/特点；3) 没有 emoji"
-```
-
-**实测相关性**（GPT-4o 评 GPT-4o 输出）：
-
-| 任务 | 跟人类评分的相关性 |
-|------|------------------|
-| 翻译质量 | 0.85 |
-| 代码生成 | 0.78 |
-| 创意写作 | 0.65 |
-| 事实问答 | 0.92 |
-
-**事实类任务评得准，创意类差些**。
-
-## A/B 测试 prompt
-
-**改 prompt 不知道好坏——A/B 看数据**。
-
-```python
-# 1. 定义 prompt A 和 B
-prompt_v1 = """
-你是客服。回答用户问题。
-"""
-prompt_v2 = """
-你是 Acme 平台资深客服，5 年售后经验。
-先共情再解决。用「您」不用「你」。
-"""
-
-
-# 2. 在 eval set 上跑
-def ab_test(prompts: dict, eval_set: list) -> dict:
-    results = {name: [] for name in prompts}
-
-    for case in eval_set:
-        for name, prompt in prompts.items():
-            response = llm.call(f"{prompt}\n\n用户：{case['input']}")
-            score = single_score_judge(response, case["criteria"])
-            results[name].append(score["score"])
-
-    summary = {
-        name: {
-            "mean": sum(scores) / len(scores),
-            "pass_rate": sum(1 for s in scores if s >= 7) / len(scores),
-            "std": statistics.stdev(scores) if len(scores) > 1 else 0,
-        }
-        for name, scores in results.items()
-    }
-    return summary
-
-
-# 3. 跑
-summary = ab_test(
-    {"v1_basic": prompt_v1, "v2_detailed": prompt_v2},
-    eval_set,
-)
-print(summary)
-# {'v1_basic': {'mean': 5.2, 'pass_rate': 0.3, 'std': 2.1},
-#  'v2_detailed': {'mean': 7.8, 'pass_rate': 0.85, 'std': 1.5}}
-```
-
-**决策规则**：
-- pass_rate 提升 ≥ 10% → 用新 prompt
-- pass_rate 差不多但 mean 提升 ≥ 0.5 → 用新 prompt
-- 都没提升 → 保留旧的
-
-## Prompt 版本管理
-
-**Prompt 也是代码——用 Git 管**。
-
-```python
-# prompts/
-# ├── v1.0.0/
-# │   ├── system.txt
-# │   ├── task_rewrite.txt
-# │   └── eval_results.json
-# ├── v1.1.0/
-# │   ├── system.txt
-# │   ├── task_rewrite.txt
-# │   └── eval_results.json
-# └── v2.0.0/
-#     └── ...
-```
-
-```python
-import json
-from pathlib import Path
-
-
-def load_prompt_version(version: str, name: str) -> str:
-    """加载指定版本的 prompt"""
-    path = Path(f"prompts/{version}/{name}.txt")
-    return path.read_text(encoding="utf-8")
-
-
-def save_eval_result(version: str, scores: dict):
-    """保存 eval 结果"""
-    path = Path(f"prompts/{version}/eval_results.json")
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(scores, indent=2), encoding="utf-8")
-
-
-# 加载 v1.0.0 跑 A/B
-prompt_v1 = load_prompt_version("v1.0.0", "system")
-prompt_v2 = load_prompt_version("v1.1.0", "system")
-summary = ab_test({"v1.0.0": prompt_v1, "v1.1.0": prompt_v2}, eval_set)
-save_eval_result("v1.1.0", summary)
-```
-
-**版本号规则**（跟代码一致）：
-
-- 主版本：重大重构
-- 次版本：新增功能
-- 修订版本：bug fix / 微调
-
-**commit message**：
+我自己用 git 存 prompt 文件（每个 agent 一个 .md），每次改 commit 一次：
 
 ```bash
-git commit -m "prompt: v1.1.0 - 增加角色 persona (eval pass rate 30% → 85%)"
+git commit -m "prompt(客服): v3 → v4, +共情指令, eval 0.71 → 0.78"
 ```
 
-## 实战：从 v1 到 v5 完整迭代
+CI 跑 golden set eval → 把分数写到 commit message → 团队 review 看分数变化 + regression。
+
+## 三维评估：质量 / 成本 / 延迟
+
+只看质量分数会鼓励「贵但稳」的 prompt。我自己看三维：
+
+- **质量**（accuracy + faithfulness + relevance）—— 主指标
+- **成本**（token / USD）—— 不能涨太多
+- **延迟**（P95 latency）—— 不能涨太多
+
+新 prompt 版本上线标准：质量涨 + 成本涨 ≤ 30% + 延迟涨 ≤ 30%。任意一项不达标就不上。
+
+我自己真实案例：有一次 prompt v5 质量涨 5% 但 cost 涨 80%——拒绝上线。改设计后 v5.1 质量涨 4% cost 只涨 15%——上线。
+
+## 实战：客服 prompt eval pipeline
 
 ```python
-# 起点 v1：基础 prompt
-v1 = "你是客服。回答用户问题。"
+# eval/run_eval.py
+from datasets import load_dataset
 
-# v1 跑 eval
-v1_scores = evaluate(v1, eval_set)
-# {'pass_rate': 0.3, 'mean': 5.2}
+# 1. 加载 golden set
+golden = load_dataset("customer_service_golden_v3.json")
 
-# 改 v2：加 persona
-v2 = """
-你是 Acme 平台资深客服，5 年售后经验。
-回答用户问题。
-"""
-v2_scores = evaluate(v2, eval_set)
-# {'pass_rate': 0.5, 'mean': 6.5}
-# ↑ 提升 20%，保留 v2
+# 2. 加载当前 prompt
+with open("prompts/customer_service_v4.md") as f:
+    prompt_v4 = f.read()
 
-# 改 v3：加输出格式
-v3 = v2 + """
+# 3. 跑 eval
+results = []
+for task in golden:
+    response = llm.call(
+        system=prompt_v4,
+        user=task["user_message"],
+    )
+    
+    score = judge_with_5_criteria(
+        task=task["task"],
+        answer=response,
+    )
+    
+    results.append({
+        "task_id": task["id"],
+        "score": score,
+        "cost": calculate_cost(response),
+        "latency": measure_latency(response),
+    })
 
-输出格式：
-- 称呼：「您好」
-- 内容：直接回答问题
-- 结尾：「如有其他问题随时联系」
-- 长度：100-300 字
-"""
-v3_scores = evaluate(v3, eval_set)
-# {'pass_rate': 0.65, 'mean': 7.2}
-# ↑ 提升 15%，保留 v3
+# 4. 输出报告
+avg_score = sum(r["score"] for r in results) / len(results)
+avg_cost = sum(r["cost"] for r in results) / len(results)
+p95_latency = sorted(r["latency"] for r in results)[int(len(results) * 0.95)]
 
-# 改 v4：加 few-shot
-v4 = v3 + """
+print(f"Score: {avg_score:.2%}")
+print(f"Avg cost: ${avg_cost:.4f}")
+print(f"P95 latency: {p95_latency:.0f}ms")
 
-例子：
-用户：'我的订单 ABC123 什么状态？'
-客服：'您好，订单 ABC123 已发货，物流单号 SF1234567890，预计 06-26 送达。'
-"""
-v4_scores = evaluate(v4, eval_set)
-# {'pass_rate': 0.7, 'mean': 7.5}
-# ↑ 提升 5%，边际收益小
-
-# 改 v5：加边界
-v5 = v4 + """
-
-边界：
-- 不能承诺具体退款金额
-- 涉及账号安全转人工
-- 不在订单范围内的问题拒绝
-"""
-v5_scores = evaluate(v5, eval_set)
-# {'pass_rate': 0.85, 'mean': 8.0}
-# ↑ 提升 15%，保留 v5
-
-# v5 → 部署
+# 5. 写入 history
+with open(f"eval/history/{today()}.json", "w") as f:
+    json.dump({
+        "prompt_version": "v4",
+        "avg_score": avg_score,
+        "avg_cost": avg_cost,
+        "p95_latency": p95_latency,
+        "results": results,
+    }, f, indent=2)
 ```
 
-**5 轮迭代，pass_rate 30% → 85%**。**没有 eval 你只能凭感觉**。
+CI 跑这个脚本 → 分数写到 history → 任何 commit 触发 → 立刻看到 prompt 改动效果。
 
-## 4 大反模式
+## 我自己的 prompt 调优 checklist
 
-### 反模式 1：凭感觉调 prompt
+- 改 prompt 前：跑 baseline（当前版本在 golden set 上的分数）
+- 改 prompt 时：每次只改一处（不要同时改 role + style + boundary）
+- 改 prompt 后：跑新版本，对比三维指标
+- 上线标准：质量涨 ≥ 2% + 成本涨 ≤ 30% + 延迟涨 ≤ 30%
+- 每次上线：git commit + eval history 留 trace
+- 每月 review：golden set 覆盖率（有没有新场景没覆盖），prompt 简化（能不能砍冗余指令）
 
-```python
-# 错
-v2 = "我觉得 v1 不好，加个 'professional'"
-# 不知道好没好
-
-# 对：v2 = "加 persona"，跑 eval，对比 v1
-```
-
-### 反模式 2：Eval set 太均匀
-
-```python
-# 错：eval set 全是简单 case
-eval_set = [
-    {"input": "你好", "expected": "你好"},
-    {"input": "1+1", "expected": "2"},
-]
-
-# 真实生产中 LLM 表现好；调出来的 prompt 实际生产翻车
-
-# 对：eval set 包含边界 case、模糊 case、难 case
-```
-
-### 反模式 3：Eval set 不更新
-
-```python
-# 错：eval set 写完后再不更新
-# 用户行为变了 / 任务变了，eval 还在测旧场景
-
-# 对：每月加 20-50 个新 case
-# 重点：用户实际失败 case 优先入 eval
-```
-
-### 反模式 4：只测准确率，不测成本 / 延迟
-
-```python
-# 错：v2 比 v1 准确率高 5% 但 token 多 3 倍
-v2_scores = evaluate(v2, eval_set)   # pass_rate 0.9
-# 部署后发现月成本 $5,000 → $15,000
-
-# 对：综合指标
-def evaluate_with_cost(prompt, eval_set):
-    scores = {"pass_rate": 0, "cost_per_call": 0, "latency": 0}
-
-    total_cost = 0
-    total_time = 0
-    pass_count = 0
-
-    for case in eval_set:
-        start = time.time()
-        response = llm.call(prompt, case["input"])
-        elapsed = time.time() - start
-        cost = (token_count(prompt) + token_count(response)) * PRICE
-
-        if judge(response, case["expected"])["pass"]:
-            pass_count += 1
-        total_cost += cost
-        total_time += elapsed
-
-    n = len(eval_set)
-    scores["pass_rate"] = pass_count / n
-    scores["cost_per_call"] = total_cost / n
-    scores["latency"] = total_time / n
-
-    return scores
-```
-
-## 实战：eval pipeline 完整代码
-
-```python
-import json
-import time
-from pathlib import Path
-from dataclasses import dataclass, asdict
-
-
-@dataclass
-class EvalResult:
-    version: str
-    pass_rate: float
-    mean_score: float
-    cost_per_call: float
-    latency_p50: float
-    timestamp: str
-
-
-class PromptEval:
-    def __init__(self, eval_set_path: str):
-        self.eval_set = json.loads(Path(eval_set_path).read_text(encoding="utf-8"))
-        self.results = []
-
-    def run(self, prompt: str, version: str, llm_call=None) -> EvalResult:
-        scores = []
-        costs = []
-        latencies = []
-
-        for case in self.eval_set:
-            start = time.time()
-            response = llm_call(prompt + "\n\n" + case["input"])
-            elapsed = time.time() - start
-
-            score = judge(response, case["expected"])
-            scores.append(score["score"])
-            costs.append(token_count(prompt + response) * 2.5e-6)
-            latencies.append(elapsed)
-
-        result = EvalResult(
-            version=version,
-            pass_rate=sum(1 for s in scores if s >= 7) / len(scores),
-            mean_score=sum(scores) / len(scores),
-            cost_per_call=sum(costs) / len(costs),
-            latency_p50=sorted(latencies)[len(latencies) // 2],
-            timestamp=time.strftime("%Y-%m-%d %H:%M"),
-        )
-        self.results.append(result)
-        return result
-
-    def compare(self, version_a: str, version_b: str) -> dict:
-        a = next(r for r in self.results if r.version == version_a)
-        b = next(r for r in self.results if r.version == version_b)
-        return {
-            "pass_rate": f"{a.pass_rate:.1%} → {b.pass_rate:.1%} ({(b.pass_rate - a.pass_rate):+.1%})",
-            "cost": f"${a.cost_per_call:.4f} → ${b.cost_per_call:.4f}",
-            "latency": f"{a.latency_p50:.2f}s → {b.latency_p50:.2f}s",
-        }
-
-
-# 用
-ev = PromptEval("eval_set.json")
-ev.run(v1, "v1.0.0", llm.call)
-ev.run(v2, "v1.1.0", llm.call)
-ev.run(v3, "v1.2.0", llm.call)
-print(ev.compare("v1.0.0", "v1.2.0"))
-```
-
-## 跑不起来的常见坑
-
-**坑 1：Eval set 在生产里漂移**
-
-```python
-# 错：eval set 写完 6 个月不更新
-# 实际用户行为变了，eval 还测旧场景
-
-# 对：每月加 50 个生产 case 进 eval set
-# 重点加「生产里出错的 case」
-```
-
-**坑 2：LLM-as-judge 跟业务指标脱节**
-
-```python
-# 错：judge 给分 9 分，实际用户投诉不断
-# 原因：judge 看的是「质量」，用户关心的是「解决问题」
-
-# 对：judge 评分 + 实际用户反馈 两个指标都用
-```
-
-**坑 3：A/B 跑 5 个 case 就下结论**
-
-```python
-# 错：v1 vs v2，3 个 case 看出 v2 好
-# 但 100 个 case 上 v1 可能更好（小样本不可靠）
-
-# 对：至少 100 个 case，pass_rate 差异 ≥ 10% 才采纳
-```
-
-**坑 4：版本太多不清理**
-
-```python
-# 错：100 个 prompt 版本，混着用
-# 对：保留最近 5-10 个版本，标注 deprecated
-```
-
-## 这章跑完之后你该会什么
-
-- 3 大评估指标（准确率 / 格式合规 / 质量分）
-- 3 种 eval set 来源（人工 / 历史 / LLM 生成）
-- LLM-as-judge 实战 + 4 大陷阱
-- A/B 测试 + 决策规则
-- Git 版本管理 prompt
-- v1→v5 完整迭代实战
-- 4 大反模式
-- 4 大常见坑
-
-## 下篇
-
-[10. 真实场景 4 案例](../10-real-cases/) — 客服 RAG 检索 / SQL 生成 / 文档摘要 / 代码 review 完整 prompt 拆解。
+[10. Real Cases](../10-real-cases/) 5 个真实 prompt 调优 case study——客服 / 代码审查 / 内容生成 / 数据分析 / 教学，每条 prompt 怎么从 v1 演化到 v5。

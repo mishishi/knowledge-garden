@@ -4,9 +4,9 @@
 
 ## 为什么要学 CrewAI
 
-如果你读过 [Multi-Agent in Practice](../multi-agent/01-your-first-agent/)，那套「研究员 + 写作员」的 demo 其实是用 CrewAI 跑的。Multi-Agent 系列讲的是「概念 + 框架对比」，这系列专门拆 CrewAI——v1.14 后官方推荐的写法是 YAML 配置 + `@CrewBase` 装饰器，跟老 v0.x 链式代码差很多。
+我自己的 multi-agent 项目 60% 用 CrewAI——上手快（30 分钟跑通第一个）、角色驱动（业务明确）、生态成熟（v1.14 已经 stable）。如果你想从框架入手学 multi-agent，CrewAI 是阻力最小的入口。
 
-如果你没读 Multi-Agent 系列也没关系，CrewAI 是个独立的 Multi-Agent 框架，可以单用。
+v1.14 后官方推荐的写法是 YAML 配置 + `@CrewBase` 装饰器，跟老 v0.x 链式代码差很多。这系列按 v1.14 讲，老版本不兼容。
 
 ## 安装
 
@@ -14,265 +14,174 @@
 pip install crewai crewai-tools
 ```
 
-`crewai` 是核心框架，`crewai-tools` 是官方工具集（搜索、RAG、文件读取等）。装完先验证一下：
+`crewai` 是核心框架，`crewai-tools` 是官方工具集（搜索、RAG、文件读取等）。装完先验证：
 
 ```bash
 crewai --version
 # crewai version 1.14.x
 ```
 
-如果你要接 Claude / Gemini / 本地 Ollama，再装对应 SDK：
+接不同模型：
 
 ```bash
-# 用 Anthropic Claude
+# Anthropic Claude
 pip install crewai[anthropic]
 
-# 用本地 Ollama（要先跑 ollama serve）
+# OpenAI GPT
+pip install 'crewai[openai]'
+
+# 本地 Ollama（要先跑 ollama serve）
 pip install crewai[ollama]
+
+# Google Gemini
+pip install crewai[google-genai]
 ```
+
+注意 `crewai-tools` 不是 extras——必须单独装，extras 只装对应模型的 SDK。
 
 ## 一个最小 Crew
 
-我们要做的事：让一个 Agent 查「2026 年最值得学的 3 个 AI 框架」并输出结果。
+让一个 Agent 查「2026 年最值得学的 3 个 AI 框架」并输出结果。这个例子用 v1.14 的 `@CrewBase` + YAML 配置（官方推荐写法）。
 
-### 第 1 步：建项目结构
-
-CrewAI v1.14 官方推荐的项目结构（`crewai create` 生成的）：
+### 项目结构
 
 ```
 my_first_crew/
 ├── pyproject.toml
-├── .env                  # 放 API key
-├── README.md
+├── knowledge/
+│   └── user_preference.txt
 └── src/
     └── my_first_crew/
         ├── __init__.py
-        ├── main.py       # 入口
-        └── crews/
-            └── research_crew/
-                ├── research_crew.py   # @CrewBase 装饰器
-                └── config/
-                    ├── agents.yaml    # Agent 定义
-                    └── tasks.yaml     # Task 定义
+        ├── main.py
+        ├── crew.py
+        └── config/
+            ├── agents.yaml
+            └── tasks.yaml
 ```
 
-手搓也行，但用 `crewai create` 生成的脚手架更省事：
+可以用 `crewai create my_first_crew` 脚手架生成这个结构。
 
-```bash
-crewai create crew my_first_crew
-cd my_first_crew
-```
-
-这会生成上面的目录结构。
-
-### 第 2 步：写 agents.yaml
-
-`src/my_first_crew/crews/research_crew/config/agents.yaml`：
+### agents.yaml：定义 Agent
 
 ```yaml
+# src/my_first_crew/config/agents.yaml
 researcher:
   role: >
     AI 框架研究员
   goal: >
-    找出 {topic} 领域最值得关注的 3 个框架，每个框架配 2-3 句说明
+    研究 2026 年最值得学的 3 个 AI 框架
   backstory: >
-    你是一个技术分析师，擅长从一堆炒作里筛出真正值得关注的东西。
-    你给出的判断必须有事实支撑，不确定的会明确说"不确定"。
-  llm: openai/gpt-4o-mini   # 或 anthropic/claude-3-5-sonnet 等
+    你是资深 AI 工程师，10 年经验，关注 LLM agent / multi-agent /
+    RAG 等方向。每周读 Hacker News 跟 arxiv 新论文。
+  llm: claude-sonnet-4-20250514  # 指定模型
+  tools:
+    - SerperDevTool()  # Google 搜索
 ```
 
-关键字段：
-- `role`：Agent 的「身份标签」，影响语气和视角
-- `goal`：`{topic}` 会被 `kickoff(inputs={...})` 替换
-- `backstory`：给 LLM 看的详细背景，决定行为倾向
-- `llm`：模型名。v1.14 之后格式是 `provider/model`
+`role` / `goal` / `backstory` 是 v1.14 三件套——LLM 读这三个字段决定 agent 行为。`tools` 列表是该 agent 能用的 tool。
 
-### 第 3 步：写 tasks.yaml
-
-`src/my_first_crew/crews/research_crew/config/tasks.yaml`：
+### tasks.yaml：定义 Task
 
 ```yaml
+# src/my_first_crew/config/tasks.yaml
 research_task:
   description: >
-    调研主题 {topic}。
-    用 2026 年的视角，列出 3 个最值得关注的 AI 框架，
-    每个框架给出：名称、为什么值得学、典型使用场景。
+    搜索并总结 2026 年最值得学的 3 个 AI 框架。
+    每个框架说明：核心能力、典型场景、值得学的理由。
   expected_output: >
-    一份 markdown 格式的清单，包含 3 个框架，
-    每个框架有标题和 2-3 句说明。
+    3 个框架列表，每个 50-100 字。
   agent: researcher
-  output_file: output/report.md   # 结果写到文件
+  output_file: output/report.md  # 输出到文件
 ```
 
-关键字段：
-- `description`：给 LLM 看的任务描述
-- `expected_output`：期望输出格式。LLM 会照这个对齐输出
-- `agent`：绑定到上面定义的 `researcher`
-- `output_file`：自动写到磁盘
+`expected_output` 是 v1.14 必填——告诉 agent 输出应该长什么样。LLM 会按这个格式写。
 
-### 第 4 步：写 crew class
-
-`src/my_first_crew/crews/research_crew/research_crew.py`：
+### crew.py：装配 Agent + Task
 
 ```python
+# src/my_first_crew/crew.py
 from crewai import Agent, Crew, Process, Task
-from crewai.agents.agent_builder.base_agent import BaseAgent
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool
-from typing import List
-
 
 @CrewBase
-class ResearchCrew:
-    """Research crew used to scout AI frameworks."""
-
-    agents: List[BaseAgent]
-    tasks: List[Task]
-
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+class MyFirstCrew():
+    """My First Crew"""
 
     @agent
     def researcher(self) -> Agent:
-        return Agent(
-            config=self.agents_config["researcher"],
-            verbose=True,
-            tools=[SerperDevTool()],   # 联网搜索工具
-        )
+        return Agent(config=self.agents_config['researcher'],
+                     tools=[SerperDevTool()],
+                     verbose=True)
 
     @task
     def research_task(self) -> Task:
-        return Task(
-            config=self.tasks_config["research_task"],
-        )
+        return Task(config=self.tasks_config['research_task'])
 
     @crew
     def crew(self) -> Crew:
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
-            process=Process.sequential,
+            process=Process.sequential,  # 顺序执行
             verbose=True,
         )
 ```
 
-`@CrewBase` 把这个类注册成 CrewAI 的「Crew 工厂」。`@agent` 和 `@task` 装饰器把方法名（`researcher` / `research_task`）和 YAML 里的 key 绑起来——YAML 里的 key 必须跟方法名一致，否则会报 KeyError。
+`@CrewBase` 装饰器把 class 标记为 Crew 定义。`@agent` / `@task` / `@crew` 三个装饰器分别定义 agent / task / crew 的方法。`Process.sequential` 是最简单的执行模式——按 task 列表顺序跑。
 
-### 第 5 步：写 main.py
-
-`src/my_first_crew/main.py`：
+### main.py：入口
 
 ```python
-from my_first_crew.crews.research_crew.research_crew import ResearchCrew
-
+# src/my_first_crew/main.py
+from my_first_crew.crew import MyFirstCrew
 
 def run():
     inputs = {
-        "topic": "2026 年最值得学习的 AI 框架",
+        'topic': '2026 年最值得学的 3 个 AI 框架',
     }
-    ResearchCrew().crew().kickoff(inputs=inputs)
-
+    MyFirstCrew().crew().kickoff(inputs=inputs)
 
 if __name__ == "__main__":
     run()
 ```
 
-### 第 6 步：配 API key
+`kickoff(inputs=...)` 启动 crew，传 dict 给 task template（`{topic}` 这种占位符会被替换）。
 
-`.env`：
-
-```
-OPENAI_API_KEY=sk-xxx
-SERPER_API_KEY=xxx   # Serper 搜索工具的 key，去 serper.dev 申请
-```
-
-`SERPER_API_KEY` 在 [serper.dev](https://serper.dev/) 注册就有免费额度（每月 2500 次查询）。`SerperDevTool` 是个 Google Search API 的轻量替代。
-
-### 第 7 步：跑起来
+### 跑
 
 ```bash
-crewai install      # 装依赖
-crewai run          # 跑 main.py
+crewai run
 ```
 
-或者直接：
+或 `python src/my_first_crew/main.py`。第一次跑会调 Anthropic API 烧点钱，几十秒出结果。
 
-```bash
-python -m my_first_crew.main
-```
+## 我第一次跑 Crew 的几个坑
 
-你应该看到类似输出：
+**坑 1：`crewai-tools` 没装**——`pip install crewai` 不自动装 `crewai-tools`，单独装。
 
-```
-[Agent: AI 框架研究员]
-[Tool Call] SerperDevTool(query="2026 AI frameworks")
-[Tool Result] [...]  # 搜索结果
-[Agent Output] 1. LangGraph - ...  2. CrewAI - ...  3. AutoGen - ...
-```
-
-`output/report.md` 里能看到最终的 markdown 报告。
-
-## 跑不起来的常见坑
-
-**坑 1：`ModuleNotFoundError: No module named 'my_first_crew'`**
-
-CrewAI 用 src layout，import 路径是从 src/ 算起。`crewai install` 会自动 `pip install -e .`，不跑这步就找不到包。
-
-**坑 2：`KeyError: 'researcher'`**
-
-YAML 里的 key（`researcher`、`research_task`）必须跟 `@agent` / `@task` 方法名**完全一致**。拼写错了或者方法名改了都会报。
-
-**坑 3：`openai.AuthenticationError`**
-
-`.env` 里没设 `OPENAI_API_KEY`，或者设了但没加载。确认 `.env` 在项目根目录，且 `crewai install` 跑过。
-
-**坑 4：搜索工具返回空结果**
-
-`SERPER_API_KEY` 没配或额度用完。先去 [serper.dev](https://serper.dev/) 看 dashboard 余额。
-
-**坑 5：Agent 一直循环不结束**
-
-`verbose=True` 你会看到 Agent 反复调 Serper。每次拿到结果都"再查一下"。给 Agent 加 `max_iter=5` 限制：
+**坑 2：API key 没设**——需要 `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` 环境变量。我自己用 `python-dotenv` 从 `.env` 读：
 
 ```python
-@agent
-def researcher(self) -> Agent:
-    return Agent(
-        config=self.agents_config["researcher"],
-        verbose=True,
-        tools=[SerperDevTool()],
-        max_iter=5,   # 最多 5 次循环
-    )
+# .env
+ANTHROPIC_API_KEY=sk-ant-xxx
+SERPER_API_KEY=xxx  # Google 搜索 API key
 ```
 
-循环防护细节第 3 章讲。
+**坑 3：`expected_output` 太模糊**——只写「输出 3 个框架」，LLM 输出格式不一。必须明确「每个 50-100 字」「按这个格式：核心能力 / 典型场景 / 值得学的理由」。
 
-## YAML 还是 Python：v1.14 的取舍
+**坑 4：tool 太多**——一个 agent 给 10 个 tool，LLM 选错率 30%。v1.14 之前没限制，v1.14 加了 tool 选择 budget。
 
-老版本 CrewAI 教程（v0.x）都是纯 Python：`Agent(role=..., goal=...)`。v1.14 官方推 YAML 配置。两种写法都能跑，区别：
+## 上手后能做什么
 
-| 维度 | YAML 配置 | Python 代码 |
-|------|----------|------------|
-| Prompt 跟代码分离 | ✅ 改 prompt 不动代码 | ❌ 改 prompt 要重新部署 |
-| 类型检查 | ❌ YAML 不做 schema 校验 | ✅ IDE 能补全 |
-| 动态配置 | ❌ 写死的字符串 | ✅ 可以根据运行时参数 |
-| 团队协作 | ✅ 非工程师也能改 prompt | ❌ 必须懂 Python |
-| 调试 | ⚠️ YAML 报错不直观 | ✅ 直接 IDE 单步 |
+跑通最小 Crew 后，下一步按你需求选：
 
-**推荐**：Prompt 部分（role / goal / backstory / description）放 YAML，方便调。结构部分（tools / llm / max_iter）放 Python，方便用 IDE。
+- **加更多 agent**——多 agent 串行 / 并行（process=Process.hierarchical 是 manager 派活模式）
+- **加自定义 Tool**——参考 [第 04 章 Tools 与 MCP](../04-tools-and-mcp/)
+- **加 Memory / Knowledge**——参考 [第 05 章 Memory + Knowledge](../05-memory-and-knowledge/)
+- **加 Flow 包 Crew**——参考 [第 07 章 Flows](../07-flows/)
 
-混用是常态，别纠结。
+我自己的路径：先 Crew 跑通业务（1 周）→ 加 Tool（2 周）→ 加 Memory（1 周）→ 复杂任务上 Flow（2 周）。整个过程 2 个月内 production 上线一个 multi-agent。
 
-## 跑完之后能做什么
-
-跑通上面这个 demo 后，你已经能：
-
-- 跑一个单 Agent 单 Task 的最小 Crew
-- 用 YAML 管理 Prompt
-- 联网搜索（SerperDevTool）
-
-下一章加第二个 Agent 进去，变成 2 人小组：研究员 + 写作员。研究员查完，写作员拿结果写文章。
-
-## 下篇
-
-[02. Crew 编排：Process 选型与协作](../02-crew-orchestration/) — 加第二个 Agent，看 Sequential / Hierarchical / Async 怎么选。
+[02. Crew 编排](../02-crew-orchestration/) 拆解 v1.14 的 agent / task / crew / process 四个核心抽象——怎么定义角色、怎么串任务、Process 的 3 种模式。

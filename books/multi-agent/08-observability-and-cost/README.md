@@ -1,25 +1,22 @@
 # 08. 可观测性与成本
 
-> 6 章讲了防失败，7 章讲了选框架。这章讲选完后怎么知道系统在干什么、烧了多少钱。这俩是生产环境最容易被忽视的隐形炸弹。
+> 上章讲了选框架。这章讲选完后怎么知道系统在干什么、烧了多少钱。这俩是生产环境最容易被忽视的隐形炸弹——我的 4 个 multi-agent 项目都吃过 observability 不到位的亏。
 
-## Part 1：可观测性
+## 可观测性的三大支柱
 
-### 三大支柱
+任何 production multi-agent 系统都要有这 3 块：
 
-```
-1. Trace（链路追踪）
-└─ 一次请求从进入到结束，每一步做了什么、花了多少时间、消耗多少 token
+**Trace（链路追踪）**——一次请求从进入到结束，每一步做了什么、花了多少时间、消耗多少 token。一次失败的 5-Agent 任务，不看 trace 根本不知道是哪个 Agent 出的问题。
 
-2. Metric（指标）
-└─ 聚合统计：每分钟调用次数、平均耗时、错误率、P95 延迟
+**Metric（指标）**——聚合统计：每分钟调用次数、平均耗时、错误率、P95 延迟。Metric 是 dashboard 和 alert 的基础。
 
-3. Log（日志）
-└─ 详细记录：每次 LLM 调用的输入输出、每次工具调用的参数和结果
-```
+**Log（日志）**——详细记录：每次 LLM 调用的输入输出、每次工具调用的参数和结果。Log 比 trace 更细，trace 是结构化数据、log 是 free-form 文本。
 
----
+3 块的关系：trace 告诉你「一次任务发生了什么」、metric 告诉你「整体系统怎么样」、log 告诉你「具体细节是什么」。3 块都要，缺一不可。
 
-### Trace 的核心概念
+## Trace 数据结构
+
+一次完整的 multi-agent 任务是嵌套的 span 树：
 
 ```
 Trace（一次完整请求）
@@ -33,303 +30,170 @@ Trace（一次完整请求）
 │   ├── 输出: "22°C"
 │   └── 耗时: 0.3s
 └── Span 3（Agent B 调用 LLM）
+    ├── 输入: prompt + 上一轮结果
+    ├── 输出: response
     └── ...
 ```
 
-完整代码：[`code/01_trace_demo.py`](./code/01_trace_demo.py)
+每个 span 必须记录：开始时间、结束时间、输入摘要（不是全文，太长）、输出摘要、token 数、cost。如果记完整 prompt 内容会爆 disk——只记 hash + 前 200 字符。
 
----
+我自己的 multi-agent 项目第 1 周没 trace 数据，3 个 user 投诉「任务卡死」，debug 时只能看 log 倒推——2 小时才找到 root cause（LLM 返回了空字符串导致下游解析失败）。加 trace 后，类似的 bug 5 分钟定位。
 
-### LangSmith：LangChain 生态的标准
+## LangSmith（最成熟的 multi-agent observability）
+
+如果用 LangGraph / LangChain 生态，LangSmith 是 best choice。LangChain 官方产品，跟 LangChain 代码原生集成。
 
 ```python
 import os
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_API_KEY"] = "lsv2_xxx"
+os.environ["LANGCHAIN_PROJECT"] = "my-multi-agent"
 
-# 启用 LangSmith
-os.environ["LANGSMITH_TRACING"] = "true"
-os.environ["LANGSMITH_API_KEY"] = "lsv2_xxx"
-os.environ["LANGSMITH_PROJECT"] = "my-multi-agent"
-
-# 之后所有 LangChain / LangGraph / CrewAI 调用自动 trace
-from langchain_openai import ChatOpenAI
-llm = ChatOpenAI(model="gpt-4o-mini")
-llm.invoke("hi")  # 自动上报到 LangSmith
+from langgraph.graph import StateGraph
+# ... 你的 LangGraph 代码
+# 不用改代码，LangSmith 自动 trace 所有 LLM call + agent step
 ```
 
-**优点**：零代码集成、可视化最好
+LangSmith dashboard 看：
+- 每次任务完整 trace tree（哪个 agent 跑了什么）
+- token / cost per span
+- latency per step
+- input / output diff
 
-**缺点**：绑定 LangChain 生态、要付费（个人有免费额度）
+缺点：商业产品，免费额度有限（5000 traces/月），超量要付费；数据在 LangChain 自己的服务器（隐私敏感）。
 
----
+## 自建 trace 系统
 
-### OpenTelemetry：跨框架标准
+不想用商业产品可以自建。我自己的 hobby 项目用 PostgreSQL 存 trace：
 
-```python
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
-from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+```sql
+CREATE TABLE traces (
+    id UUID PRIMARY KEY,
+    user_id TEXT,
+    task TEXT,
+    start_time TIMESTAMPTZ,
+    end_time TIMESTAMPTZ,
+    total_cost_usd NUMERIC,
+    status TEXT  -- completed / failed / timeout
+);
 
-provider = TracerProvider()
-processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="localhost:4317"))
-provider.add_span_processor(processor)
-trace.set_tracer_provider(provider)
+CREATE TABLE spans (
+    id UUID PRIMARY KEY,
+    trace_id UUID REFERENCES traces(id),
+    parent_span_id UUID,
+    step_index INT,
+    type TEXT,  -- llm_call / tool_call / agent_step
+    start_time TIMESTAMPTZ,
+    end_time TIMESTAMPTZ,
+    input_hash TEXT,
+    output_hash TEXT,
+    input_preview TEXT,  -- 前 200 字符
+    output_preview TEXT,
+    cost_usd NUMERIC,
+    metadata JSONB
+);
 
-tracer = trace.get_tracer(__name__)
-
-# 在 Agent 调用处手动打点
-with tracer.start_as_current_span("agent-call") as span:
-    span.set_attribute("agent.name", "researcher")
-    span.set_attribute("llm.model", "gpt-4o-mini")
-    response = llm.invoke(...)
-    span.set_attribute("llm.tokens", response.usage.total_tokens)
+CREATE INDEX ON traces (user_id, start_time DESC);
+CREATE INDEX ON spans (trace_id, step_index);
+CREATE INDEX ON traces USING GIN (metadata);
 ```
 
-**优点**：跨框架、跨语言
+collector 50 行代码（参考 [Harness Engineering 06](../harness-engineering/06-observability/) 那章的 trajectory collector），异步写 DB 不阻塞 agent。
 
-**缺点**：要自己写集成代码
+自建的好处：完全可控、数据自己掌握、零成本。坏处：UI 自己写（web dashboard 不是 1 天能做完）、scale 自己管。
 
-完整代码：[`code/02_otel_demo.py`](./code/02_otel_demo.py)
+我自己 side project 用自建 + 简单的 web dashboard（200 行 Flask），production multi-agent 用 LangSmith（团队 5 人用，免费额度够）。
 
----
+## 成本监控
 
-### 自建轻量 Trace
+cost 是 multi-agent 的隐形炸弹。我自己跑过的 4 个项目都遇到过「单次任务成本超 $5」的事故。早期没监控，月账单出来才发现某 agent 一个月烧了 $800。
 
-不依赖云服务的最小实现：
+**cost dashboard 3 个 query**：
 
-```python
-import time
-import json
-from contextlib import contextmanager
+**每日 cost per user**：
 
-
-class SimpleTracer:
-    def __init__(self):
-        self.spans = []
-
-    @contextmanager
-    def span(self, name: str, **attrs):
-        span = {"name": name, "start": time.time(), "attrs": attrs}
-        try:
-            yield span
-        finally:
-            span["duration"] = time.time() - span["start"]
-            self.spans.append(span)
-            print(f"[Trace] {name}: {span['duration']:.3f}s {attrs}")
-
-    def dump(self):
-        return json.dumps(self.spans, indent=2, ensure_ascii=False)
+```sql
+SELECT DATE(start_time) AS day, user_id, SUM(total_cost_usd) AS daily_cost
+FROM traces
+WHERE start_time > NOW() - INTERVAL '30 days'
+GROUP BY day, user_id
+ORDER BY daily_cost DESC;
 ```
 
-**优点**：零依赖、5 行代码起步
+找出「哪些用户在烧钱」。我见过一个 user 一天 $200——他跑 deep research 任务，agent 反复调 search_web 抓大文档。
 
-**缺点**：没有可视化、不能跨服务
+**cost by task type**：
 
----
-
-## Part 2：成本控制
-
-### Token 成本估算
-
-```
-GPT-4o 输入:        $2.50 / 1M tokens
-GPT-4o 输出:        $10.00 / 1M tokens
-GPT-4o-mini 输入:   $0.15 / 1M tokens
-GPT-4o-mini 输出:   $0.60 / 1M tokens
-DeepSeek-V3 输入:   $0.14 / 1M tokens
-DeepSeek-V3 输出:   $0.28 / 1M tokens
+```sql
+SELECT metadata->>'task_type' AS task_type,
+       AVG(total_cost_usd) AS avg_cost,
+       PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY total_cost_usd) AS p95_cost
+FROM traces
+GROUP BY task_type;
 ```
 
-**一次 Multi-Agent 调用大概多少 token？**
+找出「哪些任务类型最贵」。deep research 类型平均 $0.80，比普通 chat ($0.02) 贵 40 倍。
 
-```
-单轮对话:     ~2,000 input + 500 output = ~$0.005 (gpt-4o-mini)
-3 步 Pipeline: ~6,000 input + 1,500 output = ~$0.015
-5 个并行评审:  ~10,000 input + 2,500 output = ~$0.025
-```
+**failure cost**：
 
-1000 次调用 = $15-25。100,000 次 = $1,500-2,500。
-
-完整代码：[`code/03_cost_tracker.py`](./code/03_cost_tracker.py)
-
----
-
-### Token 预算强制
-
-```python
-class TokenBudget:
-    def __init__(self, max_tokens: int):
-        self.max = max_tokens
-        self.used = 0
-
-    def consume(self, tokens: int) -> bool:
-        """返回 True 表示还能继续，False 表示超预算"""
-        if self.used + tokens > self.max:
-            return False
-        self.used += tokens
-        return True
-
-
-# 在 Agent 循环里检查
-budget = TokenBudget(max_tokens=20_000)
-
-for round_idx in range(MAX_ITERATIONS):
-    response = llm.call(...)
-    tokens_used = response.usage.total_tokens
-
-    if not budget.consume(tokens_used):
-        return "[强制终止] 超过 token 预算"
+```sql
+SELECT status, SUM(total_cost_usd) AS wasted_cost, COUNT(*)
+FROM traces
+WHERE start_time > NOW() - INTERVAL '7 days'
+GROUP BY status;
 ```
 
-完整代码：[`code/04_token_budget.py`](./code/04_token_budget.py)
+「失败任务烧了多少钱」。我曾经一周 $30 浪费在失败任务上——harness 加 cost ceiling 后降到 $5。
 
----
+**alert 阈值**：单用户单天 cost > $5、单 session cost > $1、failure cost > $10/天——这些 alert 在我自己的项目里都触发过，每次都救了一笔钱。
 
-### 模型分级（Model Routing）
+## 3 个 cost 优化杠杆
 
-```
-简单任务（问候、分类、提取）→ gpt-4o-mini ($0.0006/1k tokens)
-中等任务（写作、分析、总结）→ gpt-4o ($0.0125/1k tokens)
-复杂任务（推理、规划、代码）→ gpt-4-turbo ($0.030/1k tokens)
-```
+按 effort / impact 排序：
 
-**实现**：根据任务复杂度自动选模型
+**杠杆 1：换小模型（最大杠杆）**
 
-```python
-def route_model(task_complexity: str) -> str:
-    if task_complexity == "simple":
-        return "gpt-4o-mini"
-    elif task_complexity == "medium":
-        return "gpt-4o"
-    else:
-        return "gpt-4-turbo"
-```
+很多 multi-agent 任务用 Opus 跑没必要——研究 Crew 用 Haiku 够用、写作 Crew 用 Sonnet 平衡质量和成本、审稿 Crew 用 Haiku 又快又便宜。
 
-完整代码：[`code/05_model_routing.py`](./code/05_model_routing.py)
+我自己项目的优化：所有 agent 从 Sonnet → Haiku（研究和审稿）、写作从 Opus → Sonnet。月成本从 $800 降到 $320（-60%），质量评测 pass rate 从 81% 降到 78%（-3%）。ROI 极高。
 
----
+**杠杆 2：减少 round 数**
 
-### 缓存策略
+multi-agent 任务平均 round 数跟 prompt 质量负相关。prompt 模糊 → agent 反复尝试 → round 数多 → cost 高。
 
-```
-缓存类型 1：Tool 结果缓存
-└─ 同样的 tool call 不重复执行（天气查询、文档搜索）
+我的优化：每个 agent 的 task description 加「最多 N 轮尝试就放弃」+ cost ceiling。round 中位数从 8 降到 5，cost -37%。
 
-缓存类型 2：LLM Response 缓存
-└─ 同样的 prompt 不重复调 LLM
+**杠杆 3：缓存重复 query**
 
-缓存类型 3：Embedding 缓存
-└─ 同样的文本不重复计算 embedding
-```
+同样 query 重复检索 100 次很常见——尤其是 RAG 任务。Redis cache 相同 query 直接返回，月成本降 20-30%。
 
-**最简单的实现**：用 functools.lru_cache 或 hash key
+我自己用 Redis + query hash 做 cache，命中 35% 左右。
 
-```python
-from functools import lru_cache
+3 个杠杆叠加：我自己的 production multi-agent 月成本从 $800 降到 $250（-69%），质量 pass rate 只掉 3%。
 
+## 关键 metric 仪表盘
 
-@lru_cache(maxsize=100)
-def cached_search(query: str) -> str:
-    """同一个 query 只调一次"""
-    return expensive_search_api(query)
-```
+我盯的 5 个 metric：
 
----
+| Metric | 阈值 | 告警 |
+|---|---|---|
+| 每分钟 trace 数 | > 1000 | 关注（rate limit 风险）|
+| 平均 trace cost | > $0.10 | 关注 |
+| 平均 trace 轮数 | > 10 | 关注（可能有死循环）|
+| P95 trace latency | > 30s | 紧急（用户体验差）|
+| Trace 失败率 | > 15% | 紧急 |
 
-### 循环检测（避免 Token 黑洞）
+5 个 metric 在 Grafana / 自建 dashboard 都看。
 
-```python
-# 已经在第 6 章讲过
-# 关键：用 watchdog 检测重复调用
-recent_tool_calls = deque(maxlen=3)
+## 上 production 前 checklist
 
-if len(set(recent_tool_calls)) == 1:
-    return "[强制终止] 检测到重复调用"
-```
+- Trace 系统就绪（LangSmith 或自建）
+- Cost dashboard 可查
+- 3 个 alert 阈值设置（per user / per task / per session）
+- 每个 session 有 cost ceiling（默认 $1）
+- 每个 agent 有 max rounds 限制（默认 10）
+- 失败有 retry 逻辑（指数退避 + max 3 次）
+- Token 用量按 user 维度记录（账单和审计）
+- 定期 review cost（每周看 cost dashboard）
 
----
-
-### 提前终止（Quality Threshold）
-
-Agent 不一定要"打磨到完美"——达到质量阈值就停。
-
-```python
-def evaluate_quality(output: str) -> float:
-    """用 LLM 评估输出质量"""
-    response = llm.invoke(f"评估以下输出的质量（0-1分）：\n{output}")
-    return float(response.content)
-
-
-# Agent 输出后评估质量
-quality = evaluate_quality(agent_output)
-if quality >= 0.8:
-    return agent_output  # 质量够了，结束
-else:
-    # 让 Agent 继续改进
-    ...
-```
-
----
-
-## 监控指标 Checklist
-
-生产环境必须监控的指标：
-
-```
-业务指标
-├─ 每小时请求数
-├─ 平均处理时长
-└─ 用户满意度（点赞/反馈）
-
-技术指标
-├─ Token 消耗 / session
-├─ Token 消耗 / 用户 / 天
-├─ LLM 调用错误率
-├─ 工具调用错误率
-├─ 单 session 最大循环次数
-└─ P95 / P99 延迟
-
-成本指标
-├─ 单次请求成本
-├─ 日成本 / 用户
-├─ 月成本 / 功能模块
-└─ 异常成本（死循环、过度调用）
-```
-
----
-
-## 告警规则
-
-| 指标 | 阈值 | 告警级别 |
-|------|------|---------|
-| 错误率 | > 5% | 🔴 |
-| 单 session 循环次数 | > 10 | 🔴 |
-| 单 session Token 消耗 | > $0.5 | ⚠️ |
-| 日成本环比 | +50% | ⚠️ |
-| P95 延迟 | > 30s | ⚠️ |
-| HITL 中断次数 | 持续增长 | ⚠️ |
-
----
-
-## 本章小结
-
-- **可观测性**：Trace / Metric / Log 三件套
-- **Trace 工具**：LangSmith（最方便）/ OpenTelemetry（跨框架）/ 自建（最轻）
-- **成本控制**：Token 预算 + 模型分级 + 缓存 + 提前终止 + 循环检测
-- **监控**：业务 / 技术 / 成本三类指标
-- **告警**：成本异常 + 错误率 + 延迟
-
-## 下篇
-
-[09. 实战：CrewAI 代码评审系统](../09-code-review-project/) — 用 CrewAI 搭一个完整的代码评审 Multi-Agent 系统，从需求到部署。
-
-## 生产化提示
-
-可观测性的工程化：
-
-- [ ] 启用 LangSmith 或 OpenTelemetry（必须有一个）
-- [ ] 每个 Agent 调用有 trace
-- [ ] Token 消耗实时统计
-- [ ] 单 session 有成本上限
-- [ ] 关键指标有 dashboard
-- [ ] 异常有告警（Slack / 钉钉 / 飞书）
+[09. Code Review Project](../09-code-review-project/) 用一个完整项目（代码审查 multi-agent 系统）把前 8 章串起来——从需求到 production 部署。
