@@ -241,6 +241,80 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     letter-spacing: 1px;
 }
 
+.sidebar-bookmarks {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+.sidebar-bookmarks .sb-title {
+    font-size: 11px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sidebar-bookmarks .sb-count {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+}
+.sidebar-bookmarks .sb-item {
+    background: var(--bg-soft);
+    border-left: 2px solid var(--accent);
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+}
+.sidebar-bookmarks .sb-item:hover {
+    background: var(--accent-soft);
+}
+.sidebar-bookmarks .sb-chapter {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-bottom: 2px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+.sidebar-bookmarks .sb-text {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.sidebar-bookmarks .sb-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 6px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+.sidebar-bookmarks .sb-item:hover .sb-delete { opacity: 1; }
+.sidebar-bookmarks .sb-delete:hover { color: var(--accent); }
+.sidebar-bookmarks .sb-empty {
+    font-size: 12px;
+    color: var(--text-faint);
+    padding: 12px 0;
+    text-align: center;
+    font-style: italic;
+}
+
 .sidebar .subtitle {
     font-size: 12px;
     color: var(--text-faint);
@@ -1754,6 +1828,7 @@ mark.search-highlight {
         <div class="bookshelf">
             <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/></svg></span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>你的第一个 Agent</span><span class="ch-read-pct" data-chapter="multi-agent__01-your-first-agent"></span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>为什么需要 Multi-Agent</span><span class="ch-read-pct" data-chapter="multi-agent__02-why-multi-agent"></span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>5 个核心抽象</span><span class="ch-read-pct" data-chapter="multi-agent__03-five-abstractions"></span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>编排模式全景</span><span class="ch-read-pct" data-chapter="multi-agent__04-orchestration-patterns"></span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>通信与状态</span><span class="ch-read-pct" data-chapter="multi-agent__05-state-and-communication"></span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>失败的艺术</span><span class="ch-read-pct" data-chapter="multi-agent__06-failure-handling"></span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>框架横向对比</span><span class="ch-read-pct" data-chapter="multi-agent__07-framework-comparison"></span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>可观测性与成本</span><span class="ch-read-pct" data-chapter="multi-agent__08-observability-and-cost"></span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>第 9 章：实战 CodeReviewer Multi-Agent</span><span class="ch-read-pct" data-chapter="multi-agent__09-code-review-project"></span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>生产化 Checklist</span><span class="ch-read-pct" data-chapter="multi-agent__10-production-checklist"></span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/></svg></span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础 + Token 经济学</span><span class="ch-read-pct" data-chapter="llm-prompt__01-prompt-basics"></span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 实战</span><span class="ch-read-pct" data-chapter="llm-prompt__02-few-shot"></span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>CoT 思维链</span><span class="ch-read-pct" data-chapter="llm-prompt__03-advanced-patterns"></span></a></li><li><a href="#llm-prompt__04-role-system-prompt"><span class="ch-num">04</span><span>Role / System Prompt：persona effect</span><span class="ch-read-pct" data-chapter="llm-prompt__04-role-system-prompt"></span></a></li><li><a href="#llm-prompt__05-structured-output"><span class="ch-num">05</span><span>Structured Output</span><span class="ch-read-pct" data-chapter="llm-prompt__05-structured-output"></span></a></li><li><a href="#llm-prompt__06-tool-use"><span class="ch-num">06</span><span>Tool Use / Function Calling</span><span class="ch-read-pct" data-chapter="llm-prompt__06-tool-use"></span></a></li><li><a href="#llm-prompt__07-prompt-caching"><span class="ch-num">07</span><span>Prompt Caching：降成本 10x</span><span class="ch-read-pct" data-chapter="llm-prompt__07-prompt-caching"></span></a></li><li><a href="#llm-prompt__08-prompt-injection"><span class="ch-num">08</span><span>Prompt Injection 防御</span><span class="ch-read-pct" data-chapter="llm-prompt__08-prompt-injection"></span></a></li><li><a href="#llm-prompt__09-eval-driven"><span class="ch-num">09</span><span>Eval-driven 迭代</span><span class="ch-read-pct" data-chapter="llm-prompt__09-eval-driven"></span></a></li><li><a href="#llm-prompt__10-real-cases"><span class="ch-num">10</span><span>真实场景 4 案例</span><span class="ch-read-pct" data-chapter="llm-prompt__10-real-cases"></span></a></li></ul></div><div class="book-group" data-book="crewai"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span><span class="book-title-text">CrewAI 入门到实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#crewai__01-getting-started"><span class="ch-num">01</span><span>上手：跑通第一个 Crew</span><span class="ch-read-pct" data-chapter="crewai__01-getting-started"></span></a></li><li><a href="#crewai__02-crew-orchestration"><span class="ch-num">02</span><span>Crew 编排：Process 选型与协作</span><span class="ch-read-pct" data-chapter="crewai__02-crew-orchestration"></span></a></li><li><a href="#crewai__03-agent-tuning"><span class="ch-num">03</span><span>Agent 调优：让 agent 听指挥</span><span class="ch-read-pct" data-chapter="crewai__03-agent-tuning"></span></a></li><li><a href="#crewai__04-tools-and-mcp"><span class="ch-num">04</span><span>Tools 与 MCP：给 agent 接手和脚</span><span class="ch-read-pct" data-chapter="crewai__04-tools-and-mcp"></span></a></li><li><a href="#crewai__05-memory-and-knowledge"><span class="ch-num">05</span><span>Memory + Knowledge：让 agent 有记忆</span><span class="ch-read-pct" data-chapter="crewai__05-memory-and-knowledge"></span></a></li><li><a href="#crewai__06-structured-output"><span class="ch-num">06</span><span>结构化输出与 Guardrail</span><span class="ch-read-pct" data-chapter="crewai__06-structured-output"></span></a></li><li><a href="#crewai__07-flows"><span class="ch-num">07</span><span>Flows：状态化的事件驱动编排</span><span class="ch-read-pct" data-chapter="crewai__07-flows"></span></a></li><li><a href="#crewai__08-skills-and-prod"><span class="ch-num">08</span><span>Skills 与生产化基础</span><span class="ch-read-pct" data-chapter="crewai__08-skills-and-prod"></span></a></li><li><a href="#crewai__09-side-projects"><span class="ch-num">09</span><span>实战：2 个 Side-Project 串起来</span><span class="ch-read-pct" data-chapter="crewai__09-side-projects"></span></a></li><li><a href="#crewai__10-prod-cases"><span class="ch-num">10</span><span>公司生产案例 + 社区实战拆解</span><span class="ch-read-pct" data-chapter="crewai__10-prod-cases"></span></a></li></ul></div>
         </div>
+        <div class="sidebar-bookmarks" id="sidebar-bookmarks"></div>
     </aside>
 
     <div class="toolbar">
@@ -1782,6 +1857,7 @@ mark.search-highlight {
         <div class="color-swatch pink" data-color="pink"></div>
         <div class="divider" style="background: rgba(255,255,255,0.2);"></div>
             <button class="note-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 笔记</button>
+            <button class="bookmark-btn" title="加书签"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> 收藏</button>
     </div>
 
     <div class="note-modal">
@@ -13293,6 +13369,127 @@ document.querySelector('.selection-toolbar .note-btn').addEventListener('click',
     modal.querySelector('textarea').value = '';
     modal.querySelector('textarea').focus();
 });
+
+// ============================================================
+// 段落书签（localStorage 'bookmarks'）
+// 结构：{ [chapterId]: [{text, timestamp, idx}, ...] }
+// ============================================================
+let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
+
+function saveBookmarks() {
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+}
+
+function addBookmark(info) {
+    if (!bookmarks[info.chapterId]) bookmarks[info.chapterId] = [];
+    bookmarks[info.chapterId].push({
+        text: info.text,
+        timestamp: Date.now(),
+    });
+    saveBookmarks();
+    renderBookmarksList();
+}
+
+function deleteBookmark(chapterId, idx) {
+    if (bookmarks[chapterId]) {
+        bookmarks[chapterId].splice(idx, 1);
+        if (bookmarks[chapterId].length === 0) delete bookmarks[chapterId];
+        saveBookmarks();
+        renderBookmarksList();
+    }
+}
+
+document.querySelector('.selection-toolbar .bookmark-btn').addEventListener('click', () => {
+    const info = getSelectionInfo();
+    if (!info) return;
+    addBookmark(info);
+    hideSelectionToolbar();
+    window.getSelection().removeAllRanges();
+});
+
+function renderBookmarksList() {
+    const container = document.getElementById('sidebar-bookmarks');
+    if (!container) return;
+
+    const allBookmarks = [];
+    for (const [chapterId, list] of Object.entries(bookmarks)) {
+        list.forEach((bm, idx) => {
+            allBookmarks.push({ chapterId, idx, ...bm });
+        });
+    }
+    // 按 timestamp 倒序
+    allBookmarks.sort((a, b) => b.timestamp - a.timestamp);
+
+    const total = allBookmarks.length;
+    let html = `<div class="sb-title"><span>⭐ 书签</span><span class="sb-count">${total}</span></div>`;
+
+    if (total === 0) {
+        html += `<div class="sb-empty">选中文本 → 工具栏 → 收藏</div>`;
+        container.innerHTML = html;
+        return;
+    }
+
+    // 最近 8 条
+    const recent = allBookmarks.slice(0, 8);
+    recent.forEach(bm => {
+        const article = document.getElementById(bm.chapterId);
+        const chapTitle = article?.querySelector('.chapter-title')?.textContent || bm.chapterId;
+        const text = bm.text.length > 80 ? bm.text.slice(0, 80) + '…' : bm.text;
+        html += `
+            <div class="sb-item" data-chapter="${bm.chapterId}" data-idx="${bm.idx}">
+                <button class="sb-delete" title="删除">×</button>
+                <div class="sb-chapter">${chapTitle}</div>
+                <div class="sb-text">${text}</div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+
+    container.querySelectorAll('.sb-item').forEach(item => {
+        const chapterId = item.dataset.chapter;
+        const idx = parseInt(item.dataset.idx);
+        item.addEventListener('click', (e) => {
+            if (e.target.classList.contains('sb-delete')) return;
+            jumpToBookmark(chapterId, idx);
+        });
+        item.querySelector('.sb-delete').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteBookmark(chapterId, idx);
+        });
+    });
+}
+
+function jumpToBookmark(chapterId, idx) {
+    const article = document.getElementById(chapterId);
+    if (!article) return;
+    article.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.pushState(null, '', '#' + chapterId);
+    const bm = bookmarks[chapterId]?.[idx];
+    if (!bm) return;
+    // 高亮匹配文本（复用 Cmd+K 的逻辑）
+    const content = article.querySelector('.chapter-content');
+    if (!content) return;
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+        const pos = node.textContent.indexOf(bm.text);
+        if (pos >= 0) {
+            try {
+                const range = document.createRange();
+                range.setStart(node, pos);
+                range.setEnd(node, pos + bm.text.length);
+                const mark = document.createElement('mark');
+                mark.className = 'search-highlight';
+                range.surroundContents(mark);
+                mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => mark.replaceWith(document.createTextNode(bm.text)), 3000);
+                return;
+            } catch (e) { break; }
+        }
+    }
+}
+
+renderBookmarksList();
 
 document.querySelector('.note-modal .cancel').addEventListener('click', () => {
     document.querySelector('.note-modal').classList.remove('visible');

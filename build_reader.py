@@ -158,6 +158,7 @@ ICONS = {
     'agents':   '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/>',
     'sparkles': '<path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/>',
     'bot':      '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
+    'bookmark': '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
     'qr':       '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/>',
     'disc':     '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M6 12c0-1.7 1.3-3 3-3"/>',
 }
@@ -433,6 +434,80 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     color: var(--text);
     font-weight: 600;
     letter-spacing: 1px;
+}
+
+.sidebar-bookmarks {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+.sidebar-bookmarks .sb-title {
+    font-size: 11px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.sidebar-bookmarks .sb-count {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+}
+.sidebar-bookmarks .sb-item {
+    background: var(--bg-soft);
+    border-left: 2px solid var(--accent);
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+}
+.sidebar-bookmarks .sb-item:hover {
+    background: var(--accent-soft);
+}
+.sidebar-bookmarks .sb-chapter {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-bottom: 2px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+.sidebar-bookmarks .sb-text {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.sidebar-bookmarks .sb-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px 6px;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+.sidebar-bookmarks .sb-item:hover .sb-delete { opacity: 1; }
+.sidebar-bookmarks .sb-delete:hover { color: var(--accent); }
+.sidebar-bookmarks .sb-empty {
+    font-size: 12px;
+    color: var(--text-faint);
+    padding: 12px 0;
+    text-align: center;
+    font-style: italic;
 }
 
 .sidebar .subtitle {
@@ -2309,6 +2384,127 @@ document.querySelector('.selection-toolbar .note-btn').addEventListener('click',
     modal.querySelector('textarea').focus();
 });
 
+// ============================================================
+// 段落书签（localStorage 'bookmarks'）
+// 结构：{ [chapterId]: [{text, timestamp, idx}, ...] }
+// ============================================================
+let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
+
+function saveBookmarks() {
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+}
+
+function addBookmark(info) {
+    if (!bookmarks[info.chapterId]) bookmarks[info.chapterId] = [];
+    bookmarks[info.chapterId].push({
+        text: info.text,
+        timestamp: Date.now(),
+    });
+    saveBookmarks();
+    renderBookmarksList();
+}
+
+function deleteBookmark(chapterId, idx) {
+    if (bookmarks[chapterId]) {
+        bookmarks[chapterId].splice(idx, 1);
+        if (bookmarks[chapterId].length === 0) delete bookmarks[chapterId];
+        saveBookmarks();
+        renderBookmarksList();
+    }
+}
+
+document.querySelector('.selection-toolbar .bookmark-btn').addEventListener('click', () => {
+    const info = getSelectionInfo();
+    if (!info) return;
+    addBookmark(info);
+    hideSelectionToolbar();
+    window.getSelection().removeAllRanges();
+});
+
+function renderBookmarksList() {
+    const container = document.getElementById('sidebar-bookmarks');
+    if (!container) return;
+
+    const allBookmarks = [];
+    for (const [chapterId, list] of Object.entries(bookmarks)) {
+        list.forEach((bm, idx) => {
+            allBookmarks.push({ chapterId, idx, ...bm });
+        });
+    }
+    // 按 timestamp 倒序
+    allBookmarks.sort((a, b) => b.timestamp - a.timestamp);
+
+    const total = allBookmarks.length;
+    let html = `<div class="sb-title"><span>⭐ 书签</span><span class="sb-count">${total}</span></div>`;
+
+    if (total === 0) {
+        html += `<div class="sb-empty">选中文本 → 工具栏 → 收藏</div>`;
+        container.innerHTML = html;
+        return;
+    }
+
+    // 最近 8 条
+    const recent = allBookmarks.slice(0, 8);
+    recent.forEach(bm => {
+        const article = document.getElementById(bm.chapterId);
+        const chapTitle = article?.querySelector('.chapter-title')?.textContent || bm.chapterId;
+        const text = bm.text.length > 80 ? bm.text.slice(0, 80) + '…' : bm.text;
+        html += `
+            <div class="sb-item" data-chapter="${bm.chapterId}" data-idx="${bm.idx}">
+                <button class="sb-delete" title="删除">×</button>
+                <div class="sb-chapter">${chapTitle}</div>
+                <div class="sb-text">${text}</div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+
+    container.querySelectorAll('.sb-item').forEach(item => {
+        const chapterId = item.dataset.chapter;
+        const idx = parseInt(item.dataset.idx);
+        item.addEventListener('click', (e) => {
+            if (e.target.classList.contains('sb-delete')) return;
+            jumpToBookmark(chapterId, idx);
+        });
+        item.querySelector('.sb-delete').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteBookmark(chapterId, idx);
+        });
+    });
+}
+
+function jumpToBookmark(chapterId, idx) {
+    const article = document.getElementById(chapterId);
+    if (!article) return;
+    article.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.pushState(null, '', '#' + chapterId);
+    const bm = bookmarks[chapterId]?.[idx];
+    if (!bm) return;
+    // 高亮匹配文本（复用 Cmd+K 的逻辑）
+    const content = article.querySelector('.chapter-content');
+    if (!content) return;
+    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+        const pos = node.textContent.indexOf(bm.text);
+        if (pos >= 0) {
+            try {
+                const range = document.createRange();
+                range.setStart(node, pos);
+                range.setEnd(node, pos + bm.text.length);
+                const mark = document.createElement('mark');
+                mark.className = 'search-highlight';
+                range.surroundContents(mark);
+                mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => mark.replaceWith(document.createTextNode(bm.text)), 3000);
+                return;
+            } catch (e) { break; }
+        }
+    }
+}
+
+renderBookmarksList();
+
 document.querySelector('.note-modal .cancel').addEventListener('click', () => {
     document.querySelector('.note-modal').classList.remove('visible');
 });
@@ -3361,6 +3557,7 @@ def build_html():
         <div class="bookshelf">
             {''.join(bookshelf_html_parts)}
         </div>
+        <div class="sidebar-bookmarks" id="sidebar-bookmarks"></div>
     </aside>
 
     <div class="toolbar">
@@ -3389,6 +3586,7 @@ def build_html():
         <div class="color-swatch pink" data-color="pink"></div>
         <div class="divider" style="background: rgba(255,255,255,0.2);"></div>
             <button class="note-btn">{svg_icon('plus')} 笔记</button>
+            <button class="bookmark-btn" title="加书签">{svg_icon('bookmark', size=14)} 收藏</button>
     </div>
 
     <div class="note-modal">
