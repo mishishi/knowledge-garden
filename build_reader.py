@@ -1348,6 +1348,52 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
     align-items: center;
 }
 
+.calendar-chart {
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar-months-row {
+    display: flex;
+    align-items: flex-end;
+    height: 16px;
+    margin-bottom: 4px;
+}
+.calendar-weekday-spacer { width: 28px; flex-shrink: 0; }
+.calendar-months {
+    position: relative;
+    flex: 1;
+    height: 16px;
+    overflow: hidden;
+}
+.calendar-months .month-label {
+    position: absolute;
+    top: 0;
+    font-size: 10px;
+    color: var(--text-soft);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+}
+
+.calendar-body-row { display: flex; }
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-rows: repeat(7, 11px);
+    gap: 2px;
+    width: 28px;
+    flex-shrink: 0;
+    margin-right: 6px;
+}
+.calendar-weekdays .weekday-label {
+    font-size: 9px;
+    color: var(--text-faint);
+    line-height: 11px;
+    text-align: right;
+    align-self: center;
+}
+.calendar-weekdays .weekday-label.spacer { visibility: hidden; }
+
 .calendar-grid {
     display: flex;
     gap: 2px;
@@ -2241,10 +2287,24 @@ function weekdayName(date) {
 }
 
 function renderCalendar() {
+    const monthsEl = document.getElementById('calendar-months');
+    const weekdaysEl = document.getElementById('calendar-weekdays');
     const grid = document.getElementById('calendar-grid');
     const tooltip = document.getElementById('calendar-tooltip');
     const recent = document.getElementById('calendar-recent');
+    monthsEl.innerHTML = '';
+    weekdaysEl.innerHTML = '';
     grid.innerHTML = '';
+
+    // weekday 标签（只显 Mon/Wed/Fri —— GitHub 风格，省空间）
+    const weekdayLabels = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    const visibleIdx = new Set([1, 3, 5]);
+    for (let i = 0; i < 7; i++) {
+        const lbl = document.createElement('div');
+        lbl.className = 'weekday-label' + (visibleIdx.has(i) ? '' : ' spacer');
+        lbl.textContent = weekdayLabels[i];
+        weekdaysEl.appendChild(lbl);
+    }
 
     // 每天的完成数
     const daily = {};
@@ -2258,10 +2318,14 @@ function renderCalendar() {
     today.setHours(0, 0, 0, 0);
     const startDate = new Date(today.getFullYear(), 0, 1);
 
-    // 按周分列（GitHub 风格）
-    let currentDate = new Date(startDate);
     // 调整到最近的周日
+    let currentDate = new Date(startDate);
     currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+
+    // 月份首次出现的列索引（用于顶部月份标签定位）
+    const monthStartCol = {};
+    const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+    const STRIDE = 11 + 2; // 单元格宽 + 列间隙
 
     while (currentDate <= today) {
         const week = document.createElement('div');
@@ -2271,7 +2335,15 @@ function renderCalendar() {
             const day = document.createElement('div');
             day.className = 'calendar-day';
 
-            if (currentDate > today) {
+            // 记录本月首次出现的列（仅当年内的日期）
+            if (currentDate >= startDate && currentDate <= today) {
+                const m = currentDate.getMonth();
+                if (monthStartCol[m] === undefined) {
+                    monthStartCol[m] = grid.children.length;
+                }
+            }
+
+            if (currentDate > today || currentDate < startDate) {
                 day.classList.add('empty');
             } else {
                 const dateKey = currentDate.toISOString().slice(0, 10);
@@ -2295,7 +2367,6 @@ function renderCalendar() {
                     tooltip.classList.add('visible');
                 });
                 day.addEventListener('mousemove', (e) => {
-                    // 跟随鼠标，offset 12px
                     tooltip.style.left = (e.clientX + 12) + 'px';
                     tooltip.style.top = (e.clientY + 12) + 'px';
                 });
@@ -2310,6 +2381,15 @@ function renderCalendar() {
 
         grid.appendChild(week);
     }
+
+    // 渲染顶部月份标签（用 left = 列索引 × 步长 定位到对应列上方）
+    Object.keys(monthStartCol).sort((a, b) => parseInt(a) - parseInt(b)).forEach(m => {
+        const lbl = document.createElement('span');
+        lbl.className = 'month-label';
+        lbl.textContent = monthNames[parseInt(m)];
+        lbl.style.left = (monthStartCol[m] * STRIDE) + 'px';
+        monthsEl.appendChild(lbl);
+    });
 
     // 最近 30 天明细
     recent.innerHTML = '<div class="calendar-recent-title">最近 30 天</div>';
@@ -2770,7 +2850,7 @@ def build_html():
 
             <div class="calendar">
                 <div class="calendar-title">
-                    <span>{svg_icon('calendar')} 阅读日历（过去 365 天）</span>
+                    <span>{svg_icon('calendar')} 阅读日历（本年至今）</span>
                     <div class="calendar-legend">
                         <span>少</span>
                         <span class="calendar-day"></span>
@@ -2781,7 +2861,16 @@ def build_html():
                         <span>多</span>
                     </div>
                 </div>
-                <div class="calendar-grid" id="calendar-grid"></div>
+                <div class="calendar-chart">
+                    <div class="calendar-months-row">
+                        <div class="calendar-weekday-spacer"></div>
+                        <div class="calendar-months" id="calendar-months"></div>
+                    </div>
+                    <div class="calendar-body-row">
+                        <div class="calendar-weekdays" id="calendar-weekdays"></div>
+                        <div class="calendar-grid" id="calendar-grid"></div>
+                    </div>
+                </div>
                 <div class="calendar-tooltip" id="calendar-tooltip"></div>
                 <div class="calendar-recent" id="calendar-recent"></div>
             </div>

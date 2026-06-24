@@ -8,7 +8,7 @@
 2. 什么任务**应该**上 Multi-Agent，什么任务**不应该**？
 3. Multi-Agent 的复杂度代价是什么？
 
-## TL;DR
+## 本章核心
 
 **核心原则**：能用单 Agent 解决就别上 Multi-Agent。Multi-Agent 增加的复杂度（角色设计、状态共享、错误传播、token 翻倍）只在能换来清晰度的时候才值得。
 
