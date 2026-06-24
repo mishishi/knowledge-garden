@@ -1734,64 +1734,6 @@ function startMusic(scene) {
         audioEl.currentTime = 0;
         audioEl.play().catch(e => console.log('audio play failed:', e));
         musicNodes = { source: audioEl, gain: mainGain, isAudio: true };
-        localStorage.setItem('musicScene', scene);
-        return;
-    }
-
-    if (scene === 'white') {
-        const bufferSize = ctx.sampleRate * 2;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-        const noise = ctx.createBufferSource();
-        noise.buffer = buffer;
-        noise.loop = true;
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 800;
-        noise.connect(filter).connect(mainGain);
-        noise.start();
-        musicNodes = { source: noise, gain: mainGain };
-    } else if (scene === 'rain') {
-        const bufferSize = ctx.sampleRate * 2;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            if (Math.random() < 0.002) data[i] = (Math.random() * 2 - 1) * 0.5;
-            else data[i] = (Math.random() * 2 - 1) * 0.05;
-        }
-        const noise = ctx.createBufferSource();
-        noise.buffer = buffer;
-        noise.loop = true;
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.value = 1500;
-        filter.Q.value = 0.5;
-        noise.connect(filter).connect(mainGain);
-        noise.start();
-        musicNodes = { source: noise, gain: mainGain };
-    } else if (scene === 'warm') {
-        const osc1 = ctx.createOscillator();
-        osc1.type = 'sine';
-        osc1.frequency.value = 110;
-        const osc2 = ctx.createOscillator();
-        osc2.type = 'sine';
-        osc2.frequency.value = 165;
-        const lfo = ctx.createOscillator();
-        lfo.frequency.value = 0.15;
-        const lfoGain = ctx.createGain();
-        lfoGain.gain.value = 8;
-        lfo.connect(lfoGain);
-        lfoGain.connect(osc1.frequency);
-        const mixGain = ctx.createGain();
-        mixGain.gain.value = 0.6;
-        osc1.connect(mixGain);
-        osc2.connect(mixGain);
-        mixGain.connect(mainGain);
-        osc1.start();
-        osc2.start();
-        lfo.start();
-        musicNodes = { source: osc1, gain: mainGain, lfo };
     }
     localStorage.setItem('musicScene', scene);
 }
@@ -1802,9 +1744,8 @@ function stopMusic() {
         if (musicNodes.isAudio) {
             musicNodes.source.pause();
             musicNodes.source.currentTime = 0;
-        } else {
-            if (musicNodes.source.stop) musicNodes.source.stop();
-            if (musicNodes.lfo) musicNodes.lfo.stop();
+        } else if (musicNodes.source.stop) {
+            musicNodes.source.stop();
         }
     } catch (e) {}
     musicNodes = null;
@@ -2670,9 +2611,6 @@ def build_html():
         <h4>背景音 <button class="close">×</button></h4>
         <div class="scenes">
             <button class="scene-btn" data-scene="off">{svg_icon('mute')} 静音</button>
-            <button class="scene-btn" data-scene="white">{svg_icon('wave')} 白噪音</button>
-            <button class="scene-btn" data-scene="rain">{svg_icon('rain')} 雨声</button>
-            <button class="scene-btn" data-scene="warm">{svg_icon('flame')} 暖调</button>
             <button class="scene-btn" data-scene="woju">{svg_icon('disc')} 且听风吟</button>
         </div>
         <div class="volume">{svg_icon('volume')} <input type="range" min="0" max="100" value="30"> {svg_icon('volume', size=18)}</div>
