@@ -2220,6 +2220,54 @@ document.querySelectorAll('.completion-toggle').forEach(btn => {
     btn.addEventListener('click', () => toggleChapter(btn.dataset.chapter));
 });
 
+// ============================================================
+// 自动标记：滚到「本章完」+ 停留 5 秒 → 自动标为已读
+// 手动按钮仍可 toggle / 撤销
+// 5s 内滚走 → 计时清零，不会误标
+// 已标章节不重复标；手动撤销后滚走再回 5s → 重新自动标
+// ============================================================
+const autoMarkTimers = new WeakMap(); // chapterEndEl -> timerId
+
+function setupAutoMark() {
+    document.querySelectorAll('.chapter-end').forEach(endEl => {
+        const article = endEl.closest('.chapter');
+        if (!article || !article.id) return;
+        const chapterId = article.id;
+        const originalText = endEl.textContent;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (progress.completed[chapterId]) return;
+                    if (autoMarkTimers.has(endEl)) return;
+                    const timer = setTimeout(() => {
+                        if (!progress.completed[chapterId]) {
+                            progress.completed[chapterId] = Date.now();
+                            saveProgress();
+                            refreshCompletionUI();
+                        }
+                        endEl.textContent = originalText;
+                        autoMarkTimers.delete(endEl);
+                    }, 5000);
+                    autoMarkTimers.set(endEl, timer);
+                    endEl.textContent = originalText + ' · 5秒后自动标记已读';
+                } else {
+                    const timer = autoMarkTimers.get(endEl);
+                    if (timer) {
+                        clearTimeout(timer);
+                        autoMarkTimers.delete(endEl);
+                        endEl.textContent = originalText;
+                    }
+                }
+            });
+        }, { threshold: 0 });
+
+        observer.observe(endEl);
+    });
+}
+
+setupAutoMark();
+
 // 打开进度面板
 document.getElementById('progress-btn').addEventListener('click', openProgressPanel);
 document.querySelector('.progress-panel .close').addEventListener('click', () => {
