@@ -480,7 +480,8 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
 .book-chapters.collapsed { display: none; }
 
 .book-chapters li a {
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 6px 12px;
     color: var(--text-soft);
     text-decoration: none;
@@ -491,6 +492,15 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     border-left: 2px solid transparent;
     margin-left: -1px;
 }
+
+.book-chapters .ch-read-pct {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+.book-chapters li a.completed .ch-read-pct { color: var(--done); }
 
 .book-chapters li a:hover {
     background: var(--accent-soft);
@@ -1336,6 +1346,64 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
+.help-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 90%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+.help-modal h2 {
+    font-size: 1.3em;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.help-modal .help-section { margin-bottom: 18px; }
+.help-modal .help-section-title {
+    color: var(--text-soft);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+}
+.help-modal .help-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 13px;
+}
+.help-modal .help-row kbd {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 11px;
+    color: var(--text);
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    min-width: 24px;
+    text-align: center;
+}
+body.dark .help-modal .help-row kbd { background: rgba(255, 255, 255, 0.06); }
+.help-modal .help-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: var(--text-faint);
+    line-height: 1;
+}
+.help-modal .help-close:hover { color: var(--text); }
+
 .progress-modal-header {
     display: flex;
     justify-content: space-between;
@@ -1388,6 +1456,17 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
     background: var(--accent);
     transition: width 0.5s ease;
     border-radius: 4px;
+}
+
+.overall-progress .time-stat {
+    color: var(--text-faint);
+    font-size: 12px;
+    margin-top: 10px;
+    font-variant-numeric: tabular-nums;
+}
+.overall-progress .time-stat strong {
+    color: var(--text);
+    font-weight: 500;
 }
 
 .book-progress { margin-bottom: 20px; }
@@ -1534,7 +1613,7 @@ body.dark .calendar-tooltip .tt-count { color: #a0a0a0; }
 
 .calendar-recent {
     margin-top: 16px;
-    max-height: 180px;
+    max-height: 320px;
     overflow-y: auto;
     border-top: 1px solid var(--border, #e0e0e0);
     padding-top: 12px;
@@ -1543,6 +1622,18 @@ body.dark .calendar-tooltip .tt-count { color: #a0a0a0; }
     color: var(--text-soft, #666);
     font-size: 12px;
     margin-bottom: 8px;
+}
+.calendar-recent-month {
+    color: var(--text-soft);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 12px 0 4px;
+    letter-spacing: 0.5px;
+    border-top: 1px dashed var(--border);
+}
+.calendar-recent-month:first-child {
+    border-top: none;
+    padding-top: 4px;
 }
 body.dark .calendar-recent-title { color: #a0a0a0; }
 .calendar-recent-item {
@@ -2314,6 +2405,8 @@ toolbarMenu.querySelectorAll('button').forEach(btn => {
 // ============================================================
 let progress = JSON.parse(localStorage.getItem('progress') || '{}');
 if (!progress.completed) progress = { completed: {} };
+if (!progress.timeSpent) progress.timeSpent = {};
+if (!progress.readPct) progress.readPct = {};
 
 function saveProgress() {
     localStorage.setItem('progress', JSON.stringify(progress));
@@ -2347,6 +2440,21 @@ function refreshCompletionUI() {
     document.querySelectorAll('.book-chapters a').forEach(a => {
         const chapterId = a.getAttribute('href').slice(1);
         a.classList.toggle('completed', !!progress.completed[chapterId]);
+    });
+}
+
+function refreshReadPctUI() {
+    document.querySelectorAll('.ch-read-pct').forEach(el => {
+        const id = el.dataset.chapter;
+        const pct = progress.readPct[id] || 0;
+        const isCompleted = !!progress.completed[id];
+        if (isCompleted) {
+            el.textContent = '✓';
+        } else if (pct > 0 && pct < 100) {
+            el.textContent = pct + '%';
+        } else {
+            el.textContent = '';
+        }
     });
 }
 
@@ -2402,6 +2510,85 @@ function setupAutoMark() {
 
 setupAutoMark();
 
+// ============================================================
+// 阅读时长 + 章节滚动百分比追踪
+// 两者都靠 IntersectionObserver 监听每章可见性：
+//   - 章入视 50% → 开始计时
+//   - 章离视    → 累加 elapsed 到 timeSpent[chapterId]
+//   - 滚动事件：每章计算「已滚过的比例」，保存最大值到 readPct[chapterId]
+// ============================================================
+let readTimerStart = null;
+let readTimerChapter = null;
+
+function setupReadingTracker() {
+    document.querySelectorAll('.chapter').forEach(article => {
+        const chapterId = article.id;
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.intersectionRatio >= 0.5) {
+                    if (readTimerChapter && readTimerChapter !== chapterId) {
+                        commitReadTime();
+                    }
+                    if (chapterId !== readTimerChapter) {
+                        readTimerStart = Date.now();
+                        readTimerChapter = chapterId;
+                    }
+                } else if (readTimerChapter === chapterId) {
+                    commitReadTime();
+                }
+            });
+        }, { threshold: [0, 0.5, 1] });
+        io.observe(article);
+    });
+}
+
+function commitReadTime() {
+    if (!readTimerStart || !readTimerChapter) return;
+    const elapsed = Math.floor((Date.now() - readTimerStart) / 1000);
+    if (elapsed >= 1) {
+        progress.timeSpent[readTimerChapter] = (progress.timeSpent[readTimerChapter] || 0) + elapsed;
+        saveProgress();
+    }
+    readTimerStart = null;
+    readTimerChapter = null;
+}
+
+// 关闭/切走时落盘
+window.addEventListener('beforeunload', commitReadTime);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) commitReadTime();
+});
+
+// 滚动事件：每章计算「已滚过」最大百分比
+let scrollSaveTimer = null;
+function updateReadPct() {
+    const winH = window.innerHeight;
+    document.querySelectorAll('.chapter').forEach(article => {
+        const rect = article.getBoundingClientRect();
+        if (rect.height === 0) return;
+        let pct;
+        if (rect.bottom <= winH) {
+            pct = 100;
+        } else if (rect.top >= winH) {
+            pct = 0;
+        } else {
+            pct = Math.round(((winH - rect.top) / rect.height) * 100);
+            pct = Math.max(0, Math.min(100, pct));
+        }
+        if (pct > (progress.readPct[article.id] || 0)) {
+            progress.readPct[article.id] = pct;
+        }
+    });
+    refreshReadPctUI();
+    if (scrollSaveTimer) clearTimeout(scrollSaveTimer);
+    scrollSaveTimer = setTimeout(() => saveProgress(), 200);
+}
+window.addEventListener('scroll', updateReadPct, { passive: true });
+
+setupReadingTracker();
+updateReadPct();
+refreshReadPctUI();
+
 // 打开进度面板
 document.getElementById('progress-btn').addEventListener('click', openProgressPanel);
 document.querySelector('.progress-panel .close').addEventListener('click', () => {
@@ -2441,6 +2628,17 @@ function renderProgress() {
     document.getElementById('overall-percent').textContent = percent;
     document.getElementById('overall-stats').textContent = `${completedChapters} / ${totalChapters} 章`;
     document.getElementById('overall-fill').style.width = percent + '%';
+
+    // 累计阅读时长
+    const totalSeconds = Object.values(progress.timeSpent).reduce((a, b) => a + (b || 0), 0);
+    const timeStatEl = document.getElementById('time-stat');
+    if (totalSeconds === 0) {
+        timeStatEl.innerHTML = '还没开始记录阅读时长';
+    } else {
+        const hours = Math.floor(totalSeconds / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        timeStatEl.innerHTML = `总阅读 <strong>${hours > 0 ? hours + ' 小时 ' : ''}${mins} 分</strong>`;
+    }
 
     // 各书进度
     const bookProgressList = document.getElementById('book-progress-list');
@@ -2580,23 +2778,27 @@ function renderCalendar() {
         monthsEl.appendChild(lbl);
     });
 
-    // 最近 30 天明细
-    recent.innerHTML = '<div class="calendar-recent-title">最近 30 天</div>';
+    // 完整阅读历史：所有有记录的日期，按日期倒序，按月分组
     const todayKey = localDateKey(today);
-    const recentDays = [];
-    for (let i = 0; i < 30; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const key = localDateKey(d);
-        if (key > todayKey) continue;
-        const count = daily[key] || 0;
-        recentDays.push({ date: d, key, count });
-    }
+    const historyDays = Object.entries(daily)
+        .filter(([k, c]) => c > 0)
+        .map(([key, count]) => ({ key, count, date: new Date(key) }))
+        .sort((a, b) => b.key.localeCompare(a.key));
 
-    if (recentDays.every(d => d.count === 0)) {
-        recent.innerHTML += '<div class="calendar-recent-empty">还没有阅读记录。读一章试试。</div>';
+    if (historyDays.length === 0) {
+        recent.innerHTML = '<div class="calendar-recent-title">完整阅读历史</div><div class="calendar-recent-empty">还没有阅读记录。读一章试试。</div>';
     } else {
-        recentDays.forEach(({ date, key, count }) => {
+        recent.innerHTML = `<div class="calendar-recent-title">完整阅读历史 · ${historyDays.length} 天</div>`;
+        let lastYM = '';
+        historyDays.forEach(({ key, count, date }) => {
+            const ym = key.slice(0, 7);
+            if (ym !== lastYM) {
+                const monthHeader = document.createElement('div');
+                monthHeader.className = 'calendar-recent-month';
+                monthHeader.textContent = `${date.getFullYear()} 年 ${date.getMonth() + 1} 月`;
+                recent.appendChild(monthHeader);
+                lastYM = ym;
+            }
             const item = document.createElement('div');
             item.className = 'calendar-recent-item';
             const todayFlag = key === todayKey ? ' · 今天' : '';
@@ -2605,7 +2807,7 @@ function renderCalendar() {
                     <span class="ri-date">${key}</span>
                     <span class="ri-weekday">${weekdayName(date)}${todayFlag}</span>
                 </div>
-                <span class="ri-count">${count > 0 ? count + ' 章' : '—'}</span>
+                <span class="ri-count">${count} 章</span>
             `;
             recent.appendChild(item);
         });
@@ -2862,6 +3064,7 @@ def build_html():
                 f'<li><a href="#{anchor}">'
                 f'<span class="ch-num">{chap_idx:02d}</span>'
                 f'<span>{display_title}</span>'
+                f'<span class="ch-read-pct" data-chapter="{anchor}"></span>'
                 f'</a></li>'
             )
 
@@ -3040,6 +3243,7 @@ def build_html():
                 <div class="progress-bar">
                     <div class="progress-bar-fill" id="overall-fill" style="width: 0%"></div>
                 </div>
+                <div class="time-stat" id="time-stat">还没开始记录阅读时长</div>
             </div>
 
             <div id="book-progress-list"></div>

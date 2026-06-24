@@ -286,7 +286,8 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
 .book-chapters.collapsed { display: none; }
 
 .book-chapters li a {
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 6px 12px;
     color: var(--text-soft);
     text-decoration: none;
@@ -297,6 +298,15 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     border-left: 2px solid transparent;
     margin-left: -1px;
 }
+
+.book-chapters .ch-read-pct {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+.book-chapters li a.completed .ch-read-pct { color: var(--done); }
 
 .book-chapters li a:hover {
     background: var(--accent-soft);
@@ -1196,6 +1206,17 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
     border-radius: 4px;
 }
 
+.overall-progress .time-stat {
+    color: var(--text-faint);
+    font-size: 12px;
+    margin-top: 10px;
+    font-variant-numeric: tabular-nums;
+}
+.overall-progress .time-stat strong {
+    color: var(--text);
+    font-weight: 500;
+}
+
 .book-progress { margin-bottom: 20px; }
 
 .book-progress-header {
@@ -1340,7 +1361,7 @@ body.dark .calendar-tooltip .tt-count { color: #a0a0a0; }
 
 .calendar-recent {
     margin-top: 16px;
-    max-height: 180px;
+    max-height: 320px;
     overflow-y: auto;
     border-top: 1px solid var(--border, #e0e0e0);
     padding-top: 12px;
@@ -1349,6 +1370,18 @@ body.dark .calendar-tooltip .tt-count { color: #a0a0a0; }
     color: var(--text-soft, #666);
     font-size: 12px;
     margin-bottom: 8px;
+}
+.calendar-recent-month {
+    color: var(--text-soft);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 12px 0 4px;
+    letter-spacing: 0.5px;
+    border-top: 1px dashed var(--border);
+}
+.calendar-recent-month:first-child {
+    border-top: none;
+    padding-top: 4px;
 }
 body.dark .calendar-recent-title { color: #a0a0a0; }
 .calendar-recent-item {
@@ -1555,7 +1588,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
         <h1>个人知识库</h1>
         <div class="subtitle">3 个系列 · 30 章 · 约 75 分钟</div>
         <div class="bookshelf">
-            <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/></svg></span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>你的第一个 Agent</span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>为什么需要 Multi-Agent</span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>5 个核心抽象</span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>编排模式全景</span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>通信与状态</span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>失败的艺术</span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>框架横向对比</span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>可观测性与成本</span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>第 9 章：实战 CodeReviewer Multi-Agent</span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>生产化 Checklist</span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/></svg></span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础 + Token 经济学</span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 实战</span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>CoT 思维链</span></a></li><li><a href="#llm-prompt__04-role-system-prompt"><span class="ch-num">04</span><span>Role / System Prompt：persona effect</span></a></li><li><a href="#llm-prompt__05-structured-output"><span class="ch-num">05</span><span>Structured Output</span></a></li><li><a href="#llm-prompt__06-tool-use"><span class="ch-num">06</span><span>Tool Use / Function Calling</span></a></li><li><a href="#llm-prompt__07-prompt-caching"><span class="ch-num">07</span><span>Prompt Caching：降成本 10x</span></a></li><li><a href="#llm-prompt__08-prompt-injection"><span class="ch-num">08</span><span>Prompt Injection 防御</span></a></li><li><a href="#llm-prompt__09-eval-driven"><span class="ch-num">09</span><span>Eval-driven 迭代</span></a></li><li><a href="#llm-prompt__10-real-cases"><span class="ch-num">10</span><span>真实场景 4 案例</span></a></li></ul></div><div class="book-group" data-book="crewai"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span><span class="book-title-text">CrewAI 入门到实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#crewai__01-getting-started"><span class="ch-num">01</span><span>上手：跑通第一个 Crew</span></a></li><li><a href="#crewai__02-crew-orchestration"><span class="ch-num">02</span><span>Crew 编排：Process 选型与协作</span></a></li><li><a href="#crewai__03-agent-tuning"><span class="ch-num">03</span><span>Agent 调优：让 agent 听指挥</span></a></li><li><a href="#crewai__04-tools-and-mcp"><span class="ch-num">04</span><span>Tools 与 MCP：给 agent 接手和脚</span></a></li><li><a href="#crewai__05-memory-and-knowledge"><span class="ch-num">05</span><span>Memory + Knowledge：让 agent 有记忆</span></a></li><li><a href="#crewai__06-structured-output"><span class="ch-num">06</span><span>结构化输出与 Guardrail</span></a></li><li><a href="#crewai__07-flows"><span class="ch-num">07</span><span>Flows：状态化的事件驱动编排</span></a></li><li><a href="#crewai__08-skills-and-prod"><span class="ch-num">08</span><span>Skills 与生产化基础</span></a></li><li><a href="#crewai__09-side-projects"><span class="ch-num">09</span><span>实战：2 个 Side-Project 串起来</span></a></li><li><a href="#crewai__10-prod-cases"><span class="ch-num">10</span><span>公司生产案例 + 社区实战拆解</span></a></li></ul></div>
+            <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/></svg></span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>你的第一个 Agent</span><span class="ch-read-pct" data-chapter="multi-agent__01-your-first-agent"></span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>为什么需要 Multi-Agent</span><span class="ch-read-pct" data-chapter="multi-agent__02-why-multi-agent"></span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>5 个核心抽象</span><span class="ch-read-pct" data-chapter="multi-agent__03-five-abstractions"></span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>编排模式全景</span><span class="ch-read-pct" data-chapter="multi-agent__04-orchestration-patterns"></span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>通信与状态</span><span class="ch-read-pct" data-chapter="multi-agent__05-state-and-communication"></span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>失败的艺术</span><span class="ch-read-pct" data-chapter="multi-agent__06-failure-handling"></span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>框架横向对比</span><span class="ch-read-pct" data-chapter="multi-agent__07-framework-comparison"></span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>可观测性与成本</span><span class="ch-read-pct" data-chapter="multi-agent__08-observability-and-cost"></span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>第 9 章：实战 CodeReviewer Multi-Agent</span><span class="ch-read-pct" data-chapter="multi-agent__09-code-review-project"></span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>生产化 Checklist</span><span class="ch-read-pct" data-chapter="multi-agent__10-production-checklist"></span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/></svg></span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础 + Token 经济学</span><span class="ch-read-pct" data-chapter="llm-prompt__01-prompt-basics"></span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 实战</span><span class="ch-read-pct" data-chapter="llm-prompt__02-few-shot"></span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>CoT 思维链</span><span class="ch-read-pct" data-chapter="llm-prompt__03-advanced-patterns"></span></a></li><li><a href="#llm-prompt__04-role-system-prompt"><span class="ch-num">04</span><span>Role / System Prompt：persona effect</span><span class="ch-read-pct" data-chapter="llm-prompt__04-role-system-prompt"></span></a></li><li><a href="#llm-prompt__05-structured-output"><span class="ch-num">05</span><span>Structured Output</span><span class="ch-read-pct" data-chapter="llm-prompt__05-structured-output"></span></a></li><li><a href="#llm-prompt__06-tool-use"><span class="ch-num">06</span><span>Tool Use / Function Calling</span><span class="ch-read-pct" data-chapter="llm-prompt__06-tool-use"></span></a></li><li><a href="#llm-prompt__07-prompt-caching"><span class="ch-num">07</span><span>Prompt Caching：降成本 10x</span><span class="ch-read-pct" data-chapter="llm-prompt__07-prompt-caching"></span></a></li><li><a href="#llm-prompt__08-prompt-injection"><span class="ch-num">08</span><span>Prompt Injection 防御</span><span class="ch-read-pct" data-chapter="llm-prompt__08-prompt-injection"></span></a></li><li><a href="#llm-prompt__09-eval-driven"><span class="ch-num">09</span><span>Eval-driven 迭代</span><span class="ch-read-pct" data-chapter="llm-prompt__09-eval-driven"></span></a></li><li><a href="#llm-prompt__10-real-cases"><span class="ch-num">10</span><span>真实场景 4 案例</span><span class="ch-read-pct" data-chapter="llm-prompt__10-real-cases"></span></a></li></ul></div><div class="book-group" data-book="crewai"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span><span class="book-title-text">CrewAI 入门到实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#crewai__01-getting-started"><span class="ch-num">01</span><span>上手：跑通第一个 Crew</span><span class="ch-read-pct" data-chapter="crewai__01-getting-started"></span></a></li><li><a href="#crewai__02-crew-orchestration"><span class="ch-num">02</span><span>Crew 编排：Process 选型与协作</span><span class="ch-read-pct" data-chapter="crewai__02-crew-orchestration"></span></a></li><li><a href="#crewai__03-agent-tuning"><span class="ch-num">03</span><span>Agent 调优：让 agent 听指挥</span><span class="ch-read-pct" data-chapter="crewai__03-agent-tuning"></span></a></li><li><a href="#crewai__04-tools-and-mcp"><span class="ch-num">04</span><span>Tools 与 MCP：给 agent 接手和脚</span><span class="ch-read-pct" data-chapter="crewai__04-tools-and-mcp"></span></a></li><li><a href="#crewai__05-memory-and-knowledge"><span class="ch-num">05</span><span>Memory + Knowledge：让 agent 有记忆</span><span class="ch-read-pct" data-chapter="crewai__05-memory-and-knowledge"></span></a></li><li><a href="#crewai__06-structured-output"><span class="ch-num">06</span><span>结构化输出与 Guardrail</span><span class="ch-read-pct" data-chapter="crewai__06-structured-output"></span></a></li><li><a href="#crewai__07-flows"><span class="ch-num">07</span><span>Flows：状态化的事件驱动编排</span><span class="ch-read-pct" data-chapter="crewai__07-flows"></span></a></li><li><a href="#crewai__08-skills-and-prod"><span class="ch-num">08</span><span>Skills 与生产化基础</span><span class="ch-read-pct" data-chapter="crewai__08-skills-and-prod"></span></a></li><li><a href="#crewai__09-side-projects"><span class="ch-num">09</span><span>实战：2 个 Side-Project 串起来</span><span class="ch-read-pct" data-chapter="crewai__09-side-projects"></span></a></li><li><a href="#crewai__10-prod-cases"><span class="ch-num">10</span><span>公司生产案例 + 社区实战拆解</span><span class="ch-read-pct" data-chapter="crewai__10-prod-cases"></span></a></li></ul></div>
         </div>
     </aside>
 
@@ -1655,6 +1688,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
                 <div class="progress-bar">
                     <div class="progress-bar-fill" id="overall-fill" style="width: 0%"></div>
                 </div>
+                <div class="time-stat" id="time-stat">还没开始记录阅读时长</div>
             </div>
 
             <div id="book-progress-list"></div>
@@ -13244,6 +13278,8 @@ toolbarMenu.querySelectorAll('button').forEach(btn => {
 // ============================================================
 let progress = JSON.parse(localStorage.getItem('progress') || '{}');
 if (!progress.completed) progress = { completed: {} };
+if (!progress.timeSpent) progress.timeSpent = {};
+if (!progress.readPct) progress.readPct = {};
 
 function saveProgress() {
     localStorage.setItem('progress', JSON.stringify(progress));
@@ -13277,6 +13313,21 @@ function refreshCompletionUI() {
     document.querySelectorAll('.book-chapters a').forEach(a => {
         const chapterId = a.getAttribute('href').slice(1);
         a.classList.toggle('completed', !!progress.completed[chapterId]);
+    });
+}
+
+function refreshReadPctUI() {
+    document.querySelectorAll('.ch-read-pct').forEach(el => {
+        const id = el.dataset.chapter;
+        const pct = progress.readPct[id] || 0;
+        const isCompleted = !!progress.completed[id];
+        if (isCompleted) {
+            el.textContent = '✓';
+        } else if (pct > 0 && pct < 100) {
+            el.textContent = pct + '%';
+        } else {
+            el.textContent = '';
+        }
     });
 }
 
@@ -13332,6 +13383,85 @@ function setupAutoMark() {
 
 setupAutoMark();
 
+// ============================================================
+// 阅读时长 + 章节滚动百分比追踪
+// 两者都靠 IntersectionObserver 监听每章可见性：
+//   - 章入视 50% → 开始计时
+//   - 章离视    → 累加 elapsed 到 timeSpent[chapterId]
+//   - 滚动事件：每章计算「已滚过的比例」，保存最大值到 readPct[chapterId]
+// ============================================================
+let readTimerStart = null;
+let readTimerChapter = null;
+
+function setupReadingTracker() {
+    document.querySelectorAll('.chapter').forEach(article => {
+        const chapterId = article.id;
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.intersectionRatio >= 0.5) {
+                    if (readTimerChapter && readTimerChapter !== chapterId) {
+                        commitReadTime();
+                    }
+                    if (chapterId !== readTimerChapter) {
+                        readTimerStart = Date.now();
+                        readTimerChapter = chapterId;
+                    }
+                } else if (readTimerChapter === chapterId) {
+                    commitReadTime();
+                }
+            });
+        }, { threshold: [0, 0.5, 1] });
+        io.observe(article);
+    });
+}
+
+function commitReadTime() {
+    if (!readTimerStart || !readTimerChapter) return;
+    const elapsed = Math.floor((Date.now() - readTimerStart) / 1000);
+    if (elapsed >= 1) {
+        progress.timeSpent[readTimerChapter] = (progress.timeSpent[readTimerChapter] || 0) + elapsed;
+        saveProgress();
+    }
+    readTimerStart = null;
+    readTimerChapter = null;
+}
+
+// 关闭/切走时落盘
+window.addEventListener('beforeunload', commitReadTime);
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) commitReadTime();
+});
+
+// 滚动事件：每章计算「已滚过」最大百分比
+let scrollSaveTimer = null;
+function updateReadPct() {
+    const winH = window.innerHeight;
+    document.querySelectorAll('.chapter').forEach(article => {
+        const rect = article.getBoundingClientRect();
+        if (rect.height === 0) return;
+        let pct;
+        if (rect.bottom <= winH) {
+            pct = 100;
+        } else if (rect.top >= winH) {
+            pct = 0;
+        } else {
+            pct = Math.round(((winH - rect.top) / rect.height) * 100);
+            pct = Math.max(0, Math.min(100, pct));
+        }
+        if (pct > (progress.readPct[article.id] || 0)) {
+            progress.readPct[article.id] = pct;
+        }
+    });
+    refreshReadPctUI();
+    if (scrollSaveTimer) clearTimeout(scrollSaveTimer);
+    scrollSaveTimer = setTimeout(() => saveProgress(), 200);
+}
+window.addEventListener('scroll', updateReadPct, { passive: true });
+
+setupReadingTracker();
+updateReadPct();
+refreshReadPctUI();
+
 // 打开进度面板
 document.getElementById('progress-btn').addEventListener('click', openProgressPanel);
 document.querySelector('.progress-panel .close').addEventListener('click', () => {
@@ -13371,6 +13501,17 @@ function renderProgress() {
     document.getElementById('overall-percent').textContent = percent;
     document.getElementById('overall-stats').textContent = `${completedChapters} / ${totalChapters} 章`;
     document.getElementById('overall-fill').style.width = percent + '%';
+
+    // 累计阅读时长
+    const totalSeconds = Object.values(progress.timeSpent).reduce((a, b) => a + (b || 0), 0);
+    const timeStatEl = document.getElementById('time-stat');
+    if (totalSeconds === 0) {
+        timeStatEl.innerHTML = '还没开始记录阅读时长';
+    } else {
+        const hours = Math.floor(totalSeconds / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        timeStatEl.innerHTML = `总阅读 <strong>${hours > 0 ? hours + ' 小时 ' : ''}${mins} 分</strong>`;
+    }
 
     // 各书进度
     const bookProgressList = document.getElementById('book-progress-list');
@@ -13510,23 +13651,27 @@ function renderCalendar() {
         monthsEl.appendChild(lbl);
     });
 
-    // 最近 30 天明细
-    recent.innerHTML = '<div class="calendar-recent-title">最近 30 天</div>';
+    // 完整阅读历史：所有有记录的日期，按日期倒序，按月分组
     const todayKey = localDateKey(today);
-    const recentDays = [];
-    for (let i = 0; i < 30; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const key = localDateKey(d);
-        if (key > todayKey) continue;
-        const count = daily[key] || 0;
-        recentDays.push({ date: d, key, count });
-    }
+    const historyDays = Object.entries(daily)
+        .filter(([k, c]) => c > 0)
+        .map(([key, count]) => ({ key, count, date: new Date(key) }))
+        .sort((a, b) => b.key.localeCompare(a.key));
 
-    if (recentDays.every(d => d.count === 0)) {
-        recent.innerHTML += '<div class="calendar-recent-empty">还没有阅读记录。读一章试试。</div>';
+    if (historyDays.length === 0) {
+        recent.innerHTML = '<div class="calendar-recent-title">完整阅读历史</div><div class="calendar-recent-empty">还没有阅读记录。读一章试试。</div>';
     } else {
-        recentDays.forEach(({ date, key, count }) => {
+        recent.innerHTML = `<div class="calendar-recent-title">完整阅读历史 · ${historyDays.length} 天</div>`;
+        let lastYM = '';
+        historyDays.forEach(({ key, count, date }) => {
+            const ym = key.slice(0, 7);
+            if (ym !== lastYM) {
+                const monthHeader = document.createElement('div');
+                monthHeader.className = 'calendar-recent-month';
+                monthHeader.textContent = `${date.getFullYear()} 年 ${date.getMonth() + 1} 月`;
+                recent.appendChild(monthHeader);
+                lastYM = ym;
+            }
             const item = document.createElement('div');
             item.className = 'calendar-recent-item';
             const todayFlag = key === todayKey ? ' · 今天' : '';
@@ -13535,7 +13680,7 @@ function renderCalendar() {
                     <span class="ri-date">${key}</span>
                     <span class="ri-weekday">${weekdayName(date)}${todayFlag}</span>
                 </div>
-                <span class="ri-count">${count > 0 ? count + ' 章' : '—'}</span>
+                <span class="ri-count">${count} 章</span>
             `;
             recent.appendChild(item);
         });
