@@ -2289,10 +2289,13 @@ def build_html():
 
             # 用目录名（去掉数字前缀）作为展示标题
             display_title = chap_slug
-            # 尝试从 README 第一个 # 标题取
+            # 尝试从 README 第一个 # 标题取，并剥掉「01.」「1、」这类序号前缀
+            # （sidebar 已有 ch-num 序号，标题里再带一次会重复）
             first_heading = re.search(r"^#\s+(.+)$", md_text, re.MULTILINE)
             if first_heading:
-                display_title = first_heading.group(1).strip()
+                display_title = re.sub(
+                    r"^\s*\d+[\.\u3001\)\]\uff09]\s*", "", first_heading.group(1).strip()
+                )
 
             # 章节锚点：bookSlug__chapterSlug
             anchor = f"{book_slug}__{chap_slug}"
