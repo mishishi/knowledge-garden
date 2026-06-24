@@ -229,6 +229,7 @@ CSS = """
     --hl-green: rgba(150, 230, 150, 0.4);
     --hl-blue: rgba(150, 200, 255, 0.4);
     --hl-pink: rgba(255, 180, 220, 0.4);
+    --done: #6b9b76;
     --font-base: 18px;
 }
 
@@ -260,6 +261,7 @@ body.dark {
     --hl-green: rgba(80, 160, 80, 0.4);
     --hl-blue: rgba(80, 130, 180, 0.4);
     --hl-pink: rgba(180, 100, 140, 0.4);
+    --done: #7ba888;
 }
 
 .progress {
@@ -1190,14 +1192,17 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
     height: 14px;
     margin-right: 6px;
     vertical-align: -2px;
-    background: currentColor;
-    color: var(--accent);
+    background: var(--done);
     -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
     mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
 }
 
 .book-chapters li a.completed {
-    color: var(--accent);
+    color: var(--text-soft);
+    opacity: 0.55;
+    text-decoration: line-through;
+    text-decoration-color: var(--done);
+    text-decoration-thickness: 1.5px;
 }
 
 .book-chapters li a.completed::after {
@@ -1207,7 +1212,8 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
     height: 12px;
     margin-left: 6px;
     vertical-align: -1px;
-    background: currentColor;
+    background: var(--done);
+    opacity: 1;
     -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
     mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
 }
