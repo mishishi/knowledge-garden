@@ -863,7 +863,7 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 }
 
 .chapter-content hr::after {
-    content: "❀";
+    content: "—";
     position: absolute;
     top: -10px;
     left: 50%;
@@ -883,7 +883,7 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     font-style: italic;
 }
 
-.chapter-end::before { content: "— ❀ ❀ ❀ —"; color: var(--accent); }
+.chapter-end::before { content: "———"; color: var(--accent); letter-spacing: 8px; }
 
 @media (max-width: 900px) {
     .sidebar { transform: translateX(-300px); }
@@ -2436,7 +2436,7 @@ function renderBookmarksList() {
     allBookmarks.sort((a, b) => b.timestamp - a.timestamp);
 
     const total = allBookmarks.length;
-    let html = `<div class="sb-title"><span>⭐ 书签</span><span class="sb-count">${total}</span></div>`;
+    let html = `<div class="sb-title"><span>书签</span><span class="sb-count">${total}</span></div>`;
 
     if (total === 0) {
         html += `<div class="sb-empty">选中文本 → 工具栏 → 收藏</div>`;
@@ -2784,7 +2784,7 @@ function refreshReadPctUI() {
         const pct = progress.readPct[id] || 0;
         const isCompleted = !!progress.completed[id];
         if (isCompleted) {
-            el.textContent = '✓';
+            el.innerHTML = '<svg class="icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
         } else if (pct > 0 && pct < 100) {
             el.textContent = pct + '%';
         } else {
@@ -3210,7 +3210,7 @@ document.getElementById('import-progress').addEventListener('click', () => {
                     alert('数据导入成功');
                 }
             } catch (err) {
-                alert('✗ 文件格式错误: ' + err.message);
+                alert('错误：文件格式不正确 - ' + err.message);
             }
         };
         reader.readAsText(file);
@@ -3431,7 +3431,7 @@ def build_html():
     books = discover_books()
 
     if not books:
-        print("⚠️  没找到任何书。请在 books/ 目录下创建子目录。")
+        print("警告：没找到任何书。请在 books/ 目录下创建子目录。")
         return
 
     # 构建内容
@@ -3774,7 +3774,7 @@ def build_html():
 
     output = ROOT / "index.html"
     output.write_text(html, encoding="utf-8")
-    print(f"✓ 生成 {output}")
+    print(f"生成 {output}")
     print(f"  大小: {len(html):,} 字符 ({len(html) / 1024:.1f} KB)")
     print(f"  系列: {len(books)} | 总章节: {total_chapters} | 总字数: {total_chars:,}")
     for slug, meta, chs in books:

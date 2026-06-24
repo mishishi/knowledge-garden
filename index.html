@@ -667,7 +667,7 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 }
 
 .chapter-content hr::after {
-    content: "❀";
+    content: "—";
     position: absolute;
     top: -10px;
     left: 50%;
@@ -687,7 +687,7 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     font-style: italic;
 }
 
-.chapter-end::before { content: "— ❀ ❀ ❀ —"; color: var(--accent); }
+.chapter-end::before { content: "———"; color: var(--accent); letter-spacing: 8px; }
 
 @media (max-width: 900px) {
     .sidebar { transform: translateX(-300px); }
@@ -15340,7 +15340,7 @@ function renderBookmarksList() {
     allBookmarks.sort((a, b) => b.timestamp - a.timestamp);
 
     const total = allBookmarks.length;
-    let html = `<div class="sb-title"><span>⭐ 书签</span><span class="sb-count">${total}</span></div>`;
+    let html = `<div class="sb-title"><span>书签</span><span class="sb-count">${total}</span></div>`;
 
     if (total === 0) {
         html += `<div class="sb-empty">选中文本 → 工具栏 → 收藏</div>`;
@@ -15688,7 +15688,7 @@ function refreshReadPctUI() {
         const pct = progress.readPct[id] || 0;
         const isCompleted = !!progress.completed[id];
         if (isCompleted) {
-            el.textContent = '✓';
+            el.innerHTML = '<svg class="icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
         } else if (pct > 0 && pct < 100) {
             el.textContent = pct + '%';
         } else {
@@ -16114,7 +16114,7 @@ document.getElementById('import-progress').addEventListener('click', () => {
                     alert('数据导入成功');
                 }
             } catch (err) {
-                alert('✗ 文件格式错误: ' + err.message);
+                alert('错误：文件格式不正确 - ' + err.message);
             }
         };
         reader.readAsText(file);
