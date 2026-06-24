@@ -280,37 +280,124 @@ body.dark {
     right: 16px;
     z-index: 100;
     display: flex;
-    gap: 4px;
+    align-items: center;
+}
+
+#more-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     background: rgba(255, 255, 255, 0.85);
     border: 1px solid var(--border);
-    padding: 6px;
-    border-radius: 10px;
+    color: var(--text-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-}
-
-body.dark .toolbar { background: rgba(40, 40, 44, 0.85); }
-
-.toolbar button {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    padding: 6px 10px;
-    font-size: 13px;
-    color: var(--text-soft);
-    border-radius: 6px;
     transition: all 0.15s;
 }
-
-.toolbar button:hover { background: var(--accent-soft); color: var(--accent); }
-.toolbar button.active { background: var(--accent); color: white; }
-
-.toolbar .divider {
-    width: 1px;
-    background: var(--border);
-    margin: 4px 2px;
+#more-btn:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: var(--accent);
 }
+#more-btn.open {
+    color: white;
+    background: var(--accent);
+    border-color: var(--accent);
+}
+body.dark #more-btn { background: rgba(40, 40, 44, 0.85); }
+
+.toolbar-menu {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    min-width: 200px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    display: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.toolbar-menu.visible { display: block; }
+body.dark .toolbar-menu { background: rgba(28, 28, 30, 0.95); }
+
+.toolbar-section { padding: 4px 0; }
+.toolbar-section .section-label {
+    display: block;
+    color: var(--text-faint);
+    font-size: 10px;
+    padding: 6px 12px 4px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+.toolbar-section.font-sizes {
+    display: flex;
+    gap: 2px;
+    padding: 4px 6px;
+}
+.toolbar-section.font-sizes button {
+    flex: 1;
+    padding: 6px 0;
+    text-align: center;
+}
+
+.toolbar-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 6px;
+}
+
+.toolbar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.toolbar-actions button,
+.toolbar-section button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 13px;
+    transition: all 0.15s;
+}
+.toolbar-actions button:hover,
+.toolbar-section button:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.toolbar-actions button.active {
+    background: var(--accent);
+    color: white;
+}
+.toolbar-actions button kbd {
+    margin-left: auto;
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 10px;
+    color: var(--text-faint);
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+}
+body.dark .toolbar-actions button kbd { background: rgba(255, 255, 255, 0.05); }
+.toolbar-actions button:hover kbd,
+.toolbar-actions button.active kbd { color: inherit; opacity: 0.7; }
 
 .sidebar {
     position: fixed;
@@ -708,6 +795,8 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     .chapter-num { font-size: 12px; letter-spacing: 5px; }
     .book-cover h1 { font-size: 1.8em; }
     .toolbar { top: 8px; right: 8px; }
+    #more-btn { width: 36px; height: 36px; }
+    .toolbar-menu { min-width: 180px; }
     .sidebar-toggle { top: 8px; left: 8px; }
 }
 
@@ -2187,7 +2276,37 @@ document.addEventListener('keydown', (e) => {
         document.querySelector('.notes-panel').classList.remove('visible');
         document.querySelector('.note-modal').classList.remove('visible');
         document.querySelector('.progress-panel').classList.remove('visible');
+        document.getElementById('toolbar-menu').classList.remove('visible');
+        document.getElementById('more-btn').classList.remove('open');
     }
+});
+
+// ============================================================
+// 工具栏溢出菜单
+// ============================================================
+const moreBtn = document.getElementById('more-btn');
+const toolbarMenu = document.getElementById('toolbar-menu');
+
+function setToolbarOpen(open) {
+    toolbarMenu.classList.toggle('visible', open);
+    moreBtn.classList.toggle('open', open);
+}
+
+moreBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setToolbarOpen(!toolbarMenu.classList.contains('visible'));
+});
+
+// 点菜单外面关闭
+document.addEventListener('click', (e) => {
+    if (!toolbarMenu.contains(e.target) && !moreBtn.contains(e.target)) {
+        setToolbarOpen(false);
+    }
+});
+
+// 点了任何工具按钮后关闭（音乐/笔记/进度/QR/暗色/字号）
+toolbarMenu.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => setToolbarOpen(false));
 });
 
 // ============================================================
@@ -2826,15 +2945,22 @@ def build_html():
     </aside>
 
     <div class="toolbar">
-        <button class="font-btn" data-size="small" title="小字号 (-)">A−</button>
-        <button class="font-btn" data-size="medium" title="中字号">A</button>
-        <button class="font-btn" data-size="large" title="大字号 (+)">A+</button>
-        <div class="divider"></div>
-        <button id="music-btn" title="背景音乐 (M)">{svg_icon('music')}</button>
-        <button id="notes-btn" title="笔记 (N)">{svg_icon('notes')}</button>
-        <button id="progress-btn" title="阅读进度 (P)">{svg_icon('progress')}</button>
-        <button id="qr-btn" title="扫码阅读 (Q)">{svg_icon('qr')}</button>
-        <button id="dark-btn" title="暗色模式 (D)">{svg_icon('moon')}</button>
+        <button id="more-btn" title="工具">{svg_icon('menu')}</button>
+        <div class="toolbar-menu" id="toolbar-menu">
+            <div class="toolbar-section font-sizes">
+                <button class="font-btn" data-size="small" title="小字号 (-)">A−</button>
+                <button class="font-btn" data-size="medium" title="中字号">A</button>
+                <button class="font-btn" data-size="large" title="大字号 (+)">A+</button>
+            </div>
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-actions">
+                <button id="music-btn">{svg_icon('music')}<span>背景音乐</span><kbd>M</kbd></button>
+                <button id="notes-btn">{svg_icon('notes')}<span>笔记</span><kbd>N</kbd></button>
+                <button id="progress-btn">{svg_icon('progress')}<span>阅读进度</span><kbd>P</kbd></button>
+                <button id="qr-btn">{svg_icon('qr')}<span>扫码阅读</span><kbd>Q</kbd></button>
+                <button id="dark-btn">{svg_icon('moon')}<span>暗色模式</span><kbd>D</kbd></button>
+            </div>
+        </div>
     </div>
 
     <div class="selection-toolbar">
