@@ -159,6 +159,7 @@ ICONS = {
     'sparkles': '<path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/>',
     'bot':      '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
     'qr':       '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/>',
+    'disc':     '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M6 12c0-1.7 1.3-3 3-3"/>',
 }
 
 
@@ -1720,6 +1721,23 @@ function startMusic(scene) {
     mainGain.gain.value = volume;
     mainGain.connect(ctx.destination);
 
+    if (scene === 'woju') {
+        // 真实录音：用 <audio> 元素 + WebAudio GainNode 控制音量
+        const audioEl = document.getElementById('woju-audio');
+        if (!audioEl || !audioEl.querySelector('source, [src]') && !audioEl.src) {
+            console.log('woju scene: audio file not found, fallback to off');
+            return;
+        }
+        const source = ctx.createMediaElementSource(audioEl);
+        source.connect(mainGain);
+        audioEl.volume = volume;
+        audioEl.currentTime = 0;
+        audioEl.play().catch(e => console.log('audio play failed:', e));
+        musicNodes = { source: audioEl, gain: mainGain, isAudio: true };
+        localStorage.setItem('musicScene', scene);
+        return;
+    }
+
     if (scene === 'white') {
         const bufferSize = ctx.sampleRate * 2;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
@@ -1781,8 +1799,13 @@ function startMusic(scene) {
 function stopMusic() {
     if (!musicNodes) return;
     try {
-        if (musicNodes.source.stop) musicNodes.source.stop();
-        if (musicNodes.lfo) musicNodes.lfo.stop();
+        if (musicNodes.isAudio) {
+            musicNodes.source.pause();
+            musicNodes.source.currentTime = 0;
+        } else {
+            if (musicNodes.source.stop) musicNodes.source.stop();
+            if (musicNodes.lfo) musicNodes.lfo.stop();
+        }
     } catch (e) {}
     musicNodes = null;
     currentScene = 'off';
@@ -1800,7 +1823,13 @@ document.querySelectorAll('.scene-btn').forEach(btn => {
 
 document.querySelector('.volume input').addEventListener('input', (e) => {
     volume = e.target.value / 100;
-    if (musicNodes) musicNodes.gain.gain.value = volume;
+    if (musicNodes) {
+        if (musicNodes.isAudio) {
+            musicNodes.source.volume = volume;
+        } else {
+            musicNodes.gain.gain.value = volume;
+        }
+    }
     localStorage.setItem('volume', volume);
 });
 
@@ -1812,6 +1841,22 @@ if (savedScene !== 'off') {
 } else {
     document.querySelector('.scene-btn[data-scene="off"]').classList.add('active');
 }
+
+// 检查 woju 录音文件是否存在，不存在则隐藏按钮（部署到 GitHub Pages 时不会带 mp3）
+fetch('assets/audio/woju_low.mp3', { method: 'HEAD' }).then(r => {
+    if (!r.ok) {
+        const btn = document.querySelector('.scene-btn[data-scene="woju"]');
+        if (btn) btn.style.display = 'none';
+        // 如果之前选的是 woju，重置为 off
+        if (localStorage.getItem('musicScene') === 'woju') {
+            localStorage.setItem('musicScene', 'off');
+        }
+    }
+}).catch(() => {
+    // 网络错误也隐藏
+    const btn = document.querySelector('.scene-btn[data-scene="woju"]');
+    if (btn) btn.style.display = 'none';
+});
 
 document.getElementById('music-btn').addEventListener('click', () => {
     document.querySelector('.music-panel').classList.toggle('visible');
@@ -2628,6 +2673,7 @@ def build_html():
             <button class="scene-btn" data-scene="white">{svg_icon('wave')} 白噪音</button>
             <button class="scene-btn" data-scene="rain">{svg_icon('rain')} 雨声</button>
             <button class="scene-btn" data-scene="warm">{svg_icon('flame')} 暖调</button>
+            <button class="scene-btn" data-scene="woju">{svg_icon('disc')} 且听风吟</button>
         </div>
         <div class="volume">{svg_icon('volume')} <input type="range" min="0" max="100" value="30"> {svg_icon('volume', size=18)}</div>
     </div>
@@ -2652,6 +2698,10 @@ def build_html():
             </div>
         </div>
     </div>
+
+    <!-- 背景音乐 - 真实录音（且听风吟，电视剧《蜗居》钢琴插曲，3:08） -->
+    <!-- 文件不入 git，本地 build 才有；部署到 GitHub Pages 时不存在，scene 按钮自动隐藏 -->
+    <audio id="woju-audio" src="assets/audio/woju_low.mp3" loop preload="auto"></audio>
 
     <!-- 进度面板 -->
     <div class="progress-panel">

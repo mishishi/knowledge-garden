@@ -25,3 +25,11 @@ env/
 # 临时文件
 *.log
 tmp/
+
+# 版权音频（不入 git，本地 build 才有；部署到 GitHub Pages 时按钮自动隐藏）
+assets/audio/*.mp3
+assets/audio/*.wav
+assets/audio/*.ogg
+assets/audio/*.flac
+assets/audio/*_analysis.png
+assets/audio/*_analysis.*
