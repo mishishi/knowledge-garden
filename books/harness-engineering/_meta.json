@@ -1,0 +1,19 @@
+{
+  "title": "Harness Engineering",
+  "description": "包裹 LLM 的整套工程基座：agent loop、tools、context、permissions、observability、memory、failure recovery、eval — 写给需要自己造 / 选 harness 的人",
+  "icon": "layers",
+  "color": "#c2410c",
+  "priority": 5,
+  "order": [
+    "01-what-is-harness",
+    "02-agent-loop",
+    "03-tool-design",
+    "04-context-management",
+    "05-permissions-sandbox",
+    "06-observability",
+    "07-memory-layers",
+    "08-failure-recovery",
+    "09-eval-driven",
+    "10-build-from-scratch"
+  ]
+}
