@@ -1877,19 +1877,20 @@ function openProgressPanel() {
 
 function renderProgress() {
     // 收集所有章节
-    const allChapters = Array.from(document.querySelectorAll('.chapter')).map(c => ({
-        id: c.id,
-        book: c.dataset.book,
-        bookTitle: c.closest('.chapter').dataset.book,
-    }));
+    const allChapters = Array.from(document.querySelectorAll('.chapter')).map(c => {
+        const bookEl = document.querySelector(`[data-book="${c.dataset.book}"] .book-title-text`);
+        return {
+            id: c.id,
+            book: c.dataset.book,
+            bookTitle: bookEl?.textContent || c.dataset.book,
+        };
+    });
 
     // 按书分组
     const bookStats = {};
     allChapters.forEach(c => {
-        const bookGroup = document.querySelector(`[data-book="${c.book}"]`);
-        const bookTitle = bookGroup?.querySelector('.book-title-text')?.textContent || c.book;
         if (!bookStats[c.book]) {
-            bookStats[c.book] = { title: bookTitle, total: 0, completed: 0 };
+            bookStats[c.book] = { title: c.bookTitle, total: 0, completed: 0 };
         }
         bookStats[c.book].total++;
         if (progress.completed[c.id]) bookStats[c.book].completed++;
