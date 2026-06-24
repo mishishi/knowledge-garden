@@ -1369,6 +1369,60 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
     outline: 1px solid var(--accent);
 }
 
+.calendar-tooltip {
+    position: fixed;
+    background: var(--card-bg, #ffffff);
+    color: var(--text, #2d2d2d);
+    border: 1px solid var(--border, #e0e0e0);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+    line-height: 1.5;
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+body.dark .calendar-tooltip { background: #2a2a2e; color: #e8e8e8; border-color: #444; }
+.calendar-tooltip.visible { opacity: 1; }
+.calendar-tooltip .tt-date { font-weight: 600; }
+.calendar-tooltip .tt-count { color: var(--text-soft, #666); }
+body.dark .calendar-tooltip .tt-count { color: #a0a0a0; }
+
+.calendar-recent {
+    margin-top: 16px;
+    max-height: 180px;
+    overflow-y: auto;
+    border-top: 1px solid var(--border, #e0e0e0);
+    padding-top: 12px;
+}
+.calendar-recent-title {
+    color: var(--text-soft, #666);
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+body.dark .calendar-recent-title { color: #a0a0a0; }
+.calendar-recent-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 12px;
+    color: var(--text, #2d2d2d);
+    border-bottom: 1px dashed var(--border-soft, #eee);
+}
+body.dark .calendar-recent-item { color: #e8e8e8; border-color: #333; }
+.calendar-recent-item:last-child { border-bottom: none; }
+.calendar-recent-item .ri-date { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.calendar-recent-item .ri-weekday { color: var(--text-faint, #999); margin-left: 8px; font-size: 11px; }
+.calendar-recent-item .ri-count {
+    color: var(--accent, #b08968);
+    font-weight: 600;
+}
+.calendar-recent-empty { color: var(--text-faint, #999); font-size: 12px; padding: 8px 0; }
+
 .calendar-day.empty {
     background: transparent;
     cursor: default;
@@ -2175,8 +2229,15 @@ function renderProgress() {
     renderCalendar();
 }
 
+function weekdayName(date) {
+    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    return weekdays[date.getDay()];
+}
+
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid');
+    const tooltip = document.getElementById('calendar-tooltip');
+    const recent = document.getElementById('calendar-recent');
     grid.innerHTML = '';
 
     // 每天的完成数
@@ -2223,7 +2284,19 @@ function renderCalendar() {
                     day.classList.add('level-4');
                 }
 
-                day.title = `${dateKey}: ${count} 章`;
+                // 自定义 tooltip（不用 native title，体验差）
+                day.addEventListener('mouseenter', (e) => {
+                    tooltip.innerHTML = `<span class="tt-date">${dateKey}</span> · ${weekdayName(currentDate)}<br><span class="tt-count">${count === 0 ? '未阅读' : count + ' 章'}</span>`;
+                    tooltip.classList.add('visible');
+                });
+                day.addEventListener('mousemove', (e) => {
+                    // 跟随鼠标，offset 12px
+                    tooltip.style.left = (e.clientX + 12) + 'px';
+                    tooltip.style.top = (e.clientY + 12) + 'px';
+                });
+                day.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('visible');
+                });
             }
 
             week.appendChild(day);
@@ -2231,6 +2304,37 @@ function renderCalendar() {
         }
 
         grid.appendChild(week);
+    }
+
+    // 最近 30 天明细
+    recent.innerHTML = '<div class="calendar-recent-title">最近 30 天</div>';
+    const todayKey = today.toISOString().slice(0, 10);
+    const recentDays = [];
+    for (let i = 0; i < 30; i++) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const key = d.toISOString().slice(0, 10);
+        if (key > todayKey) continue;
+        const count = daily[key] || 0;
+        recentDays.push({ date: d, key, count });
+    }
+
+    if (recentDays.every(d => d.count === 0)) {
+        recent.innerHTML += '<div class="calendar-recent-empty">还没有阅读记录。读一章试试。</div>';
+    } else {
+        recentDays.forEach(({ date, key, count }) => {
+            const item = document.createElement('div');
+            item.className = 'calendar-recent-item';
+            const todayFlag = key === todayKey ? ' · 今天' : '';
+            item.innerHTML = `
+                <div>
+                    <span class="ri-date">${key}</span>
+                    <span class="ri-weekday">${weekdayName(date)}${todayFlag}</span>
+                </div>
+                <span class="ri-count">${count > 0 ? count + ' 章' : '—'}</span>
+            `;
+            recent.appendChild(item);
+        });
     }
 }
 
@@ -2673,6 +2777,8 @@ def build_html():
                     </div>
                 </div>
                 <div class="calendar-grid" id="calendar-grid"></div>
+                <div class="calendar-tooltip" id="calendar-tooltip"></div>
+                <div class="calendar-recent" id="calendar-recent"></div>
             </div>
 
             <div class="progress-actions">
