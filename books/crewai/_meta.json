@@ -1,0 +1,19 @@
+{
+  "title": "CrewAI 入门到实战",
+  "description": "用 CrewAI v1.14 搭建生产级 Multi-Agent 系统：核心 API + 实战项目 + 公司落地案例",
+  "icon": "bot",
+  "color": "#6c63ff",
+  "priority": 3,
+  "order": [
+    "01-getting-started",
+    "02-crew-orchestration",
+    "03-agent-tuning",
+    "04-tools-and-mcp",
+    "05-memory-and-knowledge",
+    "06-structured-output",
+    "07-flows",
+    "08-skills-and-prod",
+    "09-side-projects",
+    "10-prod-cases"
+  ]
+}
