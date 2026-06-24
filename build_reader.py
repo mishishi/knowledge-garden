@@ -95,6 +95,57 @@ def discover_books():
     return books
 
 
+# ============================================================
+# SVG Icons（替换 emoji，统一线条风格，stroke=currentColor）
+# ============================================================
+ICONS = {
+    # Toolbar
+    'menu':     '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>',
+    'music':    '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+    'notes':    '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/>',
+    'progress': '<circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/>',
+    'moon':     '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+    'search':   '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+
+    # Sidebar
+    'book':     '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+
+    # Music scenes
+    'mute':     '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>',
+    'wave':     '<path d="M2 12c2-3 4-3 6 0s4 3 6 0 4-3 6 0 4 3 6 0"/>',
+    'rain':     '<path d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"/><line x1="16" y1="14" x2="16" y2="20"/><line x1="8" y1="14" x2="8" y2="20"/><line x1="12" y1="18" x2="12" y2="22"/>',
+    'flame':    '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+
+    # Data ops
+    'download': '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+    'upload':   '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+    'trash':    '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+
+    # Panels
+    'calendar': '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+    'pwa':      '<rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
+    'plus':     '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+
+    # Common
+    'check':    '<polyline points="20 6 9 17 4 12"/>',
+    'close':    '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+    'volume':   '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+}
+
+
+def svg_icon(name, size=16, stroke_width=1.5, classes=""):
+    """生成 SVG icon HTML。颜色跟随 currentColor。"""
+    if name not in ICONS:
+        return ''
+    cls = f' class="icon {classes}"' if classes else ' class="icon"'
+    return (
+        f'<svg{cls} width="{size}" height="{size}" viewBox="0 0 24 24" '
+        f'fill="none" stroke="currentColor" stroke-width="{stroke_width}" '
+        f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+        f'{ICONS[name]}</svg>'
+    )
+
+
 def md_to_html(md_text: str) -> str:
     return markdown.markdown(
         md_text,
@@ -127,6 +178,12 @@ PWA_ICON_DATA_URI = f"data:image/svg+xml;base64,{base64.b64encode(PWA_ICON_SVG.e
 # CSS（与 v3 几乎相同）
 # ============================================================
 CSS = """
+.icon {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
 :root {
     --bg: #faf9f5;
     --bg-soft: #f4f1e8;
@@ -980,8 +1037,16 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
 }
 
 .chapter.completed .chapter-title::before {
-    content: "✓ ";
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    vertical-align: -2px;
+    background: currentColor;
     color: var(--accent);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
 }
 
 .book-chapters li a.completed {
@@ -989,9 +1054,15 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
 }
 
 .book-chapters li a.completed::after {
-    content: " ✓";
-    color: var(--accent);
-    margin-left: 4px;
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 6px;
+    vertical-align: -1px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
 }
 
 /* === 进度面板 === */
@@ -1691,7 +1762,7 @@ document.querySelector('.notes-panel-header .close').addEventListener('click', (
 function renderNotesList() {
     const list = document.querySelector('.notes-list');
     if (notes.length === 0) {
-        list.innerHTML = '<div class="notes-empty">还没有笔记<br><br>选中文字后<br>点击浮动工具栏添加 ✎</div>';
+        list.innerHTML = '<div class="notes-empty">还没有笔记<br><br>选中正文中的文字后<br>点击弹出的浮动工具栏添加</div>';
         return;
     }
 
@@ -1847,7 +1918,9 @@ function refreshCompletionUI() {
         const chapterId = btn.dataset.chapter;
         const isCompleted = !!progress.completed[chapterId];
         btn.classList.toggle('completed', isCompleted);
-        btn.textContent = isCompleted ? '✓ 已读 (点击撤销)' : '☐ 标记为已读';
+        btn.innerHTML = isCompleted
+            ? '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>已读 (点击撤销)'
+            : '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读';
         // article 加 completed class
         const article = document.getElementById(chapterId);
         if (article) article.classList.toggle('completed', isCompleted);
@@ -2011,7 +2084,7 @@ document.getElementById('import-progress').addEventListener('click', () => {
                     saveProgress();
                     refreshCompletionUI();
                     renderProgress();
-                    alert('✓ 数据导入成功');
+                    alert('数据导入成功');
                 }
             } catch (err) {
                 alert('✗ 文件格式错误: ' + err.message);
@@ -2197,7 +2270,7 @@ def build_html():
     total_chars = 0
     total_chapters = 0
 
-    book_icons = ["📕", "📗", "📘", "📙", "📓", "📔", "🗂"]
+    book_icons = [svg_icon('book', size=14) for _ in range(7)]
 
     for book_idx, (book_slug, meta, chapters) in enumerate(books):
         book_icon = book_icons[book_idx % len(book_icons)]
@@ -2238,7 +2311,9 @@ def build_html():
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字</div>'
                 f'<div class="chapter-content">{content_html}</div>'
                 f'<div class="chapter-end">本章完</div>'
-                f'<button class="completion-toggle" data-chapter="{anchor}">☐ 标记为已读</button>'
+                f'<button class="completion-toggle" data-chapter="{anchor}">'
+                f'<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>'
+                f'标记为已读</button>'
                 f'</article>'
             )
 
@@ -2298,7 +2373,7 @@ def build_html():
 <body class="sidebar-collapsed">
     <div class="progress"></div>
 
-    <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)">☰ 书架</button>
+    <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)">{svg_icon('menu')} 书架</button>
 
     <aside class="sidebar">
         <h1>个人知识库</h1>
@@ -2313,10 +2388,10 @@ def build_html():
         <button class="font-btn" data-size="medium" title="中字号">A</button>
         <button class="font-btn" data-size="large" title="大字号 (+)">A+</button>
         <div class="divider"></div>
-        <button id="music-btn" title="背景音乐 (M)">♪</button>
-        <button id="notes-btn" title="笔记 (N)">✎</button>
-        <button id="progress-btn" title="阅读进度 (P)">✓</button>
-        <button id="dark-btn" title="暗色模式 (D)">🌙</button>
+        <button id="music-btn" title="背景音乐 (M)">{svg_icon('music')}</button>
+        <button id="notes-btn" title="笔记 (N)">{svg_icon('notes')}</button>
+        <button id="progress-btn" title="阅读进度 (P)">{svg_icon('progress')}</button>
+        <button id="dark-btn" title="暗色模式 (D)">{svg_icon('moon')}</button>
     </div>
 
     <div class="selection-toolbar">
@@ -2325,7 +2400,7 @@ def build_html():
         <div class="color-swatch blue" data-color="blue"></div>
         <div class="color-swatch pink" data-color="pink"></div>
         <div class="divider" style="background: rgba(255,255,255,0.2);"></div>
-        <button class="note-btn">✎ 笔记</button>
+            <button class="note-btn">{svg_icon('plus')} 笔记</button>
     </div>
 
     <div class="note-modal">
@@ -2342,7 +2417,7 @@ def build_html():
 
     <aside class="notes-panel">
         <div class="notes-panel-header">
-            <h2>✎ 我的笔记</h2>
+            <h2>{svg_icon('notes')} 我的笔记</h2>
             <button class="close">×</button>
         </div>
         <div class="notes-list"></div>
@@ -2351,16 +2426,16 @@ def build_html():
     <div class="music-panel">
         <h4>背景音 <button class="close">×</button></h4>
         <div class="scenes">
-            <button class="scene-btn" data-scene="off">🔇 静音</button>
-            <button class="scene-btn" data-scene="white">🌊 白噪音</button>
-            <button class="scene-btn" data-scene="rain">🌧 雨声</button>
-            <button class="scene-btn" data-scene="warm">🎵 暖调</button>
+            <button class="scene-btn" data-scene="off">{svg_icon('mute')} 静音</button>
+            <button class="scene-btn" data-scene="white">{svg_icon('wave')} 白噪音</button>
+            <button class="scene-btn" data-scene="rain">{svg_icon('rain')} 雨声</button>
+            <button class="scene-btn" data-scene="warm">{svg_icon('flame')} 暖调</button>
         </div>
-        <div class="volume">🔈 <input type="range" min="0" max="100" value="30"> 🔊</div>
+        <div class="volume">{svg_icon('volume')} <input type="range" min="0" max="100" value="30"> {svg_icon('volume', size=18)}</div>
     </div>
 
     <div class="pwa-prompt">
-        📱 添加到主屏幕，离线可用
+        {svg_icon('pwa')} 添加到主屏幕，离线可用
         <button class="close">×</button>
     </div>
 
@@ -2368,7 +2443,7 @@ def build_html():
     <div class="progress-panel">
         <div class="progress-modal">
             <div class="progress-modal-header">
-                <h2>📊 阅读进度</h2>
+                <h2>{svg_icon('progress')} 阅读进度</h2>
                 <button class="close">×</button>
             </div>
 
@@ -2384,7 +2459,7 @@ def build_html():
 
             <div class="calendar">
                 <div class="calendar-title">
-                    <span>📅 阅读日历（过去 365 天）</span>
+                    <span>{svg_icon('calendar')} 阅读日历（过去 365 天）</span>
                     <div class="calendar-legend">
                         <span>少</span>
                         <span class="calendar-day"></span>
@@ -2399,9 +2474,9 @@ def build_html():
             </div>
 
             <div class="progress-actions">
-                <button id="export-progress">📤 导出数据</button>
-                <button id="import-progress">📥 导入数据</button>
-                <button id="reset-progress">🗑 重置进度</button>
+                <button id="export-progress">{svg_icon('download')} 导出数据</button>
+                <button id="import-progress">{svg_icon('upload')} 导入数据</button>
+                <button id="reset-progress">{svg_icon('trash')} 重置进度</button>
             </div>
         </div>
     </div>
@@ -2409,7 +2484,7 @@ def build_html():
     <!-- 命令面板（搜索） -->
     <div class="command-palette">
         <div class="command-modal">
-            <input type="text" class="command-input" placeholder="🔍 搜索章节标题或内容...">
+            <input type="text" class="command-input" placeholder="搜索章节标题或内容...">
             <div class="command-hint">
                 <span>↑↓ 选择 · Enter 跳转 · Esc 关闭</span>
                 <span>Ctrl+K</span>

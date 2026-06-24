@@ -14,6 +14,12 @@
     <meta name="apple-mobile-web-app-title" content="知识库">
 
     <style>
+.icon {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
 :root {
     --bg: #faf9f5;
     --bg-soft: #f4f1e8;
@@ -867,8 +873,16 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
 }
 
 .chapter.completed .chapter-title::before {
-    content: "✓ ";
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    vertical-align: -2px;
+    background: currentColor;
     color: var(--accent);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
 }
 
 .book-chapters li a.completed {
@@ -876,9 +890,15 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
 }
 
 .book-chapters li a.completed::after {
-    content: " ✓";
-    color: var(--accent);
-    margin-left: 4px;
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 6px;
+    vertical-align: -1px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
 }
 
 /* === 进度面板 === */
@@ -1217,13 +1237,13 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
 <body class="sidebar-collapsed">
     <div class="progress"></div>
 
-    <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)">☰ 书架</button>
+    <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> 书架</button>
 
     <aside class="sidebar">
         <h1>个人知识库</h1>
         <div class="subtitle">2 个系列 · 13 章 · 约 19 分钟</div>
         <div class="bookshelf">
-            <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon">📕</span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>01. 你的第一个 Agent</span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>02. 为什么需要 Multi-Agent</span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>03. 5 个核心抽象</span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>04. 编排模式全景</span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>05. 通信与状态</span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>06. 失败的艺术</span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>07. 框架横向对比</span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>08. 可观测性与成本</span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>第 9 章：实战 CodeReviewer Multi-Agent</span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>10. 生产化 Checklist</span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon">📗</span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">3 章</span></div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础</span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 与示例</span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>高级模式</span></a></li></ul></div>
+            <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>01. 你的第一个 Agent</span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>02. 为什么需要 Multi-Agent</span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>03. 5 个核心抽象</span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>04. 编排模式全景</span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>05. 通信与状态</span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>06. 失败的艺术</span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>07. 框架横向对比</span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>08. 可观测性与成本</span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>第 9 章：实战 CodeReviewer Multi-Agent</span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>10. 生产化 Checklist</span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">3 章</span></div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础</span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 与示例</span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>高级模式</span></a></li></ul></div>
         </div>
     </aside>
 
@@ -1232,10 +1252,10 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
         <button class="font-btn" data-size="medium" title="中字号">A</button>
         <button class="font-btn" data-size="large" title="大字号 (+)">A+</button>
         <div class="divider"></div>
-        <button id="music-btn" title="背景音乐 (M)">♪</button>
-        <button id="notes-btn" title="笔记 (N)">✎</button>
-        <button id="progress-btn" title="阅读进度 (P)">✓</button>
-        <button id="dark-btn" title="暗色模式 (D)">🌙</button>
+        <button id="music-btn" title="背景音乐 (M)"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></button>
+        <button id="notes-btn" title="笔记 (N)"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg></button>
+        <button id="progress-btn" title="阅读进度 (P)"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg></button>
+        <button id="dark-btn" title="暗色模式 (D)"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
     </div>
 
     <div class="selection-toolbar">
@@ -1244,7 +1264,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
         <div class="color-swatch blue" data-color="blue"></div>
         <div class="color-swatch pink" data-color="pink"></div>
         <div class="divider" style="background: rgba(255,255,255,0.2);"></div>
-        <button class="note-btn">✎ 笔记</button>
+            <button class="note-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 笔记</button>
     </div>
 
     <div class="note-modal">
@@ -1261,7 +1281,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
 
     <aside class="notes-panel">
         <div class="notes-panel-header">
-            <h2>✎ 我的笔记</h2>
+            <h2><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 我的笔记</h2>
             <button class="close">×</button>
         </div>
         <div class="notes-list"></div>
@@ -1270,16 +1290,16 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
     <div class="music-panel">
         <h4>背景音 <button class="close">×</button></h4>
         <div class="scenes">
-            <button class="scene-btn" data-scene="off">🔇 静音</button>
-            <button class="scene-btn" data-scene="white">🌊 白噪音</button>
-            <button class="scene-btn" data-scene="rain">🌧 雨声</button>
-            <button class="scene-btn" data-scene="warm">🎵 暖调</button>
+            <button class="scene-btn" data-scene="off"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg> 静音</button>
+            <button class="scene-btn" data-scene="white"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c2-3 4-3 6 0s4 3 6 0 4-3 6 0 4 3 6 0"/></svg> 白噪音</button>
+            <button class="scene-btn" data-scene="rain"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"/><line x1="16" y1="14" x2="16" y2="20"/><line x1="8" y1="14" x2="8" y2="20"/><line x1="12" y1="18" x2="12" y2="22"/></svg> 雨声</button>
+            <button class="scene-btn" data-scene="warm"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg> 暖调</button>
         </div>
-        <div class="volume">🔈 <input type="range" min="0" max="100" value="30"> 🔊</div>
+        <div class="volume"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> <input type="range" min="0" max="100" value="30"> <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
     </div>
 
     <div class="pwa-prompt">
-        📱 添加到主屏幕，离线可用
+        <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> 添加到主屏幕，离线可用
         <button class="close">×</button>
     </div>
 
@@ -1287,7 +1307,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
     <div class="progress-panel">
         <div class="progress-modal">
             <div class="progress-modal-header">
-                <h2>📊 阅读进度</h2>
+                <h2><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg> 阅读进度</h2>
                 <button class="close">×</button>
             </div>
 
@@ -1303,7 +1323,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
 
             <div class="calendar">
                 <div class="calendar-title">
-                    <span>📅 阅读日历（过去 365 天）</span>
+                    <span><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> 阅读日历（过去 365 天）</span>
                     <div class="calendar-legend">
                         <span>少</span>
                         <span class="calendar-day"></span>
@@ -1318,9 +1338,9 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
             </div>
 
             <div class="progress-actions">
-                <button id="export-progress">📤 导出数据</button>
-                <button id="import-progress">📥 导入数据</button>
-                <button id="reset-progress">🗑 重置进度</button>
+                <button id="export-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 导出数据</button>
+                <button id="import-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> 导入数据</button>
+                <button id="reset-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg> 重置进度</button>
             </div>
         </div>
     </div>
@@ -1328,7 +1348,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
     <!-- 命令面板（搜索） -->
     <div class="command-palette">
         <div class="command-modal">
-            <input type="text" class="command-input" placeholder="🔍 搜索章节标题或内容...">
+            <input type="text" class="command-input" placeholder="搜索章节标题或内容...">
             <div class="command-hint">
                 <span>↑↓ 选择 · Enter 跳转 · Esc 关闭</span>
                 <span>Ctrl+K</span>
@@ -1338,7 +1358,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
     </div>
 
     <main class="content">
-        <div class="book-cover"><div class="book-icon-big">📕</div><h1>Multi-Agent in Practice</h1><p>从零到生产：手把手教你构建 Multi-Agent 系统</p><div class="book-stats">10 章 · 7,642 字 · 约 19 分钟</div></div><article id="multi-agent__01-your-first-agent" class="chapter" data-book="multi-agent" data-chap="01-your-first-agent"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">01. 你的第一个 Agent</h1><div class="chapter-meta">约 2 分钟 · 1056 字</div><div class="chapter-content"><h1>01. 你的第一个 Agent</h1>
+        <div class="book-cover"><div class="book-icon-big"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><h1>Multi-Agent in Practice</h1><p>从零到生产：手把手教你构建 Multi-Agent 系统</p><div class="book-stats">10 章 · 7,642 字 · 约 19 分钟</div></div><article id="multi-agent__01-your-first-agent" class="chapter" data-book="multi-agent" data-chap="01-your-first-agent"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">01. 你的第一个 Agent</h1><div class="chapter-meta">约 2 分钟 · 1056 字</div><div class="chapter-content"><h1>01. 你的第一个 Agent</h1>
 <blockquote>
 <p>本章用 30 分钟带你写出能调用工具的 Agent。从零开始，不假设你会 LLM 编程。</p>
 </blockquote>
@@ -1574,7 +1594,7 @@ python multi_agent.py
 <li>错误处理：工具失败怎么办？LLM 返回 malformed JSON 怎么办？</li>
 <li>日志：记录每次决策和工具调用，便于调试</li>
 </ul>
-<p>这些会在第 8 篇 <a href="../08-observability-and-cost/">可观测性与成本</a> 和第 10 篇 <a href="../10-production-checklist/">生产化 Checklist</a> 展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__01-your-first-agent">☐ 标记为已读</button></article><article id="multi-agent__02-why-multi-agent" class="chapter" data-book="multi-agent" data-chap="02-why-multi-agent"><div class="chapter-num">CHAPTER 02</div><h1 class="chapter-title">02. 为什么需要 Multi-Agent</h1><div class="chapter-meta">约 2 分钟 · 1017 字</div><div class="chapter-content"><h1>02. 为什么需要 Multi-Agent</h1>
+<p>这些会在第 8 篇 <a href="../08-observability-and-cost/">可观测性与成本</a> 和第 10 篇 <a href="../10-production-checklist/">生产化 Checklist</a> 展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__01-your-first-agent"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__02-why-multi-agent" class="chapter" data-book="multi-agent" data-chap="02-why-multi-agent"><div class="chapter-num">CHAPTER 02</div><h1 class="chapter-title">02. 为什么需要 Multi-Agent</h1><div class="chapter-meta">约 2 分钟 · 1017 字</div><div class="chapter-content"><h1>02. 为什么需要 Multi-Agent</h1>
 <blockquote>
 <p>第 1 篇我们用单 Agent 查了天气、用 Multi-Agent 写了短文。本章具体拆解：单 Agent 在哪些场景下会"撑不住"，以及 Multi-Agent 如何解。</p>
 </blockquote>
@@ -1748,7 +1768,7 @@ python multi_agent.py
 <li>失败要 circuit breaker（一个 Agent 失败不能拖垮整个）</li>
 <li>监控每个 Agent 的 token 消耗和延迟</li>
 </ul>
-<p>这些会在 <a href="../08-observability-and-cost/">第 8 章 可观测性与成本</a> 和 <a href="../10-production-checklist/">第 10 章 生产化 Checklist</a> 展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__02-why-multi-agent">☐ 标记为已读</button></article><article id="multi-agent__03-five-abstractions" class="chapter" data-book="multi-agent" data-chap="03-five-abstractions"><div class="chapter-num">CHAPTER 03</div><h1 class="chapter-title">03. 5 个核心抽象</h1><div class="chapter-meta">约 2 分钟 · 1019 字</div><div class="chapter-content"><h1>03. 5 个核心抽象</h1>
+<p>这些会在 <a href="../08-observability-and-cost/">第 8 章 可观测性与成本</a> 和 <a href="../10-production-checklist/">第 10 章 生产化 Checklist</a> 展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__02-why-multi-agent"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__03-five-abstractions" class="chapter" data-book="multi-agent" data-chap="03-five-abstractions"><div class="chapter-num">CHAPTER 03</div><h1 class="chapter-title">03. 5 个核心抽象</h1><div class="chapter-meta">约 2 分钟 · 1019 字</div><div class="chapter-content"><h1>03. 5 个核心抽象</h1>
 <blockquote>
 <p>上一章我们直觉式地拆出了"研究员 + 写作员"两个 Agent。本章把这种直觉抽象成 5 个核心概念：<strong>Role / Goal / Tool / Memory / Handoff</strong>。理解这 5 个抽象，所有 Multi-Agent 框架都是它们的实现细节。</p>
 </blockquote>
@@ -1972,7 +1992,7 @@ Memory ──&gt; 贯穿所有 Agent
 <li><strong>Tool</strong>：统一错误返回格式、加超时、加重试</li>
 <li><strong>Memory</strong>：短期用 Redis，长期用向量数据库，共享用 LangGraph State</li>
 <li><strong>Handoff</strong>：可视化编排（用 LangGraph Studio / CrewAI Studio）</li>
-</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__03-five-abstractions">☐ 标记为已读</button></article><article id="multi-agent__04-orchestration-patterns" class="chapter" data-book="multi-agent" data-chap="04-orchestration-patterns"><div class="chapter-num">CHAPTER 04</div><h1 class="chapter-title">04. 编排模式全景</h1><div class="chapter-meta">约 2 分钟 · 978 字</div><div class="chapter-content"><h1>04. 编排模式全景</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__03-five-abstractions"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__04-orchestration-patterns" class="chapter" data-book="multi-agent" data-chap="04-orchestration-patterns"><div class="chapter-num">CHAPTER 04</div><h1 class="chapter-title">04. 编排模式全景</h1><div class="chapter-meta">约 2 分钟 · 978 字</div><div class="chapter-content"><h1>04. 编排模式全景</h1>
 <blockquote>
 <p>第 3 章我们学了 5 个核心抽象（Role / Goal / Tool / Memory / Handoff）。本章把它们组合起来，看 5 种主流的"组合方式"——也就是 <strong>5 种编排模式</strong>。理解这 5 种模式，你就有了 Multi-Agent 系统的"流程图设计语言"。</p>
 </blockquote>
@@ -2204,7 +2224,7 @@ A ──┤      ├─→ D
 <li><strong>GroupChat</strong>：限制最大轮数（防无限讨论），加 cost budget</li>
 <li><strong>Swarm</strong>：所有 handoff 要有日志（难调试，必须有 trace）</li>
 <li><strong>Graph</strong>：用 LangGraph Studio 可视化，分层（subgraph 复用）</li>
-</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__04-orchestration-patterns">☐ 标记为已读</button></article><article id="multi-agent__05-state-and-communication" class="chapter" data-book="multi-agent" data-chap="05-state-and-communication"><div class="chapter-num">CHAPTER 05</div><h1 class="chapter-title">05. 通信与状态</h1><div class="chapter-meta">约 2 分钟 · 891 字</div><div class="chapter-content"><h1>05. 通信与状态</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__04-orchestration-patterns"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__05-state-and-communication" class="chapter" data-book="multi-agent" data-chap="05-state-and-communication"><div class="chapter-num">CHAPTER 05</div><h1 class="chapter-title">05. 通信与状态</h1><div class="chapter-meta">约 2 分钟 · 891 字</div><div class="chapter-content"><h1>05. 通信与状态</h1>
 <blockquote>
 <p>第 4 章我们看了 5 种编排模式——本质上就是"Agent 之间怎么连"。本章深入一层：连起来之后，<strong>数据怎么传、状态怎么管</strong>。这是 Multi-Agent 系统从 demo 走向生产的关键工程问题。</p>
 </blockquote>
@@ -2417,7 +2437,7 @@ messages.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;
 <li><strong>状态管理</strong>：用 LangGraph 的 TypedDict State，按节点定义读写权限</li>
 <li><strong>监控</strong>：每条消息记录来源、大小、耗时</li>
 <li><strong>告警</strong>：单条消息 &gt; 1MB 告警，单次 session 状态 &gt; 10MB 告警</li>
-</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__05-state-and-communication">☐ 标记为已读</button></article><article id="multi-agent__06-failure-handling" class="chapter" data-book="multi-agent" data-chap="06-failure-handling"><div class="chapter-num">CHAPTER 06</div><h1 class="chapter-title">06. 失败的艺术</h1><div class="chapter-meta">约 1 分钟 · 714 字</div><div class="chapter-content"><h1>06. 失败的艺术</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__05-state-and-communication"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__06-failure-handling" class="chapter" data-book="multi-agent" data-chap="06-failure-handling"><div class="chapter-num">CHAPTER 06</div><h1 class="chapter-title">06. 失败的艺术</h1><div class="chapter-meta">约 1 分钟 · 714 字</div><div class="chapter-content"><h1>06. 失败的艺术</h1>
 <blockquote>
 <p>Multi-Agent 系统的失败是单 Agent 的 N 倍（N = Agent 数量）。本章系统讲<strong>失败的分类 + 防御模式</strong>——这是从 demo 走向生产的关键一步。</p>
 </blockquote>
@@ -2750,7 +2770,7 @@ app.invoke(Command(resume=&quot;yes&quot;), config=config)
 <li>[ ] State 有 size 限制（防止 OOM）</li>
 <li>[ ] 单 session 有 token budget</li>
 <li>[ ] 失败有日志 + trace（便于事后分析）</li>
-</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__06-failure-handling">☐ 标记为已读</button></article><article id="multi-agent__07-framework-comparison" class="chapter" data-book="multi-agent" data-chap="07-framework-comparison"><div class="chapter-num">CHAPTER 07</div><h1 class="chapter-title">07. 框架横向对比</h1><div class="chapter-meta">约 2 分钟 · 824 字</div><div class="chapter-content"><h1>07. 框架横向对比</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__06-failure-handling"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__07-framework-comparison" class="chapter" data-book="multi-agent" data-chap="07-framework-comparison"><div class="chapter-num">CHAPTER 07</div><h1 class="chapter-title">07. 框架横向对比</h1><div class="chapter-meta">约 2 分钟 · 824 字</div><div class="chapter-content"><h1>07. 框架横向对比</h1>
 <blockquote>
 <p>第 4 章我们看了 5 种编排模式，本章做一件更实际的事：<strong>用同一需求对比 4 个主流 Multi-Agent 框架的代码风格、调试难度、生产成熟度</strong>。看完你应该能根据自己的场景选框架。</p>
 </blockquote>
@@ -3070,7 +3090,7 @@ response = client.run(agent=researcher, messages=[{&quot;role&quot;: &quot;user&
 <li><strong>加监控层</strong>：不论用哪个框架，都要把 trace / metric 抽到统一 observability 平台</li>
 <li><strong>测试用 mock</strong>：避免每个测试都调 LLM，用 mock 的 LLM client</li>
 <li><strong>版本锁</strong>：框架迭代快，<code>requirements.txt</code> 锁版本</li>
-</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__07-framework-comparison">☐ 标记为已读</button></article><article id="multi-agent__08-observability-and-cost" class="chapter" data-book="multi-agent" data-chap="08-observability-and-cost"><div class="chapter-num">CHAPTER 08</div><h1 class="chapter-title">08. 可观测性与成本</h1><div class="chapter-meta">约 1 分钟 · 547 字</div><div class="chapter-content"><h1>08. 可观测性与成本</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__07-framework-comparison"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__08-observability-and-cost" class="chapter" data-book="multi-agent" data-chap="08-observability-and-cost"><div class="chapter-num">CHAPTER 08</div><h1 class="chapter-title">08. 可观测性与成本</h1><div class="chapter-meta">约 1 分钟 · 547 字</div><div class="chapter-content"><h1>08. 可观测性与成本</h1>
 <blockquote>
 <p>第 6 章讲了怎么防止失败，第 7 章讲了怎么选框架。本章讲选完框架之后，<strong>怎么知道系统在干什么、烧了多少钱</strong>。这是生产环境最容易被忽视的两个隐形炸弹。</p>
 </blockquote>
@@ -3358,7 +3378,7 @@ else:
 <li>[ ] 单 session 有成本上限</li>
 <li>[ ] 关键指标有 dashboard</li>
 <li>[ ] 异常有告警（Slack / 钉钉 / 飞书）</li>
-</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__08-observability-and-cost">☐ 标记为已读</button></article><article id="multi-agent__09-code-review-project" class="chapter" data-book="multi-agent" data-chap="09-code-review-project"><div class="chapter-num">CHAPTER 09</div><h1 class="chapter-title">第 9 章：实战 CodeReviewer Multi-Agent</h1><div class="chapter-meta">约 1 分钟 · 78 字</div><div class="chapter-content"><h1>第 9 章：实战 CodeReviewer Multi-Agent</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__08-observability-and-cost"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__09-code-review-project" class="chapter" data-book="multi-agent" data-chap="09-code-review-project"><div class="chapter-num">CHAPTER 09</div><h1 class="chapter-title">第 9 章：实战 CodeReviewer Multi-Agent</h1><div class="chapter-meta">约 1 分钟 · 78 字</div><div class="chapter-content"><h1>第 9 章：实战 CodeReviewer Multi-Agent</h1>
 <h2>项目结构</h2>
 <pre><code>09-code-review-project/
 ├── README.md                    # 项目说明
@@ -3409,7 +3429,7 @@ python main.py --diff &quot;git diff HEAD~1&quot;
 <li>接 Slack / 飞书通知</li>
 <li>高风险评审结果需要人类确认（不能自动 approve）</li>
 <li>评审结果存数据库，做趋势分析</li>
-</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__09-code-review-project">☐ 标记为已读</button></article><article id="multi-agent__10-production-checklist" class="chapter" data-book="multi-agent" data-chap="10-production-checklist"><div class="chapter-num">CHAPTER 10</div><h1 class="chapter-title">10. 生产化 Checklist</h1><div class="chapter-meta">约 1 分钟 · 518 字</div><div class="chapter-content"><h1>10. 生产化 Checklist</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__09-code-review-project"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="multi-agent__10-production-checklist" class="chapter" data-book="multi-agent" data-chap="10-production-checklist"><div class="chapter-num">CHAPTER 10</div><h1 class="chapter-title">10. 生产化 Checklist</h1><div class="chapter-meta">约 1 分钟 · 518 字</div><div class="chapter-content"><h1>10. 生产化 Checklist</h1>
 <blockquote>
 <p>最后这一章：把"能跑"变成"能上生产"。<strong>12 个真实坑</strong>，每个坑配一段"症状—诊断—修复"。这是系列所有内容的工程化总结。</p>
 </blockquote>
@@ -3758,7 +3778,7 @@ def cost_report_by_feature():
 <li>[ ] 用第 10 章的 Checklist 给你的项目打分</li>
 </ul>
 <hr />
-<p><strong>系列完结</strong> 🎉</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__10-production-checklist">☐ 标记为已读</button></article><div class="book-cover"><div class="book-icon-big">📗</div><h1>LLM Prompt 实战</h1><p>从基础到高级的 Prompt 工程指南</p><div class="book-stats">3 章 · 290 字 · 约 1 分钟</div></div><article id="llm-prompt__01-prompt-basics" class="chapter" data-book="llm-prompt" data-chap="01-prompt-basics"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">Prompt 基础</h1><div class="chapter-meta">约 1 分钟 · 89 字</div><div class="chapter-content"><h1>Prompt 基础</h1>
+<p><strong>系列完结</strong> 🎉</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__10-production-checklist"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><div class="book-cover"><div class="book-icon-big"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><h1>LLM Prompt 实战</h1><p>从基础到高级的 Prompt 工程指南</p><div class="book-stats">3 章 · 290 字 · 约 1 分钟</div></div><article id="llm-prompt__01-prompt-basics" class="chapter" data-book="llm-prompt" data-chap="01-prompt-basics"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">Prompt 基础</h1><div class="chapter-meta">约 1 分钟 · 89 字</div><div class="chapter-content"><h1>Prompt 基础</h1>
 <blockquote>
 <p>Prompt Engineering 是和 LLM 协作的第一课。</p>
 </blockquote>
@@ -3778,7 +3798,7 @@ def cost_report_by_feature():
 <pre><code>找出 3 个安全问题，并给出修复建议。
 </code></pre>
 <h2>下篇</h2>
-<p><a href="../02-few-shot/">02. Few-shot 与示例</a></p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__01-prompt-basics">☐ 标记为已读</button></article><article id="llm-prompt__02-few-shot" class="chapter" data-book="llm-prompt" data-chap="02-few-shot"><div class="chapter-num">CHAPTER 02</div><h1 class="chapter-title">Few-shot 与示例</h1><div class="chapter-meta">约 1 分钟 · 99 字</div><div class="chapter-content"><h1>Few-shot 与示例</h1>
+<p><a href="../02-few-shot/">02. Few-shot 与示例</a></p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__01-prompt-basics"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="llm-prompt__02-few-shot" class="chapter" data-book="llm-prompt" data-chap="02-few-shot"><div class="chapter-num">CHAPTER 02</div><h1 class="chapter-title">Few-shot 与示例</h1><div class="chapter-meta">约 1 分钟 · 99 字</div><div class="chapter-content"><h1>Few-shot 与示例</h1>
 <blockquote>
 <p>给 LLM 看几个例子，比讲 100 条规则更管用。</p>
 </blockquote>
@@ -3806,7 +3826,7 @@ def cost_report_by_feature():
 <li><strong>3-5 个最佳</strong>：太多反而稀释</li>
 </ol>
 <h2>下篇</h2>
-<p><a href="../03-advanced-patterns/">03. 高级模式</a></p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__02-few-shot">☐ 标记为已读</button></article><article id="llm-prompt__03-advanced-patterns" class="chapter" data-book="llm-prompt" data-chap="03-advanced-patterns"><div class="chapter-num">CHAPTER 03</div><h1 class="chapter-title">高级模式</h1><div class="chapter-meta">约 1 分钟 · 102 字</div><div class="chapter-content"><h1>高级模式</h1>
+<p><a href="../03-advanced-patterns/">03. 高级模式</a></p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__02-few-shot"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><article id="llm-prompt__03-advanced-patterns" class="chapter" data-book="llm-prompt" data-chap="03-advanced-patterns"><div class="chapter-num">CHAPTER 03</div><h1 class="chapter-title">高级模式</h1><div class="chapter-meta">约 1 分钟 · 102 字</div><div class="chapter-content"><h1>高级模式</h1>
 <blockquote>
 <p>Chain-of-Thought / ReAct / Self-Consistency——这些模式让 LLM 的能力跃升一个台阶。</p>
 </blockquote>
@@ -3832,7 +3852,7 @@ def cost_report_by_feature():
 → 通常更准确
 </code></pre>
 <h2>下篇</h2>
-<p>更多高级模式（ToT / Reflexion / Auto-CoT）会在 <a href="../../multi-agent/">Multi-Agent in Practice</a> 系列里展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__03-advanced-patterns">☐ 标记为已读</button></article>
+<p>更多高级模式（ToT / Reflexion / Auto-CoT）会在 <a href="../../multi-agent/">Multi-Agent in Practice</a> 系列里展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__03-advanced-patterns"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article>
     </main>
 
     <script>
@@ -4198,7 +4218,7 @@ document.querySelector('.notes-panel-header .close').addEventListener('click', (
 function renderNotesList() {
     const list = document.querySelector('.notes-list');
     if (notes.length === 0) {
-        list.innerHTML = '<div class="notes-empty">还没有笔记<br><br>选中文字后<br>点击浮动工具栏添加 ✎</div>';
+        list.innerHTML = '<div class="notes-empty">还没有笔记<br><br>选中正文中的文字后<br>点击弹出的浮动工具栏添加</div>';
         return;
     }
 
@@ -4354,7 +4374,9 @@ function refreshCompletionUI() {
         const chapterId = btn.dataset.chapter;
         const isCompleted = !!progress.completed[chapterId];
         btn.classList.toggle('completed', isCompleted);
-        btn.textContent = isCompleted ? '✓ 已读 (点击撤销)' : '☐ 标记为已读';
+        btn.innerHTML = isCompleted
+            ? '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>已读 (点击撤销)'
+            : '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读';
         // article 加 completed class
         const article = document.getElementById(chapterId);
         if (article) article.classList.toggle('completed', isCompleted);
@@ -4518,7 +4540,7 @@ document.getElementById('import-progress').addEventListener('click', () => {
                     saveProgress();
                     refreshCompletionUI();
                     renderProgress();
-                    alert('✓ 数据导入成功');
+                    alert('数据导入成功');
                 }
             } catch (err) {
                 alert('✗ 文件格式错误: ' + err.message);
