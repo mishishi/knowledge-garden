@@ -1,9 +1,25 @@
 # 📚 Knowledge Garden
 
+[![Deploy](https://github.com/mishishi/knowledge-garden/actions/workflows/deploy.yml/badge.svg)](https://github.com/mishishi/knowledge-garden/actions)
+
 > A personal knowledge garden · multi-series Markdown books rendered as a single-file immersive HTML reader with notes, highlights, ambient music & PWA offline support.
 
 [中文简介]
 个人知识库。多本 Markdown 系列自动合成一个沉浸式阅读器：每一章都能做笔记、画高亮、配背景音乐，手机可加到主屏幕离线阅读。
+
+## 📸 Screenshots
+
+| 沉浸式阅读（亮色） | 沉浸式阅读（暗色） |
+| :---: | :---: |
+| ![Home Light](docs/screenshots/01-home-light.png) | ![Home Dark](docs/screenshots/04-home-dark.png) |
+
+| 进度面板（打勾 + 日历） | 高亮 + 笔记 |
+| :---: | :---: |
+| ![Progress](docs/screenshots/02-progress-panel.png) | ![Highlight](docs/screenshots/05-highlight-note.png) |
+
+| Ctrl+K 全局搜索 |
+| :---: |
+| ![Search](docs/screenshots/03-search-cmd-k.png) |
 
 ## ✨ 特性
 
