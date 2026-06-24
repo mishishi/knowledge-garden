@@ -27,13 +27,36 @@ build_reader.py - v4 多书版阅读器
 import base64
 import json
 import re
+from io import BytesIO
 from pathlib import Path
 
 import markdown
+import qrcode
 
 
 ROOT = Path(__file__).parent
 BOOKS_DIR = ROOT / "books"
+
+# 部署地址（用于生成扫码阅读的 QR 码）
+# 改这里后重新 build 即可，无需修改其他代码
+SITE_URL = "https://mishishi.github.io/knowledge-garden/"
+
+
+def make_qr_data_url(url: str, box_size: int = 8, border: int = 2) -> str:
+    """生成 QR 码 PNG 的 base64 data URL，用于内联到 HTML。"""
+    qr = qrcode.QRCode(
+        version=None,   # 自动选 version
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=box_size,
+        border=border,
+    )
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = BytesIO()
+    img.save(buf, format="PNG", optimize=True)
+    b64 = base64.b64encode(buf.getvalue()).decode("ascii")
+    return f"data:image/png;base64,{b64}"
 
 
 # ============================================================
@@ -135,6 +158,7 @@ ICONS = {
     'agents':   '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/>',
     'sparkles': '<path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/>',
     'bot':      '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
+    'qr':       '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/>',
 }
 
 
@@ -813,6 +837,113 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 .note-modal-content .actions .cancel { background: var(--bg-soft); color: var(--text); }
 .note-modal-content .actions .save { background: var(--accent); color: white; }
 
+/* === QR 扫码弹窗 === */
+.qr-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.qr-modal-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+.qr-modal {
+    background: var(--card-bg, #ffffff);
+    border-radius: 12px;
+    padding: 32px 28px 24px 28px;
+    width: min(360px, calc(100vw - 32px));
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    color: var(--text, #2d2d2d);
+    position: relative;
+}
+body.dark .qr-modal { background: #2a2a2e; color: #e8e8e8; }
+.qr-modal h3 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+.qr-modal .qr-hint {
+    font-size: 13px;
+    color: var(--text-soft, #666);
+    margin-bottom: 18px;
+}
+body.dark .qr-modal .qr-hint { color: #a0a0a0; }
+.qr-modal img {
+    width: 240px;
+    height: 240px;
+    display: block;
+    margin: 0 auto;
+    border-radius: 6px;
+    background: #fff;
+    padding: 8px;
+}
+.qr-modal .qr-url {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--text-faint, #999);
+    word-break: break-all;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--bg-soft, rgba(0, 0, 0, 0.04));
+    border-radius: 6px;
+    padding: 8px 10px;
+    user-select: all;
+}
+body.dark .qr-modal .qr-url { background: rgba(255, 255, 255, 0.05); }
+.qr-modal .qr-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+.qr-modal .qr-actions button {
+    border: 1px solid var(--border, #e0e0e0);
+    background: var(--card-bg, #ffffff);
+    color: var(--text, #2d2d2d);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+body.dark .qr-modal .qr-actions button {
+    background: #2a2a2e;
+    color: #e8e8e8;
+    border-color: #444;
+}
+.qr-modal .qr-actions button:hover {
+    background: var(--accent-soft, rgba(91, 140, 133, 0.1));
+    border-color: var(--accent, #5b8c85);
+    color: var(--accent, #5b8c85);
+}
+.qr-modal .qr-actions button.copied {
+    background: var(--accent, #5b8c85);
+    color: white;
+    border-color: var(--accent, #5b8c85);
+}
+.qr-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-faint, #999);
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 8px;
+}
+.qr-modal-close:hover { color: var(--text, #2d2d2d); }
+
 .notes-panel {
     position: fixed;
     top: 0;
@@ -1444,6 +1575,50 @@ if (localStorage.getItem('dark') === 'true') {
     document.getElementById('dark-btn').classList.add('active');
 }
 
+// === QR 扫码弹窗 ===
+const qrModal = document.getElementById('qr-modal');
+const qrBtn = document.getElementById('qr-btn');
+const qrClose = document.getElementById('qr-modal-close');
+const qrCopyBtn = document.getElementById('qr-copy-btn');
+const qrUrl = document.getElementById('qr-url');
+
+function openQr() {
+    qrModal.classList.add('visible');
+}
+function closeQr() {
+    qrModal.classList.remove('visible');
+    qrCopyBtn.classList.remove('copied');
+    qrCopyBtn.innerHTML = qrCopyBtn.dataset.originalHtml || qrCopyBtn.innerHTML;
+}
+
+if (qrBtn) qrBtn.addEventListener('click', openQr);
+if (qrClose) qrClose.addEventListener('click', closeQr);
+qrModal.addEventListener('click', (e) => { if (e.target === qrModal) closeQr(); });
+
+if (qrCopyBtn) {
+    qrCopyBtn.dataset.originalHtml = qrCopyBtn.innerHTML;
+    qrCopyBtn.addEventListener('click', async () => {
+        const url = qrUrl.textContent.trim();
+        try {
+            await navigator.clipboard.writeText(url);
+        } catch (e) {
+            // fallback for older browsers / non-https
+            const ta = document.createElement('textarea');
+            ta.value = url;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e2) {}
+            document.body.removeChild(ta);
+        }
+        qrCopyBtn.classList.add('copied');
+        qrCopyBtn.innerHTML = '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 已复制';
+        setTimeout(() => {
+            qrCopyBtn.classList.remove('copied');
+            qrCopyBtn.innerHTML = qrCopyBtn.dataset.originalHtml;
+        }, 1500);
+    });
+}
+
 document.getElementById('sidebar-toggle').addEventListener('click', () => {
     document.body.classList.toggle('sidebar-collapsed');
     localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
@@ -1889,6 +2064,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'm' || e.key === 'M') document.getElementById('music-btn').click();
     if (e.key === 'n' || e.key === 'N') document.getElementById('notes-btn').click();
     if (e.key === 'p' || e.key === 'P') document.getElementById('progress-btn').click();
+    if (e.key === 'q' || e.key === 'Q') document.getElementById('qr-btn').click();
     if (e.key === '+' || e.key === '=') {
         const sizes = Object.keys(FONT_SIZES);
         const idx = sizes.indexOf(currentFontSize);
@@ -2412,6 +2588,7 @@ def build_html():
         <button id="music-btn" title="背景音乐 (M)">{svg_icon('music')}</button>
         <button id="notes-btn" title="笔记 (N)">{svg_icon('notes')}</button>
         <button id="progress-btn" title="阅读进度 (P)">{svg_icon('progress')}</button>
+        <button id="qr-btn" title="扫码阅读 (Q)">{svg_icon('qr')}</button>
         <button id="dark-btn" title="暗色模式 (D)">{svg_icon('moon')}</button>
     </div>
 
@@ -2458,6 +2635,22 @@ def build_html():
     <div class="pwa-prompt">
         {svg_icon('pwa')} 添加到主屏幕，离线可用
         <button class="close">×</button>
+    </div>
+
+    <!-- QR 扫码弹窗 -->
+    <div class="qr-modal-backdrop" id="qr-modal">
+        <div class="qr-modal" role="dialog" aria-label="扫码在手机上打开">
+            <button class="qr-modal-close" id="qr-modal-close" aria-label="关闭">×</button>
+            <h3>用手机扫码阅读</h3>
+            <p class="qr-hint">微信 / 浏览器 / 相机 扫一扫即可</p>
+            <img src="{make_qr_data_url(SITE_URL)}" alt="QR code" id="qr-img">
+            <div class="qr-url" id="qr-url">{SITE_URL}</div>
+            <div class="qr-actions">
+                <button id="qr-copy-btn">
+                    {svg_icon('check', size=14)} 复制链接
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- 进度面板 -->
