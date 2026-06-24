@@ -130,6 +130,10 @@ ICONS = {
     'check':    '<polyline points="20 6 9 17 4 12"/>',
     'close':    '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
     'volume':   '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+
+    # Book covers（按系列主题区分）
+    'agents':   '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/>',
+    'sparkles': '<path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/>',
 }
 
 
@@ -328,8 +332,13 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
 .book-header:hover { background: var(--accent-soft); }
 
 .book-icon {
-    font-size: 18px;
     flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: var(--text-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .book-title-text {
@@ -427,8 +436,13 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 }
 
 .book-cover .book-icon-big {
-    font-size: 64px;
-    margin-bottom: 24px;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 24px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--book-color, var(--accent));
 }
 
 .book-cover h1 {
@@ -2270,10 +2284,13 @@ def build_html():
     total_chars = 0
     total_chapters = 0
 
-    book_icons = [svg_icon('book', size=14) for _ in range(7)]
+    book_icons = {}  # slug -> svg (sidebar 小图标，16px)
+    book_icons_big = {}  # slug -> svg (封面大图标，72px)
 
     for book_idx, (book_slug, meta, chapters) in enumerate(books):
-        book_icon = book_icons[book_idx % len(book_icons)]
+        icon_name = meta.get("icon", "book")
+        book_icons[book_slug] = svg_icon(icon_name, size=16)
+        book_icons_big[book_slug] = svg_icon(icon_name, size=72)
         book_color = meta.get("color", "#b08968")
 
         # 书架章节列表
@@ -2329,7 +2346,7 @@ def build_html():
         bookshelf_html_parts.append(
             f'<div class="book-group" data-book="{book_slug}">'
             f'<div class="book-header">'
-            f'<span class="book-icon">{book_icon}</span>'
+            f'<span class="book-icon">{book_icons[book_slug]}</span>'
             f'<span class="book-title-text">{meta["title"]}</span>'
             f'<span class="book-chapters-count">{chap_count} 章</span>'
             f'</div>'
@@ -2344,8 +2361,8 @@ def build_html():
         book_minutes = max(1, book_chars // 400)
 
         book_cover = (
-            f'<div class="book-cover">'
-            f'<div class="book-icon-big">{book_icon}</div>'
+            f'<div class="book-cover" style="--book-color: {book_color}">'
+            f'<div class="book-icon-big">{book_icons_big[book_slug]}</div>'
             f'<h1>{meta["title"]}</h1>'
             f'<p>{meta["description"]}</p>'
             f'<div class="book-stats">{chap_count} 章 · {book_chars:,} 字 · 约 {book_minutes} 分钟</div>'

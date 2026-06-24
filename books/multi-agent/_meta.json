@@ -1,6 +1,8 @@
 {
   "title": "Multi-Agent in Practice",
   "description": "从零到生产：手把手教你构建 Multi-Agent 系统",
+  "icon": "agents",
+  "color": "#5b8c85",
   "priority": 1,
   "order": [
     "01-your-first-agent",

@@ -164,8 +164,13 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
 .book-header:hover { background: var(--accent-soft); }
 
 .book-icon {
-    font-size: 18px;
     flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: var(--text-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .book-title-text {
@@ -263,8 +268,13 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 }
 
 .book-cover .book-icon-big {
-    font-size: 64px;
-    margin-bottom: 24px;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 24px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--book-color, var(--accent));
 }
 
 .book-cover h1 {
@@ -1243,7 +1253,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
         <h1>个人知识库</h1>
         <div class="subtitle">2 个系列 · 13 章 · 约 19 分钟</div>
         <div class="bookshelf">
-            <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>你的第一个 Agent</span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>为什么需要 Multi-Agent</span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>5 个核心抽象</span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>编排模式全景</span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>通信与状态</span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>失败的艺术</span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>框架横向对比</span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>可观测性与成本</span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>第 9 章：实战 CodeReviewer Multi-Agent</span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>生产化 Checklist</span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">3 章</span></div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础</span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 与示例</span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>高级模式</span></a></li></ul></div>
+            <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/></svg></span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>你的第一个 Agent</span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>为什么需要 Multi-Agent</span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>5 个核心抽象</span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>编排模式全景</span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>通信与状态</span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>失败的艺术</span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>框架横向对比</span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>可观测性与成本</span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>第 9 章：实战 CodeReviewer Multi-Agent</span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>生产化 Checklist</span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/></svg></span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">3 章</span></div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础</span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 与示例</span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>高级模式</span></a></li></ul></div>
         </div>
     </aside>
 
@@ -1358,7 +1368,7 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
     </div>
 
     <main class="content">
-        <div class="book-cover"><div class="book-icon-big"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><h1>Multi-Agent in Practice</h1><p>从零到生产：手把手教你构建 Multi-Agent 系统</p><div class="book-stats">10 章 · 7,642 字 · 约 19 分钟</div></div><article id="multi-agent__01-your-first-agent" class="chapter" data-book="multi-agent" data-chap="01-your-first-agent"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">你的第一个 Agent</h1><div class="chapter-meta">约 2 分钟 · 1056 字</div><div class="chapter-content"><h1>01. 你的第一个 Agent</h1>
+        <div class="book-cover" style="--book-color: #5b8c85"><div class="book-icon-big"><svg class="icon" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/></svg></div><h1>Multi-Agent in Practice</h1><p>从零到生产：手把手教你构建 Multi-Agent 系统</p><div class="book-stats">10 章 · 7,642 字 · 约 19 分钟</div></div><article id="multi-agent__01-your-first-agent" class="chapter" data-book="multi-agent" data-chap="01-your-first-agent"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">你的第一个 Agent</h1><div class="chapter-meta">约 2 分钟 · 1056 字</div><div class="chapter-content"><h1>01. 你的第一个 Agent</h1>
 <blockquote>
 <p>本章用 30 分钟带你写出能调用工具的 Agent。从零开始，不假设你会 LLM 编程。</p>
 </blockquote>
@@ -3778,7 +3788,7 @@ def cost_report_by_feature():
 <li>[ ] 用第 10 章的 Checklist 给你的项目打分</li>
 </ul>
 <hr />
-<p><strong>系列完结</strong> 🎉</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__10-production-checklist"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><div class="book-cover"><div class="book-icon-big"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><h1>LLM Prompt 实战</h1><p>从基础到高级的 Prompt 工程指南</p><div class="book-stats">3 章 · 290 字 · 约 1 分钟</div></div><article id="llm-prompt__01-prompt-basics" class="chapter" data-book="llm-prompt" data-chap="01-prompt-basics"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">Prompt 基础</h1><div class="chapter-meta">约 1 分钟 · 89 字</div><div class="chapter-content"><h1>Prompt 基础</h1>
+<p><strong>系列完结</strong> 🎉</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__10-production-checklist"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article><div class="book-cover" style="--book-color: #b08968"><div class="book-icon-big"><svg class="icon" width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/></svg></div><h1>LLM Prompt 实战</h1><p>从基础到高级的 Prompt 工程指南</p><div class="book-stats">3 章 · 290 字 · 约 1 分钟</div></div><article id="llm-prompt__01-prompt-basics" class="chapter" data-book="llm-prompt" data-chap="01-prompt-basics"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">Prompt 基础</h1><div class="chapter-meta">约 1 分钟 · 89 字</div><div class="chapter-content"><h1>Prompt 基础</h1>
 <blockquote>
 <p>Prompt Engineering 是和 LLM 协作的第一课。</p>
 </blockquote>
