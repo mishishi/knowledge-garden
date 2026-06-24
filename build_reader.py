@@ -1881,9 +1881,24 @@ document.querySelector('.volume input').addEventListener('input', (e) => {
 });
 
 document.querySelector('.volume input').value = volume * 100;
-const savedScene = localStorage.getItem('musicScene') || 'off';
+// 进入页面：默认开背景音（首次访问/之前选过 woju 都自动开；只有用户明确选过「静音」才不开）
+const savedScene = localStorage.getItem('musicScene') || 'woju';
 if (savedScene !== 'off') {
     startMusic(savedScene);
+    // 浏览器 autoplay policy：play() 可能被静默拦截
+    // 兜底：监听首次用户交互，resume audioCtx + 再 play 一次
+    if (musicNodes && musicNodes.isAudio && musicNodes.source.paused) {
+        const handler = () => {
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+            if (musicNodes && musicNodes.isAudio) {
+                musicNodes.source.play().catch(() => {});
+            }
+        };
+        document.addEventListener('click', handler, { once: true });
+        document.addEventListener('keydown', handler, { once: true });
+    }
     document.querySelectorAll('.scene-btn').forEach(b => b.classList.toggle('active', b.dataset.scene === savedScene));
 } else {
     document.querySelector('.scene-btn[data-scene="off"]').classList.add('active');
