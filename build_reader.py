@@ -248,6 +248,19 @@ body {
     transition: background 0.3s, color 0.3s;
 }
 
+.reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    width: 0%;
+    z-index: 200;
+    transition: width 0.05s linear;
+    pointer-events: none;
+}
+body.dark .reading-progress { background: #c4a87c; }
+
 body.dark {
     --bg: #1c1c1e;
     --bg-soft: #2a2a2c;
@@ -1442,7 +1455,45 @@ body.dark .help-modal .help-row kbd { background: rgba(255, 255, 255, 0.06); }
     color: var(--text-faint);
 }
 
-.overall-progress { margin-bottom: 32px; }
+.overall-progress { margin-bottom: 24px; }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 28px;
+}
+.stat-card {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+.stat-card .stat-value {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+.stat-card .stat-value-unit {
+    font-size: 13px;
+    color: var(--text-soft);
+    font-weight: 400;
+    margin-left: 2px;
+}
+.stat-card .stat-label {
+    font-size: 10px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-top: 6px;
+}
+.stat-card .stat-sub {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 2px;
+}
 
 .overall-progress .big-number {
     font-size: 56px;
@@ -1783,6 +1834,33 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
+}
+
+.command-filters {
+    display: flex;
+    gap: 6px;
+    padding: 10px 16px 8px;
+    flex-wrap: wrap;
+}
+.command-chip {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-soft);
+    font-family: inherit;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.command-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.command-chip.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
 }
 
 .command-results {
@@ -2466,6 +2544,7 @@ let progress = JSON.parse(localStorage.getItem('progress') || '{}');
 if (!progress.completed) progress = { completed: {} };
 if (!progress.timeSpent) progress.timeSpent = {};
 if (!progress.readPct) progress.readPct = {};
+if (!progress.dailyTime) progress.dailyTime = {};
 
 function saveProgress() {
     localStorage.setItem('progress', JSON.stringify(progress));
@@ -2606,6 +2685,8 @@ function commitReadTime() {
     const elapsed = Math.floor((Date.now() - readTimerStart) / 1000);
     if (elapsed >= 1) {
         progress.timeSpent[readTimerChapter] = (progress.timeSpent[readTimerChapter] || 0) + elapsed;
+        const todayKey = localDateKey(new Date());
+        progress.dailyTime[todayKey] = (progress.dailyTime[todayKey] || 0) + elapsed;
         saveProgress();
     }
     readTimerStart = null;
@@ -2698,6 +2779,35 @@ function renderProgress() {
         const mins = Math.floor((totalSeconds % 3600) / 60);
         timeStatEl.innerHTML = `总阅读 <strong>${hours > 0 ? hours + ' 小时 ' : ''}${mins} 分</strong>`;
     }
+
+    // 4 张统计卡片
+    // 最长连续（按 progress.completed 的日期算）
+    const completedDates = Object.values(progress.completed)
+        .map(ts => localDateKey(new Date(ts)))
+        .sort();
+    const uniqueDates = [...new Set(completedDates)];
+    let longestStreak = 0, curStreak = 0, prevDate = null;
+    for (const dk of uniqueDates) {
+        if (prevDate === null) {
+            curStreak = 1;
+        } else {
+            const diff = Math.round((new Date(dk) - new Date(prevDate)) / 86400000);
+            curStreak = (diff === 1) ? curStreak + 1 : 1;
+        }
+        longestStreak = Math.max(longestStreak, curStreak);
+        prevDate = dk;
+    }
+    // 今日阅读（来自 progress.dailyTime）
+    const todayKey = localDateKey(new Date());
+    const todaySeconds = progress.dailyTime[todayKey] || 0;
+    // 平均每次 = 总时长 / 阅读天数
+    const daysWithReading = Math.max(uniqueDates.length, 1);
+    const avgSeconds = Math.round(totalSeconds / daysWithReading);
+
+    document.getElementById('stat-streak').textContent = longestStreak;
+    document.getElementById('stat-today').textContent = Math.round(todaySeconds / 60);
+    document.getElementById('stat-avg').textContent = Math.round(avgSeconds / 60);
+    document.getElementById('stat-days').textContent = uniqueDates.length;
 
     // 各书进度
     const bookProgressList = document.getElementById('book-progress-list');
@@ -2949,6 +3059,17 @@ const commandPalette = document.querySelector('.command-palette');
 const commandInput = document.querySelector('.command-input');
 const commandResults = document.querySelector('.command-results');
 let activeCommandIdx = -1;
+let activeFilter = 'all';
+
+// chip 点击切换
+document.querySelectorAll('.command-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        document.querySelectorAll('.command-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        activeFilter = chip.dataset.filter;
+        performSearch(commandInput.value.trim());
+    });
+});
 
 function highlightSnippet(text, query, len = 100) {
     const lower = text.toLowerCase();
@@ -2975,6 +3096,7 @@ function performSearch(query) {
     const results = [];
 
     for (const item of searchIndex) {
+        if (activeFilter !== 'all' && item.book !== activeFilter) continue;
         if (item.lower.includes(q)) {
             // 算分数：标题命中 > 内容命中
             const titleIdx = item.title.toLowerCase().indexOf(q);
@@ -3340,6 +3462,26 @@ def build_html():
                 <div class="time-stat" id="time-stat">还没开始记录阅读时长</div>
             </div>
 
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value"><span id="stat-streak">0</span><span class="stat-value-unit">天</span></div>
+                    <div class="stat-label">最长连续</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value"><span id="stat-today">0</span><span class="stat-value-unit">分</span></div>
+                    <div class="stat-label">今日阅读</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value"><span id="stat-avg">0</span><span class="stat-value-unit">分</span></div>
+                    <div class="stat-label">平均每次</div>
+                    <div class="stat-sub" id="stat-avg-sub">每天平均</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value"><span id="stat-days">0</span><span class="stat-value-unit">天</span></div>
+                    <div class="stat-label">阅读天数</div>
+                </div>
+            </div>
+
             <div id="book-progress-list"></div>
 
             <div class="calendar">
@@ -3411,6 +3553,10 @@ def build_html():
     <div class="command-palette">
         <div class="command-modal">
             <input type="text" class="command-input" placeholder="搜索章节标题或内容...">
+            <div class="command-filters" id="command-filters">
+                <button class="command-chip active" data-filter="all">全部</button>
+                {''.join(f'<button class="command-chip" data-filter="{slug}">{title}</button>' for slug, title, _ in books)}
+            </div>
             <div class="command-hint">
                 <span>↑↓ 选择 · Enter 跳转 · Esc 关闭</span>
                 <span>Ctrl+K</span>
