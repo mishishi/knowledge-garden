@@ -1,8 +1,19 @@
 {
   "title": "LLM Prompt 实战",
-  "description": "从基础到高级的 Prompt 工程指南",
+  "description": "从基础到 2026 深度：4 元素 / Few-shot / CoT / Role / Structured / Tool / Cache / Injection / Eval",
   "icon": "sparkles",
   "color": "#b08968",
   "priority": 2,
-  "order": ["01-prompt-basics", "02-few-shot", "03-advanced-patterns"]
+  "order": [
+    "01-prompt-basics",
+    "02-few-shot",
+    "03-advanced-patterns",
+    "04-role-system-prompt",
+    "05-structured-output",
+    "06-tool-use",
+    "07-prompt-caching",
+    "08-prompt-injection",
+    "09-eval-driven",
+    "10-real-cases"
+  ]
 }
