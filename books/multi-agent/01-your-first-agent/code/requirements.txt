@@ -1,0 +1,11 @@
+# 第 1 章依赖
+# Python 3.10+
+
+# OpenAI 官方 SDK（兼容所有 OpenAI-compatible 接口）
+openai>=1.50.0
+
+# CrewAI（Multi-Agent 框架）
+crewai>=0.80.0
+
+# 从 .env 读环境变量（可选，但推荐）
+python-dotenv>=1.0.0

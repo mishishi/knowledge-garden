@@ -1,0 +1,6 @@
+{
+  "title": "LLM Prompt 实战",
+  "description": "从基础到高级的 Prompt 工程指南",
+  "priority": 2,
+  "order": ["01-prompt-basics", "02-few-shot", "03-advanced-patterns"]
+}

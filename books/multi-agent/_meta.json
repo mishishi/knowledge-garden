@@ -1,0 +1,17 @@
+{
+  "title": "Multi-Agent in Practice",
+  "description": "从零到生产：手把手教你构建 Multi-Agent 系统",
+  "priority": 1,
+  "order": [
+    "01-your-first-agent",
+    "02-why-multi-agent",
+    "03-five-abstractions",
+    "04-orchestration-patterns",
+    "05-state-and-communication",
+    "06-failure-handling",
+    "07-framework-comparison",
+    "08-observability-and-cost",
+    "09-code-review-project",
+    "10-production-checklist"
+  ]
+}

@@ -1,0 +1,19 @@
+# 第 4 章依赖
+# Python 3.10+
+
+# OpenAI 官方 SDK
+openai>=1.50.0
+
+# CrewAI（Pipeline 模式）
+crewai>=0.80.0
+
+# LangGraph + LangChain（Supervisor + Graph 模式）
+langgraph>=0.2.0
+langchain-openai>=0.1.0
+
+# AutoGen（GroupChat 模式）
+autogen-agentchat>=0.4.0
+
+# OpenAI Swarm（Swarm 模式）
+# 注意：Swarm 还在快速迭代，建议从 git 安装
+git+https://github.com/openai/swarm.git
