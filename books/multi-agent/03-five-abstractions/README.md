@@ -1,10 +1,10 @@
 # 03. 5 个核心抽象
 
-> 上一章我们直觉式地拆出了"研究员 + 写作员"两个 Agent。本章把这种直觉抽象成 5 个核心概念：**Role / Goal / Tool / Memory / Handoff**。理解这 5 个抽象，所有 Multi-Agent 框架都是它们的实现细节。
+> 上章是"研究员 + 写作员"两个 Agent 的直觉。这章把直觉提炼成 5 个抽象：Role / Goal / Tool / Memory / Handoff。CrewAI、LangGraph、AutoGen 跑不掉这几个词。
 
 ## 为什么需要抽象？
 
-第 2 章我们的 Multi-Agent 是这样的：
+第 2 章的 Multi-Agent 是这样的：
 
 ```python
 researcher = Agent(role="研究员", goal="...", backstory="...", tools=[])
@@ -275,7 +275,7 @@ Memory ──> 贯穿所有 Agent
 
 ## 下篇
 
-[04. 编排模式全景](../04-orchestration-patterns/) —— 把 5 个抽象组合起来，看 5 种主流的"组合方式"（Pipeline / Supervisor / GroupChat / Swarm / Graph）。
+[04. 编排模式全景](../04-orchestration-patterns/) — 把 5 个抽象组合成 5 种主流的"组合方式"：Pipeline / Supervisor / GroupChat / Swarm / Graph。
 
 ## 生产化提示
 

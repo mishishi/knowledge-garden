@@ -1,6 +1,6 @@
 # 04. 编排模式全景
 
-> 第 3 章我们学了 5 个核心抽象（Role / Goal / Tool / Memory / Handoff）。本章把它们组合起来，看 5 种主流的"组合方式"——也就是 **5 种编排模式**。理解这 5 种模式，你就有了 Multi-Agent 系统的"流程图设计语言"。
+> 上章是 5 个核心抽象。这章把它们组合：5 种编排模式 — Pipeline / Supervisor / GroupChat / Swarm / Graph。掌握这 5 种模式就掌握了 Multi-Agent 系统的"流程图设计语言"。
 
 ## 5 种模式一览
 
@@ -228,7 +228,7 @@ A ──┤      ├─→ D
 
 ## 下篇
 
-[05. 通信与状态](../05-state-and-communication/) —— 深入 Agent 之间怎么传数据、共享状态。
+[05. 通信与状态](../05-state-and-communication/) — 深入 Agent 之间怎么传数据、共享状态。
 
 ## 生产化提示
 

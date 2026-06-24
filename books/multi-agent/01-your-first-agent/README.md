@@ -1,6 +1,6 @@
 # 01. 你的第一个 Agent
 
-> 本章用 30 分钟带你写出能调用工具的 Agent。从零开始，不假设你会 LLM 编程。
+> 30 分钟写出能调用工具的 Agent。从零开始，不假设你会 LLM 编程。
 
 ## 什么是 Agent？
 
@@ -227,9 +227,9 @@ python multi_agent.py
 - **Multi-Agent**：把"既要又要"的单 Agent 拆成多个角色单一的 Agent
 - **决策原则**：复杂度过载才上 Multi-Agent，单 Agent 能搞定就别拆
 
-## 下篇预告
+## 下篇
 
-第 2 篇 [为什么需要 Multi-Agent](../02-why-multi-agent/) 会用 3 个真实场景，具体展示单 Agent 撑不住的瞬间，以及 Multi-Agent 如何解。看完你会建立一个判断标准：什么任务"该上" Multi-Agent。
+[02. 为什么需要 Multi-Agent](../02-why-multi-agent/) — 用 3 个真实场景展示单 Agent 什么时候撑不住，Multi-Agent 怎么解。
 
 ## 生产化提示
 
@@ -240,4 +240,4 @@ python multi_agent.py
 - 错误处理：工具失败怎么办？LLM 返回 malformed JSON 怎么办？
 - 日志：记录每次决策和工具调用，便于调试
 
-这些会在第 8 篇 [可观测性与成本](../08-observability-and-cost/) 和第 10 篇 [生产化 Checklist](../10-production-checklist/) 展开。
+监控和上线的事，第 8 章和第 10 章会说。

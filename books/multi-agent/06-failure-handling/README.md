@@ -1,6 +1,6 @@
 # 06. 失败的艺术
 
-> Multi-Agent 系统的失败是单 Agent 的 N 倍（N = Agent 数量）。本章系统讲**失败的分类 + 防御模式**——这是从 demo 走向生产的关键一步。
+> Multi-Agent 系统的失败是单 Agent 的 N 倍（N = Agent 数量）。这章讲失败的分类 + 防御模式。
 
 ## 这一章要回答的问题
 
@@ -316,7 +316,7 @@ def agent_pipeline(input_data):
 
 ## 下篇
 
-[07. 框架横向对比](../07-framework-comparison/) —— 用同一需求对比 4 个主流框架的代码风格、调试难度、生产成熟度。
+[07. 框架横向对比](../07-framework-comparison/) — 用同一需求对比 4 个主流框架的代码、调试难度、生产成熟度。
 
 ## 生产化提示
 
