@@ -1334,6 +1334,21 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
 
 .progress-panel.visible { display: flex; }
 
+.help-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.help-panel.visible { display: flex; }
+
 .progress-modal {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -1820,6 +1835,19 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
     color: var(--accent);
     padding: 0 2px;
     border-radius: 2px;
+}
+
+mark.search-highlight {
+    background: rgba(255, 235, 100, 0.7);
+    color: inherit;
+    padding: 0;
+    border-radius: 2px;
+    box-shadow: 0 0 0 2px rgba(255, 235, 100, 0.4);
+    animation: search-pulse 2s ease-out;
+}
+@keyframes search-pulse {
+    0% { box-shadow: 0 0 0 8px rgba(255, 235, 100, 0.8); }
+    100% { box-shadow: 0 0 0 2px rgba(255, 235, 100, 0.4); }
 }
 
 .command-empty {
@@ -2346,6 +2374,27 @@ links.forEach(link => {
 document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
+    if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        document.querySelector('.help-panel').classList.add('visible');
+        return;
+    }
+    if (e.key === 'g' || e.key === 'G') {
+        // 简单实现：单按 g 跳顶，连按 g 跳底（500ms 内）
+        if (!window._lastG) window._lastG = 0;
+        const now = Date.now();
+        if (now - window._lastG < 500) {
+            // 第二次 g → 跳到底
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            window._lastG = 0;
+            return;
+        }
+        // 单按 g → 跳顶
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window._lastG = now;
+        return;
+    }
+
     if (e.key === 'd' || e.key === 'D') toggleDark();
     if (e.key === 's' || e.key === 'S') document.getElementById('sidebar-toggle').click();
     if (e.key === 'm' || e.key === 'M') document.getElementById('music-btn').click();
@@ -2363,6 +2412,7 @@ document.addEventListener('keydown', (e) => {
         if (idx > 0) { currentFontSize = sizes[idx - 1]; setFontSize(currentFontSize); }
     }
     if (e.key === 'Escape') {
+        document.querySelector('.help-panel').classList.remove('visible');
         document.querySelector('.music-panel').classList.remove('visible');
         document.querySelector('.notes-panel').classList.remove('visible');
         document.querySelector('.note-modal').classList.remove('visible');
@@ -2398,6 +2448,15 @@ document.addEventListener('click', (e) => {
 // 点了任何工具按钮后关闭（音乐/笔记/进度/QR/暗色/字号）
 toolbarMenu.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('click', () => setToolbarOpen(false));
+});
+
+// 帮助面板：X 按钮 + 点击 backdrop 关闭
+const helpPanel = document.querySelector('.help-panel');
+document.getElementById('help-close').addEventListener('click', () => {
+    helpPanel.classList.remove('visible');
+});
+helpPanel.addEventListener('click', (e) => {
+    if (e.target === helpPanel) helpPanel.classList.remove('visible');
 });
 
 // ============================================================
@@ -2941,7 +3000,7 @@ function performSearch(query) {
     `).join('');
 
     commandResults.querySelectorAll('.command-item').forEach(item => {
-        item.addEventListener('click', () => jumpToCommand(item.dataset.chapter));
+        item.addEventListener('click', () => jumpToCommand(item.dataset.chapter, q));
         item.addEventListener('mouseenter', () => {
             commandResults.querySelectorAll('.command-item').forEach(el => el.classList.remove('active'));
             item.classList.add('active');
@@ -2953,14 +3012,49 @@ function performSearch(query) {
     commandResults.querySelector('.command-item')?.classList.add('active');
 }
 
-function jumpToCommand(chapterId) {
+function jumpToCommand(chapterId, query) {
     commandPalette.classList.remove('visible');
+    const searchTerm = query || commandInput.value;
     commandInput.value = '';
+
+    // 清除之前的高亮
+    document.querySelectorAll('mark.search-highlight').forEach(el => {
+        const text = el.textContent;
+        el.replaceWith(document.createTextNode(text));
+    });
+
     const target = document.getElementById(chapterId);
-    if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        history.pushState(null, '', '#' + chapterId);
+    if (!target) return;
+    history.pushState(null, '', '#' + chapterId);
+
+    // 找第一个匹配并高亮
+    if (searchTerm) {
+        const content = target.querySelector('.chapter-content');
+        if (content) {
+            const q = searchTerm.toLowerCase();
+            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
+            let node;
+            while ((node = walker.nextNode())) {
+                const idx = node.textContent.toLowerCase().indexOf(q);
+                if (idx >= 0) {
+                    try {
+                        const range = document.createRange();
+                        range.setStart(node, idx);
+                        range.setEnd(node, idx + searchTerm.length);
+                        const mark = document.createElement('mark');
+                        mark.className = 'search-highlight';
+                        range.surroundContents(mark);
+                        mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return;
+                    } catch (e) {
+                        // 跨元素节点匹配失败，fallback
+                        break;
+                    }
+                }
+            }
+        }
     }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // 打开/关闭
@@ -2997,7 +3091,7 @@ document.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             const active = commandResults.querySelector('.command-item.active');
-            if (active) jumpToCommand(active.dataset.chapter);
+            if (active) jumpToCommand(active.dataset.chapter, commandInput.value.trim());
         }
     }
 });
@@ -3279,6 +3373,36 @@ def build_html():
                 <button id="export-progress">{svg_icon('download')} 导出数据</button>
                 <button id="import-progress">{svg_icon('upload')} 导入数据</button>
                 <button id="reset-progress">{svg_icon('trash')} 重置进度</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快捷键帮助 -->
+    <div class="help-panel">
+        <div class="help-modal">
+            <button class="help-close" id="help-close">×</button>
+            <h2>{svg_icon('search')} 快捷键</h2>
+            <div class="help-section">
+                <div class="help-section-title">导航</div>
+                <div class="help-row"><span>搜索章节 / 内容</span><span><kbd>Ctrl</kbd> <kbd>K</kbd></span></div>
+                <div class="help-row"><span>切换侧栏</span><span><kbd>S</kbd></span></div>
+                <div class="help-row"><span>跳到顶部</span><span><kbd>G</kbd> <kbd>G</kbd></span></div>
+                <div class="help-row"><span>跳到底部</span><span><kbd>G</kbd> <kbd>G</kbd> <kbd>G</kbd></span></div>
+            </div>
+            <div class="help-section">
+                <div class="help-section-title">工具</div>
+                <div class="help-row"><span>背景音乐</span><span><kbd>M</kbd></span></div>
+                <div class="help-row"><span>笔记</span><span><kbd>N</kbd></span></div>
+                <div class="help-row"><span>阅读进度</span><span><kbd>P</kbd></span></div>
+                <div class="help-row"><span>扫码阅读</span><span><kbd>Q</kbd></span></div>
+                <div class="help-row"><span>暗色模式</span><span><kbd>D</kbd></span></div>
+                <div class="help-row"><span>字号 + / -</span><span><kbd>+</kbd> / <kbd>-</kbd></span></div>
+                <div class="help-row"><span>工具菜单</span><span><kbd>Esc</kbd></span></div>
+            </div>
+            <div class="help-section">
+                <div class="help-section-title">本面板</div>
+                <div class="help-row"><span>显示本帮助</span><span><kbd>?</kbd></span></div>
+                <div class="help-row"><span>关闭任何面板</span><span><kbd>Esc</kbd></span></div>
             </div>
         </div>
     </div>
