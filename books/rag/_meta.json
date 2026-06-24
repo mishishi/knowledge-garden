@@ -1,0 +1,19 @@
+{
+  "title": "RAG 实战",
+  "description": "检索增强生成：从 embedding 到向量数据库，从 chunking 到 reranking，从评测到生产化",
+  "icon": "database",
+  "color": "#0d9488",
+  "priority": 4,
+  "order": [
+    "01-why-rag",
+    "02-embedding-models",
+    "03-vector-databases",
+    "04-chunking-strategies",
+    "05-retrieval-and-reranking",
+    "06-prompt-design",
+    "07-hybrid-search",
+    "08-evaluation",
+    "09-advanced-patterns",
+    "10-prod-checklist"
+  ]
+}
