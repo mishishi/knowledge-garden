@@ -2286,6 +2286,13 @@ function weekdayName(date) {
     return weekdays[date.getDay()];
 }
 
+// 本地日期 key（YYYY-MM-DD），避开 toISOString 的 UTC 时区陷阱
+function localDateKey(d) {
+    return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+}
+
 function renderCalendar() {
     const monthsEl = document.getElementById('calendar-months');
     const weekdaysEl = document.getElementById('calendar-weekdays');
@@ -2306,10 +2313,10 @@ function renderCalendar() {
         weekdaysEl.appendChild(lbl);
     }
 
-    // 每天的完成数
+    // 每天的完成数（本地日期，避免 UTC 跨日错位）
     const daily = {};
     Object.values(progress.completed).forEach(ts => {
-        const date = new Date(ts).toISOString().slice(0, 10);
+        const date = localDateKey(new Date(ts));
         daily[date] = (daily[date] || 0) + 1;
     });
 
@@ -2346,7 +2353,7 @@ function renderCalendar() {
             if (currentDate > today || currentDate < startDate) {
                 day.classList.add('empty');
             } else {
-                const dateKey = currentDate.toISOString().slice(0, 10);
+                const dateKey = localDateKey(currentDate);
                 const count = daily[dateKey] || 0;
 
                 if (count === 0) {
@@ -2393,12 +2400,12 @@ function renderCalendar() {
 
     // 最近 30 天明细
     recent.innerHTML = '<div class="calendar-recent-title">最近 30 天</div>';
-    const todayKey = today.toISOString().slice(0, 10);
+    const todayKey = localDateKey(today);
     const recentDays = [];
     for (let i = 0; i < 30; i++) {
         const d = new Date(today);
         d.setDate(d.getDate() - i);
-        const key = d.toISOString().slice(0, 10);
+        const key = localDateKey(d);
         if (key > todayKey) continue;
         const count = daily[key] || 0;
         recentDays.push({ date: d, key, count });
