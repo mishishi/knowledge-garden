@@ -2253,11 +2253,10 @@ function renderCalendar() {
         daily[date] = (daily[date] || 0) + 1;
     });
 
-    // 365 天
+    // 当年 1/1 至今
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const startDate = new Date(today);
-    startDate.setDate(startDate.getDate() - 364);
+    const startDate = new Date(today.getFullYear(), 0, 1);
 
     // 按周分列（GitHub 风格）
     let currentDate = new Date(startDate);
