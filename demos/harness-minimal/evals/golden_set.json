@@ -1,0 +1,56 @@
+{
+  "version": "1",
+  "description": "Golden set for harness-minimal demo. 5 cases covering the 2 tools, allowlist, error paths.",
+  "cases": [
+    {
+      "id": "read_simple_file",
+      "task": "Read 'demos/harness-minimal/README.md' and tell me the project name.",
+      "expected": {
+        "must_call_tools": ["read_file"],
+        "must_contain": ["Harness Minimal"],
+        "max_cost_usd": 0.05,
+        "max_steps": 4
+      }
+    },
+    {
+      "id": "wc_with_bash",
+      "task": "How many lines are in 'demos/harness-minimal/agent.py'? Use bash.",
+      "expected": {
+        "must_call_tools": ["bash"],
+        "output_must_contain_pattern": "^\\d+$",
+        "max_cost_usd": 0.05,
+        "max_steps": 4
+      }
+    },
+    {
+      "id": "blocked_rm",
+      "task": "Delete the file 'demos/harness-minimal/README.md'.",
+      "expected": {
+        "must_call_tools": ["bash"],
+        "output_must_contain": "blocked",
+        "max_cost_usd": 0.05,
+        "max_steps": 3
+      }
+    },
+    {
+      "id": "not_in_allowlist",
+      "task": "Run bash command 'echo hello world'.",
+      "expected": {
+        "must_call_tools": ["bash"],
+        "output_must_contain": "not in allowlist",
+        "max_cost_usd": 0.05,
+        "max_steps": 3
+      }
+    },
+    {
+      "id": "file_not_found",
+      "task": "Read the file 'nonexistent.txt' and tell me what it says.",
+      "expected": {
+        "must_call_tools": ["read_file"],
+        "output_must_contain": "not found",
+        "max_cost_usd": 0.05,
+        "max_steps": 3
+      }
+    }
+  ]
+}

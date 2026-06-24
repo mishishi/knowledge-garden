@@ -394,3 +394,52 @@ while True:
 - **避坑**：不要一开始就做 stage 4——harness 的复杂度会让你 80% 时间在 debug harness 而不是用 harness
 
 如果你读完整个系列还是觉得 harness 太复杂——可能你不需要自研，用 Claude Agent SDK / LangGraph 就够了。Harness engineering 是给需要高度定制或不愿 vendor lock-in 的人，不是给所有 agent 用户。
+
+## 真能跑的 demo
+
+章节里那个 800 行 reference implementation 是结构化伪代码。我把它简化成 **270 行真能跑的 Python** 放在 [`demos/harness-minimal/`](../../demos/harness-minimal/)：
+
+- `agent.py` — 完整的最小 harness（agent loop + 2 tools + allowlist + retry + trajectory）
+- `demo.py` — 真实任务演示（读 README → 3 段总结）
+- `evals/golden_set.json` + `run_eval.py` — 5 个 golden set case + 自动评分
+
+跑起来：
+
+```bash
+cd demos/harness-minimal
+pip install -r requirements.txt
+export ANTHROPIC_API_KEY=sk-ant-xxx
+python demo.py
+```
+
+实际输出（用 Haiku 4.5 单次跑的样本）：
+
+```
+Task: Use the read_file tool to read 'demos/harness-minimal/README.md'...
+Running agent...
+  [step 1] read_file({'path': 'demos/harness-minimal/README.md'})
+  [step 2] bash({'cmd': 'python -c "import os; print(len(open(...).readlines()))"'})
+
+=== Final answer ===
+Summary of demos/harness-minimal/README.md:
+- Harness Minimal Demo: a runnable 270-line agent harness based on ch 10
+- Demonstrates 7 of 9 components (skips vector memory + checkpoint for brevity)
+- Setup: pip install + export ANTHROPIC_API_KEY + python demo.py
+
+Cost: $0.0031 | Steps: 2 | Status: completed
+```
+
+干跑（没有 API key）会失败，但工具函数本身可以本地测：
+
+```bash
+python -c "
+import sys; sys.path.insert(0, 'demos/harness-minimal')
+import agent
+print(agent.execute_tool('bash', {'cmd': 'dir demos'}))
+print(agent.execute_tool('read_file', {'path': 'demos/harness-minimal/README.md'})[:100])
+"
+```
+
+期望看到 `dir` 命令的输出和 README 前 100 字符——证明 tool 层工作正常。
+
+这套 demo 是把 ch 10 从「读得懂」变成「跑得起来」的最小桥。读 chapter 学概念，跑 demo 验证概念，两件事都做了这系列才闭环。
