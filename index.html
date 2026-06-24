@@ -54,6 +54,42 @@ body {
     transition: background 0.3s, color 0.3s;
 }
 
+/* Focus mode：隐藏侧栏 / 工具栏 / 进度条，纯净阅读 */
+body.focus-mode .sidebar,
+body.focus-mode .sidebar-toggle,
+body.focus-mode .toolbar,
+body.focus-mode #more-btn,
+body.focus-mode .reading-progress,
+body.focus-mode .page-flip { display: none !important; }
+
+body.focus-mode .content {
+    max-width: 760px;
+    padding: 60px 32px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body.focus-mode .focus-exit { display: flex; }
+
+.focus-exit {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    backdrop-filter: blur(8px);
+}
+.focus-exit:hover { background: rgba(0, 0, 0, 0.7); }
+
 .reading-progress {
     position: fixed;
     top: 0;
@@ -939,6 +975,55 @@ body.dark .qr-modal .qr-actions button {
 }
 .qr-modal-close:hover { color: var(--text, #2d2d2d); }
 
+.resume-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-bg, #ffffff);
+    color: var(--text, #2d2d2d);
+    border: 1px solid var(--border, #e0e0e0);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+    backdrop-filter: blur(12px);
+    z-index: 200;
+    max-width: 92vw;
+    animation: resume-toast-in 0.3s ease-out;
+}
+@keyframes resume-toast-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+body.dark .resume-toast { background: #2a2a2e; border-color: #444; }
+.resume-toast-text { display: flex; flex-direction: column; gap: 2px; }
+.resume-toast-title { font-size: 13px; font-weight: 500; }
+.resume-toast-meta { font-size: 11px; color: var(--text-faint); }
+.resume-toast-go {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+}
+.resume-toast-go:hover { opacity: 0.9; }
+.resume-toast-close {
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+}
+.resume-toast-close:hover { color: var(--text); }
+
 .notes-panel {
     position: fixed;
     top: 0;
@@ -1796,17 +1881,58 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
 }
 
 mark.search-highlight {
-    background: rgba(255, 235, 100, 0.7);
+    background: rgba(255, 235, 100, 0.5);
     color: inherit;
     padding: 0;
     border-radius: 2px;
-    box-shadow: 0 0 0 2px rgba(255, 235, 100, 0.4);
+}
+mark.search-highlight.search-highlight-active {
+    background: rgba(255, 200, 50, 0.85);
+    box-shadow: 0 0 0 3px rgba(255, 200, 50, 0.4);
     animation: search-pulse 2s ease-out;
 }
 @keyframes search-pulse {
-    0% { box-shadow: 0 0 0 8px rgba(255, 235, 100, 0.8); }
-    100% { box-shadow: 0 0 0 2px rgba(255, 235, 100, 0.4); }
+    0% { box-shadow: 0 0 0 8px rgba(255, 200, 50, 0.9); }
+    100% { box-shadow: 0 0 0 3px rgba(255, 200, 50, 0.4); }
 }
+
+.match-indicator {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    background: var(--card-bg, #fff);
+    color: var(--text, #2d2d2d);
+    border: 1px solid var(--border, #e0e0e0);
+    border-radius: 24px;
+    padding: 6px 6px 6px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    z-index: 200;
+    backdrop-filter: blur(8px);
+}
+.match-indicator button {
+    border: none;
+    background: transparent;
+    color: var(--text-soft);
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    line-height: 1;
+}
+.match-indicator button:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.match-indicator .match-close {
+    background: transparent;
+    color: var(--text-faint);
+}
+body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
 
 .command-empty {
     padding: 40px 20px;
@@ -1819,6 +1945,7 @@ mark.search-highlight {
 </head>
 <body class="sidebar-collapsed">
     <div class="progress"></div>
+    <button class="focus-exit" id="focus-exit" title="退出专注模式 (F)"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
 
     <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> 书架</button>
 
@@ -1982,6 +2109,7 @@ mark.search-highlight {
 
             <div class="progress-actions">
                 <button id="export-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 导出数据</button>
+                <button id="export-notes-md"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> 导出笔记 (Markdown)</button>
                 <button id="import-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> 导入数据</button>
                 <button id="reset-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg> 重置进度</button>
             </div>
@@ -1997,6 +2125,7 @@ mark.search-highlight {
                 <div class="help-section-title">导航</div>
                 <div class="help-row"><span>搜索章节 / 内容</span><span><kbd>Ctrl</kbd> <kbd>K</kbd></span></div>
                 <div class="help-row"><span>切换侧栏</span><span><kbd>S</kbd></span></div>
+                <div class="help-row"><span>专注模式</span><span><kbd>F</kbd></span></div>
                 <div class="help-row"><span>跳到顶部</span><span><kbd>G</kbd> <kbd>G</kbd></span></div>
                 <div class="help-row"><span>跳到底部</span><span><kbd>G</kbd> <kbd>G</kbd> <kbd>G</kbd></span></div>
             </div>
@@ -15385,26 +15514,14 @@ function jumpToBookmark(chapterId, idx) {
     history.pushState(null, '', '#' + chapterId);
     const bm = bookmarks[chapterId]?.[idx];
     if (!bm) return;
-    // 高亮匹配文本（复用 Cmd+K 的逻辑）
+    clearSearchHighlights();
     const content = article.querySelector('.chapter-content');
     if (!content) return;
-    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-        const pos = node.textContent.indexOf(bm.text);
-        if (pos >= 0) {
-            try {
-                const range = document.createRange();
-                range.setStart(node, pos);
-                range.setEnd(node, pos + bm.text.length);
-                const mark = document.createElement('mark');
-                mark.className = 'search-highlight';
-                range.surroundContents(mark);
-                mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(() => mark.replaceWith(document.createTextNode(bm.text)), 3000);
-                return;
-            } catch (e) { break; }
-        }
+    highlightAllMatches(content, bm.text);
+    if (searchMatches.length > 0) {
+        searchMatches[0].classList.add('search-highlight-active');
+        searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => clearSearchHighlights(), 4000);
     }
 }
 
@@ -15558,6 +15675,11 @@ document.addEventListener('keydown', (e) => {
         document.querySelector('.help-panel').classList.add('visible');
         return;
     }
+    if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFocusMode();
+        return;
+    }
     if (e.key === 'g' || e.key === 'G') {
         // 简单实现：单按 g 跳顶，连按 g 跳底（500ms 内）
         if (!window._lastG) window._lastG = 0;
@@ -15646,6 +15768,7 @@ if (!progress.completed) progress = { completed: {} };
 if (!progress.timeSpent) progress.timeSpent = {};
 if (!progress.readPct) progress.readPct = {};
 if (!progress.dailyTime) progress.dailyTime = {};
+if (!progress.lastRead) progress.lastRead = null;
 
 function saveProgress() {
     localStorage.setItem('progress', JSON.stringify(progress));
@@ -15821,6 +15944,19 @@ function updateReadPct() {
         }
     });
     refreshReadPctUI();
+    // 记录当前阅读位置（chapterId + scrollY）
+    const inView = document.querySelector('.chapter');
+    if (inView) {
+        const top = inView.getBoundingClientRect().top;
+        if (top < window.innerHeight && top > -inView.offsetHeight) {
+            progress.lastRead = {
+                chapterId: inView.id,
+                scrollY: window.scrollY,
+                timestamp: Date.now(),
+            };
+            saveProgress();
+        }
+    }
     if (scrollSaveTimer) clearTimeout(scrollSaveTimer);
     scrollSaveTimer = setTimeout(() => saveProgress(), 200);
 }
@@ -15829,6 +15965,67 @@ window.addEventListener('scroll', updateReadPct, { passive: true });
 setupReadingTracker();
 updateReadPct();
 refreshReadPctUI();
+
+// Continue reading toast：页面加载时检查 lastRead，弹小提示
+function showResumeToast() {
+    const last = progress.lastRead;
+    if (!last || !last.chapterId) return;
+    const article = document.getElementById(last.chapterId);
+    if (!article) return;
+    // 已经在该章节就不弹
+    if (window.location.hash === '#' + last.chapterId) return;
+    if (window.scrollY > 0) return;  // 用户已经在滚动了，不打扰
+    // 距离上次 < 5 分钟不打扰（说明是连续阅读）
+    if (Date.now() - last.timestamp < 5 * 60 * 1000) return;
+
+    const title = article.querySelector('.chapter-title')?.textContent || last.chapterId;
+    const ago = formatRelativeTime(last.timestamp);
+    const toast = document.createElement('div');
+    toast.className = 'resume-toast';
+    toast.innerHTML = `
+        <div class="resume-toast-text">
+            <div class="resume-toast-title">继续读：${escapeHtml(title)}</div>
+            <div class="resume-toast-meta">上次阅读：${ago}</div>
+        </div>
+        <button class="resume-toast-go">继续</button>
+        <button class="resume-toast-close">×</button>
+    `;
+    document.body.appendChild(toast);
+
+    toast.querySelector('.resume-toast-go').addEventListener('click', () => {
+        article.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.scrollTo({ top: last.scrollY, behavior: 'smooth' });
+        history.pushState(null, '', '#' + last.chapterId);
+        toast.remove();
+    });
+    toast.querySelector('.resume-toast-close').addEventListener('click', () => toast.remove());
+
+    // 12 秒自动消失
+    setTimeout(() => toast.remove(), 12000);
+}
+
+function formatRelativeTime(ts) {
+    const diff = Date.now() - ts;
+    const min = Math.floor(diff / 60000);
+    if (min < 60) return `${min} 分钟前`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr} 小时前`;
+    const day = Math.floor(hr / 24);
+    if (day < 30) return `${day} 天前`;
+    return new Date(ts).toLocaleDateString('zh-CN');
+}
+
+function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+}
+
+showResumeToast();
+
+// Focus mode 切换
+function toggleFocusMode() {
+    document.body.classList.toggle('focus-mode');
+}
+document.getElementById('focus-exit').addEventListener('click', toggleFocusMode);
 
 // 打开进度面板
 document.getElementById('progress-btn').addEventListener('click', openProgressPanel);
@@ -16095,6 +16292,94 @@ document.getElementById('export-progress').addEventListener('click', () => {
     URL.revokeObjectURL(url);
 });
 
+// 导出笔记 + 书签为 Markdown
+document.getElementById('export-notes-md').addEventListener('click', () => {
+    const md = buildNotesMarkdown(notes, bookmarks);
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `knowledge-garden-notes-${new Date().toISOString().slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+function getChapterMeta(chapterId) {
+    const article = document.getElementById(chapterId);
+    if (!article) return { title: chapterId, book: '' };
+    return {
+        title: article.querySelector('.chapter-title')?.textContent.trim() || chapterId,
+        book: article.dataset.book || '',
+    };
+}
+
+function buildNotesMarkdown(notesArr, bookmarksObj) {
+    const lines = [];
+    const today = new Date().toLocaleDateString('zh-CN');
+    lines.push('# 知识花园 · 笔记导出');
+    lines.push('');
+    lines.push(`导出日期：${today}`);
+    lines.push('');
+
+    // 按章节分组
+    const grouped = new Map();
+    notesArr.forEach(note => {
+        if (!grouped.has(note.chapterId)) grouped.set(note.chapterId, { notes: [], bookmarks: [] });
+        grouped.get(note.chapterId).notes.push(note);
+    });
+    for (const [chapterId, list] of Object.entries(bookmarksObj)) {
+        if (!grouped.has(chapterId)) grouped.set(chapterId, { notes: [], bookmarks: [] });
+        list.forEach(bm => grouped.get(chapterId).bookmarks.push(bm));
+    }
+
+    if (grouped.size === 0) {
+        lines.push('_暂无笔记或书签_');
+        return lines.join('\n');
+    }
+
+    grouped.forEach((data, chapterId) => {
+        const meta = getChapterMeta(chapterId);
+        lines.push(`## ${meta.title}`);
+        if (meta.book) {
+            const bookEl = document.querySelector(`[data-book="${meta.book}"] .book-title-text`);
+            const bookTitle = bookEl?.textContent || meta.book;
+            lines.push(`_${bookTitle}_`);
+        }
+        lines.push('');
+
+        if (data.bookmarks.length > 0) {
+            lines.push('### 书签');
+            data.bookmarks.forEach((bm, i) => {
+                const dt = new Date(bm.timestamp).toLocaleString('zh-CN');
+                lines.push(`${i + 1}. ${dt}`);
+                lines.push(`   > ${bm.text.replace(/\n/g, '\n   > ')}`);
+                lines.push('');
+            });
+        }
+
+        if (data.notes.length > 0) {
+            lines.push('### 高亮与笔记');
+            data.notes.forEach((note, i) => {
+                const dt = new Date(note.timestamp).toLocaleString('zh-CN');
+                lines.push(`${i + 1}. ${dt} · ${note.type === 'highlight' ? '高亮' : '笔记'}`);
+                if (note.quote || note.text) {
+                    const q = (note.quote || '').replace(/\n/g, '\n   > ');
+                    lines.push(`   > ${q}`);
+                }
+                if (note.type === 'note' && note.text) {
+                    lines.push('');
+                    lines.push(`   ${note.text}`);
+                }
+                lines.push('');
+            });
+        }
+        lines.push('---');
+        lines.push('');
+    });
+
+    return lines.join('\n');
+}
+
 document.getElementById('import-progress').addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -16235,50 +16520,123 @@ function performSearch(query) {
     commandResults.querySelector('.command-item')?.classList.add('active');
 }
 
+let searchMatches = [];   // 当前章节高亮的 mark 列表
+let activeMatchIdx = -1;  // 当前激活的（第几个）
+
+function clearSearchHighlights() {
+    document.querySelectorAll('mark.search-highlight').forEach(el => {
+        const text = el.textContent;
+        el.replaceWith(document.createTextNode(text));
+    });
+    searchMatches = [];
+    activeMatchIdx = -1;
+}
+
+function highlightAllMatches(contentEl, searchTerm) {
+    const term = searchTerm.toLowerCase();
+    const walker = document.createTreeWalker(contentEl, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    let n;
+    while ((n = walker.nextNode())) textNodes.push(n);
+
+    for (const textNode of textNodes) {
+        const text = textNode.textContent;
+        const lower = text.toLowerCase();
+        if (!lower.includes(term)) continue;
+
+        const fragment = document.createDocumentFragment();
+        let lastIdx = 0;
+        let idx;
+        while ((idx = lower.indexOf(term, lastIdx)) >= 0) {
+            if (idx > lastIdx) {
+                fragment.appendChild(document.createTextNode(text.slice(lastIdx, idx)));
+            }
+            const mark = document.createElement('mark');
+            mark.className = 'search-highlight';
+            mark.textContent = text.slice(idx, idx + term.length);
+            fragment.appendChild(mark);
+            lastIdx = idx + term.length;
+        }
+        if (lastIdx < text.length) {
+            fragment.appendChild(document.createTextNode(text.slice(lastIdx)));
+        }
+        textNode.parentNode.replaceChild(fragment, textNode);
+    }
+    searchMatches = Array.from(contentEl.querySelectorAll('mark.search-highlight'));
+}
+
+function jumpToMatch(direction) {
+    if (searchMatches.length === 0) return;
+    searchMatches[activeMatchIdx]?.classList.remove('search-highlight-active');
+    if (direction === 'next') {
+        activeMatchIdx = (activeMatchIdx + 1) % searchMatches.length;
+    } else {
+        activeMatchIdx = (activeMatchIdx - 1 + searchMatches.length) % searchMatches.length;
+    }
+    searchMatches[activeMatchIdx].classList.add('search-highlight-active');
+    searchMatches[activeMatchIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 function jumpToCommand(chapterId, query) {
     commandPalette.classList.remove('visible');
     const searchTerm = query || commandInput.value;
     commandInput.value = '';
 
-    // 清除之前的高亮
-    document.querySelectorAll('mark.search-highlight').forEach(el => {
-        const text = el.textContent;
-        el.replaceWith(document.createTextNode(text));
-    });
+    clearSearchHighlights();
 
     const target = document.getElementById(chapterId);
     if (!target) return;
     history.pushState(null, '', '#' + chapterId);
 
-    // 找第一个匹配并高亮
     if (searchTerm) {
         const content = target.querySelector('.chapter-content');
         if (content) {
-            const q = searchTerm.toLowerCase();
-            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT);
-            let node;
-            while ((node = walker.nextNode())) {
-                const idx = node.textContent.toLowerCase().indexOf(q);
-                if (idx >= 0) {
-                    try {
-                        const range = document.createRange();
-                        range.setStart(node, idx);
-                        range.setEnd(node, idx + searchTerm.length);
-                        const mark = document.createElement('mark');
-                        mark.className = 'search-highlight';
-                        range.surroundContents(mark);
-                        mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        return;
-                    } catch (e) {
-                        // 跨元素节点匹配失败，fallback
-                        break;
-                    }
+            highlightAllMatches(content, searchTerm);
+            if (searchMatches.length > 0) {
+                activeMatchIdx = 0;
+                searchMatches[0].classList.add('search-highlight-active');
+                searchMatches[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // 显示匹配数（如果 >1）
+                if (searchMatches.length > 1) {
+                    showMatchIndicator(searchMatches.length);
                 }
+            } else {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
         }
+    } else {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+function showMatchIndicator(count) {
+    const ind = document.createElement('div');
+    ind.className = 'match-indicator';
+    ind.innerHTML = `
+        <span>找到 <strong>${count}</strong> 处匹配</span>
+        <button class="match-prev" title="上一处 (Shift+N)">←</button>
+        <button class="match-next" title="下一处 (N)">→</button>
+        <button class="match-close" title="关闭 (Esc)">×</button>
+    `;
+    document.body.appendChild(ind);
+    ind.querySelector('.match-next').addEventListener('click', () => jumpToMatch('next'));
+    ind.querySelector('.match-prev').addEventListener('click', () => jumpToMatch('prev'));
+    ind.querySelector('.match-close').addEventListener('click', () => {
+        clearSearchHighlights();
+        ind.remove();
+    });
+    setTimeout(() => ind.remove(), 8000);
+}
+
+// N / Shift+N 在结果之间跳转
+document.addEventListener('keydown', (e) => {
+    if (searchMatches.length === 0) return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        jumpToMatch(e.shiftKey ? 'prev' : 'next');
+    }
+});
 
 // 打开/关闭
 document.addEventListener('keydown', (e) => {
