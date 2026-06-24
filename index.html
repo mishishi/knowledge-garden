@@ -4579,8 +4579,8 @@ function highlightSnippet(text, query, len = 100) {
     if (start > 0) snippet = '…' + snippet;
     if (end < text.length) snippet = snippet + '…';
 
-    const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\]/g, r'\$&'), 'gi');
-    return snippet.replace(regex, m => `<mark>${m}</mark>`);
+    // 用 split + join 高亮（不依赖 regex，避免转义问题）
+    return snippet.split(query).join('<mark>' + query + '</mark>');
 }
 
 function performSearch(query) {
