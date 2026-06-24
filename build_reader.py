@@ -951,6 +951,380 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
 }
 
 .pwa-prompt .close:hover { opacity: 1; }
+
+/* === 进度统计 === */
+.completion-toggle {
+    display: block;
+    margin: 60px auto 0;
+    padding: 12px 32px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-soft);
+    border-radius: 24px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.15s;
+}
+
+.completion-toggle:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.completion-toggle.completed {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.chapter.completed .chapter-title::before {
+    content: "✓ ";
+    color: var(--accent);
+}
+
+.book-chapters li a.completed {
+    color: var(--accent);
+}
+
+.book-chapters li a.completed::after {
+    content: " ✓";
+    color: var(--accent);
+    margin-left: 4px;
+}
+
+/* === 进度面板 === */
+.progress-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.progress-panel.visible { display: flex; }
+
+.progress-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 720px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.progress-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.progress-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: var(--text);
+}
+
+.progress-modal-header .close {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 22px;
+    color: var(--text-faint);
+}
+
+.overall-progress { margin-bottom: 32px; }
+
+.overall-progress .big-number {
+    font-size: 56px;
+    font-weight: 300;
+    color: var(--accent);
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+.overall-progress .label {
+    color: var(--text-soft);
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.overall-progress .progress-bar {
+    height: 8px;
+    background: var(--bg-soft);
+    border-radius: 4px;
+    margin-top: 16px;
+    overflow: hidden;
+}
+
+.overall-progress .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s ease;
+    border-radius: 4px;
+}
+
+.book-progress { margin-bottom: 20px; }
+
+.book-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.book-progress-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.book-progress-stats {
+    color: var(--text-soft);
+    font-size: 12px;
+    font-family: Georgia, serif;
+}
+
+.book-progress-bar {
+    height: 6px;
+    background: var(--bg-soft);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.book-progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* 阅读日历 */
+.calendar { margin-top: 32px; }
+
+.calendar-title {
+    color: var(--text-soft);
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-grid {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    padding: 4px 0;
+}
+
+.calendar-week {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.calendar-day {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    background: var(--bg-soft);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.calendar-day:hover {
+    transform: scale(1.4);
+    outline: 1px solid var(--accent);
+}
+
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+    pointer-events: none;
+}
+
+.calendar-day.level-1 { background: rgba(176, 137, 104, 0.25); }
+.calendar-day.level-2 { background: rgba(176, 137, 104, 0.5); }
+.calendar-day.level-3 { background: rgba(176, 137, 104, 0.75); }
+.calendar-day.level-4 { background: var(--accent); }
+
+body.dark .calendar-day { background: rgba(255, 255, 255, 0.06); }
+body.dark .calendar-day.level-1 { background: rgba(196, 168, 124, 0.3); }
+body.dark .calendar-day.level-2 { background: rgba(196, 168, 124, 0.55); }
+body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
+
+.calendar-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-faint);
+}
+
+.calendar-legend .calendar-day {
+    width: 10px;
+    height: 10px;
+    cursor: default;
+}
+
+.calendar-legend .calendar-day:hover {
+    transform: none;
+    outline: none;
+}
+
+.progress-actions {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+}
+
+.progress-actions button {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-soft);
+}
+
+.progress-actions button:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* === 命令面板（搜索） === */
+.command-palette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 400;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+    backdrop-filter: blur(4px);
+}
+
+.command-palette.visible { display: flex; }
+
+.command-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.command-input {
+    width: 100%;
+    padding: 18px 20px;
+    border: none;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    font-family: inherit;
+    border-bottom: 1px solid var(--border);
+    box-sizing: border-box;
+}
+
+.command-input:focus { outline: none; }
+.command-input::placeholder { color: var(--text-faint); }
+
+.command-hint {
+    padding: 8px 20px;
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+}
+
+.command-results {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.command-item {
+    padding: 14px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+}
+
+.command-item:hover, .command-item.active {
+    background: var(--accent-soft);
+}
+
+.command-item:last-child { border-bottom: none; }
+
+.command-book-tag {
+    display: inline-block;
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.command-title {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.command-snippet {
+    display: block;
+    color: var(--text-faint);
+    font-size: 12px;
+    margin-top: 4px;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.command-snippet mark {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.command-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-faint);
+    font-style: italic;
+    font-size: 13px;
+}
 """
 
 
@@ -1428,6 +1802,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 's' || e.key === 'S') document.getElementById('sidebar-toggle').click();
     if (e.key === 'm' || e.key === 'M') document.getElementById('music-btn').click();
     if (e.key === 'n' || e.key === 'N') document.getElementById('notes-btn').click();
+    if (e.key === 'p' || e.key === 'P') document.getElementById('progress-btn').click();
     if (e.key === '+' || e.key === '=') {
         const sizes = Object.keys(FONT_SIZES);
         const idx = sizes.indexOf(currentFontSize);
@@ -1442,6 +1817,367 @@ document.addEventListener('keydown', (e) => {
         document.querySelector('.music-panel').classList.remove('visible');
         document.querySelector('.notes-panel').classList.remove('visible');
         document.querySelector('.note-modal').classList.remove('visible');
+        document.querySelector('.progress-panel').classList.remove('visible');
+    }
+});
+
+// ============================================================
+// 进度统计
+// ============================================================
+let progress = JSON.parse(localStorage.getItem('progress') || '{}');
+if (!progress.completed) progress = { completed: {} };
+
+function saveProgress() {
+    localStorage.setItem('progress', JSON.stringify(progress));
+}
+
+function toggleChapter(chapterId) {
+    if (progress.completed[chapterId]) {
+        delete progress.completed[chapterId];
+    } else {
+        progress.completed[chapterId] = Date.now();
+    }
+    saveProgress();
+    refreshCompletionUI();
+}
+
+function refreshCompletionUI() {
+    // 每章 toggle button 状态
+    document.querySelectorAll('.completion-toggle').forEach(btn => {
+        const chapterId = btn.dataset.chapter;
+        const isCompleted = !!progress.completed[chapterId];
+        btn.classList.toggle('completed', isCompleted);
+        btn.textContent = isCompleted ? '✓ 已读 (点击撤销)' : '☐ 标记为已读';
+        // article 加 completed class
+        const article = document.getElementById(chapterId);
+        if (article) article.classList.toggle('completed', isCompleted);
+    });
+
+    // 侧栏每章标记
+    document.querySelectorAll('.book-chapters a').forEach(a => {
+        const chapterId = a.getAttribute('href').slice(1);
+        a.classList.toggle('completed', !!progress.completed[chapterId]);
+    });
+}
+
+document.querySelectorAll('.completion-toggle').forEach(btn => {
+    btn.addEventListener('click', () => toggleChapter(btn.dataset.chapter));
+});
+
+// 打开进度面板
+document.getElementById('progress-btn').addEventListener('click', openProgressPanel);
+document.querySelector('.progress-panel .close').addEventListener('click', () => {
+    document.querySelector('.progress-panel').classList.remove('visible');
+});
+
+function openProgressPanel() {
+    renderProgress();
+    document.querySelector('.progress-panel').classList.add('visible');
+}
+
+function renderProgress() {
+    // 收集所有章节
+    const allChapters = Array.from(document.querySelectorAll('.chapter')).map(c => ({
+        id: c.id,
+        book: c.dataset.book,
+        bookTitle: c.closest('.chapter').dataset.book,
+    }));
+
+    // 按书分组
+    const bookStats = {};
+    allChapters.forEach(c => {
+        const bookGroup = document.querySelector(`[data-book="${c.book}"]`);
+        const bookTitle = bookGroup?.querySelector('.book-title-text')?.textContent || c.book;
+        if (!bookStats[c.book]) {
+            bookStats[c.book] = { title: bookTitle, total: 0, completed: 0 };
+        }
+        bookStats[c.book].total++;
+        if (progress.completed[c.id]) bookStats[c.book].completed++;
+    });
+
+    const totalChapters = allChapters.length;
+    const completedChapters = allChapters.filter(c => progress.completed[c.id]).length;
+    const percent = totalChapters > 0 ? Math.round(completedChapters / totalChapters * 100) : 0;
+
+    document.getElementById('overall-percent').textContent = percent;
+    document.getElementById('overall-stats').textContent = `${completedChapters} / ${totalChapters} 章`;
+    document.getElementById('overall-fill').style.width = percent + '%';
+
+    // 各书进度
+    const bookProgressList = document.getElementById('book-progress-list');
+    bookProgressList.innerHTML = Object.entries(bookStats).map(([slug, stats]) => {
+        const pct = stats.total > 0 ? Math.round(stats.completed / stats.total * 100) : 0;
+        return `
+            <div class="book-progress">
+                <div class="book-progress-header">
+                    <span class="book-progress-name">${stats.title}</span>
+                    <span class="book-progress-stats">${stats.completed} / ${stats.total} · ${pct}%</span>
+                </div>
+                <div class="book-progress-bar">
+                    <div class="book-progress-bar-fill" style="width: ${pct}%"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // 日历
+    renderCalendar();
+}
+
+function renderCalendar() {
+    const grid = document.getElementById('calendar-grid');
+    grid.innerHTML = '';
+
+    // 每天的完成数
+    const daily = {};
+    Object.values(progress.completed).forEach(ts => {
+        const date = new Date(ts).toISOString().slice(0, 10);
+        daily[date] = (daily[date] || 0) + 1;
+    });
+
+    // 365 天
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - 364);
+
+    // 按周分列（GitHub 风格）
+    let currentDate = new Date(startDate);
+    // 调整到最近的周日
+    currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+
+    while (currentDate <= today) {
+        const week = document.createElement('div');
+        week.className = 'calendar-week';
+
+        for (let i = 0; i < 7; i++) {
+            const day = document.createElement('div');
+            day.className = 'calendar-day';
+
+            if (currentDate > today) {
+                day.classList.add('empty');
+            } else {
+                const dateKey = currentDate.toISOString().slice(0, 10);
+                const count = daily[dateKey] || 0;
+
+                if (count === 0) {
+                    // 保持空
+                } else if (count === 1) {
+                    day.classList.add('level-1');
+                } else if (count === 2) {
+                    day.classList.add('level-2');
+                } else if (count <= 4) {
+                    day.classList.add('level-3');
+                } else {
+                    day.classList.add('level-4');
+                }
+
+                day.title = `${dateKey}: ${count} 章`;
+            }
+
+            week.appendChild(day);
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        grid.appendChild(week);
+    }
+}
+
+// 导出/导入/重置
+document.getElementById('export-progress').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(progress, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `knowledge-garden-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+document.getElementById('import-progress').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const imported = JSON.parse(evt.target.result);
+                if (imported.completed) {
+                    progress = imported;
+                    saveProgress();
+                    refreshCompletionUI();
+                    renderProgress();
+                    alert('✓ 数据导入成功');
+                }
+            } catch (err) {
+                alert('✗ 文件格式错误: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+});
+
+document.getElementById('reset-progress').addEventListener('click', () => {
+    if (confirm('确定要重置所有阅读进度吗？此操作不可撤销。')) {
+        progress = { completed: {} };
+        saveProgress();
+        refreshCompletionUI();
+        renderProgress();
+    }
+});
+
+// 初始化
+refreshCompletionUI();
+
+// ============================================================
+// 命令面板（Ctrl+K 全局搜索）
+// ============================================================
+const searchIndex = [];
+document.querySelectorAll('.chapter').forEach(ch => {
+    const titleEl = ch.querySelector('.chapter-title');
+    const contentEl = ch.querySelector('.chapter-content');
+    const title = titleEl?.textContent.trim() || '';
+    const text = contentEl?.textContent.trim() || '';
+    const bookEl = document.querySelector(`[data-book="${ch.dataset.book}"] .book-title-text`);
+    const bookTitle = bookEl?.textContent || ch.dataset.book;
+
+    searchIndex.push({
+        id: ch.id,
+        book: ch.dataset.book,
+        bookTitle,
+        title,
+        text,
+        lower: (title + ' ' + text).toLowerCase(),
+    });
+});
+
+const commandPalette = document.querySelector('.command-palette');
+const commandInput = document.querySelector('.command-input');
+const commandResults = document.querySelector('.command-results');
+let activeCommandIdx = -1;
+
+function highlightSnippet(text, query, len = 100) {
+    const lower = text.toLowerCase();
+    const idx = lower.indexOf(query);
+    if (idx < 0) return text.slice(0, len) + (text.length > len ? '…' : '');
+
+    const start = Math.max(0, idx - 30);
+    const end = Math.min(text.length, idx + query.length + len - 30);
+    let snippet = text.slice(start, end);
+    if (start > 0) snippet = '…' + snippet;
+    if (end < text.length) snippet = snippet + '…';
+
+    const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, r'\$&'), 'gi');
+    return snippet.replace(regex, m => `<mark>${m}</mark>`);
+}
+
+function performSearch(query) {
+    commandResults.innerHTML = '';
+    activeCommandIdx = -1;
+
+    if (!query) return;
+
+    const q = query.toLowerCase();
+    const results = [];
+
+    for (const item of searchIndex) {
+        if (item.lower.includes(q)) {
+            // 算分数：标题命中 > 内容命中
+            const titleIdx = item.title.toLowerCase().indexOf(q);
+            const score = titleIdx >= 0 ? (100 - titleIdx) : 1;
+            results.push({ ...item, score });
+        }
+    }
+
+    results.sort((a, b) => b.score - a.score);
+    const top = results.slice(0, 10);
+
+    if (top.length === 0) {
+        commandResults.innerHTML = '<div class="command-empty">没有匹配的章节</div>';
+        return;
+    }
+
+    commandResults.innerHTML = top.map((r, i) => `
+        <div class="command-item" data-chapter="${r.id}" data-idx="${i}">
+            <div class="command-book-tag">${r.bookTitle}</div>
+            <div class="command-title">${r.title}</div>
+            <div class="command-snippet">${highlightSnippet(r.text, q)}</div>
+        </div>
+    `).join('');
+
+    commandResults.querySelectorAll('.command-item').forEach(item => {
+        item.addEventListener('click', () => jumpToCommand(item.dataset.chapter));
+        item.addEventListener('mouseenter', () => {
+            commandResults.querySelectorAll('.command-item').forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+            activeCommandIdx = parseInt(item.dataset.idx);
+        });
+    });
+
+    activeCommandIdx = 0;
+    commandResults.querySelector('.command-item')?.classList.add('active');
+}
+
+function jumpToCommand(chapterId) {
+    commandPalette.classList.remove('visible');
+    commandInput.value = '';
+    const target = document.getElementById(chapterId);
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.pushState(null, '', '#' + chapterId);
+    }
+}
+
+// 打开/关闭
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        commandPalette.classList.add('visible');
+        commandInput.focus();
+        commandInput.select();
+    }
+    if (e.key === 'Escape' && commandPalette.classList.contains('visible')) {
+        commandPalette.classList.remove('visible');
+        commandInput.value = '';
+    }
+    if (commandPalette.classList.contains('visible')) {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const items = commandResults.querySelectorAll('.command-item');
+            if (items.length === 0) return;
+            items.forEach(el => el.classList.remove('active'));
+            activeCommandIdx = Math.min(items.length - 1, activeCommandIdx + 1);
+            items[activeCommandIdx]?.classList.add('active');
+            items[activeCommandIdx]?.scrollIntoView({ block: 'nearest' });
+        }
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const items = commandResults.querySelectorAll('.command-item');
+            if (items.length === 0) return;
+            items.forEach(el => el.classList.remove('active'));
+            activeCommandIdx = Math.max(0, activeCommandIdx - 1);
+            items[activeCommandIdx]?.classList.add('active');
+            items[activeCommandIdx]?.scrollIntoView({ block: 'nearest' });
+        }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const active = commandResults.querySelector('.command-item.active');
+            if (active) jumpToCommand(active.dataset.chapter);
+        }
+    }
+});
+
+commandInput.addEventListener('input', (e) => performSearch(e.target.value.trim()));
+
+// 点击背景关闭
+commandPalette.addEventListener('click', (e) => {
+    if (e.target === commandPalette) {
+        commandPalette.classList.remove('visible');
+        commandInput.value = '';
     }
 });
 """
@@ -1495,12 +2231,13 @@ def build_html():
             )
 
             book_chapters_html_parts.append(
-                f'<article id="{anchor}" class="chapter" data-book="{book_slug}">'
+                f'<article id="{anchor}" class="chapter" data-book="{book_slug}" data-chap="{chap_slug}">'
                 f'<div class="chapter-num">CHAPTER {chap_idx:02d}</div>'
                 f'<h1 class="chapter-title">{display_title}</h1>'
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字</div>'
                 f'<div class="chapter-content">{content_html}</div>'
                 f'<div class="chapter-end">本章完</div>'
+                f'<button class="completion-toggle" data-chapter="{anchor}">☐ 标记为已读</button>'
                 f'</article>'
             )
 
@@ -1577,6 +2314,7 @@ def build_html():
         <div class="divider"></div>
         <button id="music-btn" title="背景音乐 (M)">♪</button>
         <button id="notes-btn" title="笔记 (N)">✎</button>
+        <button id="progress-btn" title="阅读进度 (P)">✓</button>
         <button id="dark-btn" title="暗色模式 (D)">🌙</button>
     </div>
 
@@ -1623,6 +2361,60 @@ def build_html():
     <div class="pwa-prompt">
         📱 添加到主屏幕，离线可用
         <button class="close">×</button>
+    </div>
+
+    <!-- 进度面板 -->
+    <div class="progress-panel">
+        <div class="progress-modal">
+            <div class="progress-modal-header">
+                <h2>📊 阅读进度</h2>
+                <button class="close">×</button>
+            </div>
+
+            <div class="overall-progress">
+                <div class="big-number"><span id="overall-percent">0</span>%</div>
+                <div class="label"><span id="overall-stats">0 / 0 章</span></div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="overall-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="book-progress-list"></div>
+
+            <div class="calendar">
+                <div class="calendar-title">
+                    <span>📅 阅读日历（过去 365 天）</span>
+                    <div class="calendar-legend">
+                        <span>少</span>
+                        <span class="calendar-day"></span>
+                        <span class="calendar-day level-1"></span>
+                        <span class="calendar-day level-2"></span>
+                        <span class="calendar-day level-3"></span>
+                        <span class="calendar-day level-4"></span>
+                        <span>多</span>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+            </div>
+
+            <div class="progress-actions">
+                <button id="export-progress">📤 导出数据</button>
+                <button id="import-progress">📥 导入数据</button>
+                <button id="reset-progress">🗑 重置进度</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 命令面板（搜索） -->
+    <div class="command-palette">
+        <div class="command-modal">
+            <input type="text" class="command-input" placeholder="🔍 搜索章节标题或内容...">
+            <div class="command-hint">
+                <span>↑↓ 选择 · Enter 跳转 · Esc 关闭</span>
+                <span>Ctrl+K</span>
+            </div>
+            <div class="command-results"></div>
+        </div>
     </div>
 
     <main class="content">

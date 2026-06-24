@@ -838,6 +838,380 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
 }
 
 .pwa-prompt .close:hover { opacity: 1; }
+
+/* === 进度统计 === */
+.completion-toggle {
+    display: block;
+    margin: 60px auto 0;
+    padding: 12px 32px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-soft);
+    border-radius: 24px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.15s;
+}
+
+.completion-toggle:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.completion-toggle.completed {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.chapter.completed .chapter-title::before {
+    content: "✓ ";
+    color: var(--accent);
+}
+
+.book-chapters li a.completed {
+    color: var(--accent);
+}
+
+.book-chapters li a.completed::after {
+    content: " ✓";
+    color: var(--accent);
+    margin-left: 4px;
+}
+
+/* === 进度面板 === */
+.progress-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.progress-panel.visible { display: flex; }
+
+.progress-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 720px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.progress-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.progress-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    color: var(--text);
+}
+
+.progress-modal-header .close {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 22px;
+    color: var(--text-faint);
+}
+
+.overall-progress { margin-bottom: 32px; }
+
+.overall-progress .big-number {
+    font-size: 56px;
+    font-weight: 300;
+    color: var(--accent);
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+.overall-progress .label {
+    color: var(--text-soft);
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.overall-progress .progress-bar {
+    height: 8px;
+    background: var(--bg-soft);
+    border-radius: 4px;
+    margin-top: 16px;
+    overflow: hidden;
+}
+
+.overall-progress .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s ease;
+    border-radius: 4px;
+}
+
+.book-progress { margin-bottom: 20px; }
+
+.book-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+}
+
+.book-progress-name {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.book-progress-stats {
+    color: var(--text-soft);
+    font-size: 12px;
+    font-family: Georgia, serif;
+}
+
+.book-progress-bar {
+    height: 6px;
+    background: var(--bg-soft);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.book-progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* 阅读日历 */
+.calendar { margin-top: 32px; }
+
+.calendar-title {
+    color: var(--text-soft);
+    font-size: 13px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-grid {
+    display: flex;
+    gap: 2px;
+    overflow-x: auto;
+    padding: 4px 0;
+}
+
+.calendar-week {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.calendar-day {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    background: var(--bg-soft);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.calendar-day:hover {
+    transform: scale(1.4);
+    outline: 1px solid var(--accent);
+}
+
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+    pointer-events: none;
+}
+
+.calendar-day.level-1 { background: rgba(176, 137, 104, 0.25); }
+.calendar-day.level-2 { background: rgba(176, 137, 104, 0.5); }
+.calendar-day.level-3 { background: rgba(176, 137, 104, 0.75); }
+.calendar-day.level-4 { background: var(--accent); }
+
+body.dark .calendar-day { background: rgba(255, 255, 255, 0.06); }
+body.dark .calendar-day.level-1 { background: rgba(196, 168, 124, 0.3); }
+body.dark .calendar-day.level-2 { background: rgba(196, 168, 124, 0.55); }
+body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
+
+.calendar-legend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-faint);
+}
+
+.calendar-legend .calendar-day {
+    width: 10px;
+    height: 10px;
+    cursor: default;
+}
+
+.calendar-legend .calendar-day:hover {
+    transform: none;
+    outline: none;
+}
+
+.progress-actions {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+}
+
+.progress-actions button {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-soft);
+}
+
+.progress-actions button:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+/* === 命令面板（搜索） === */
+.command-palette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 400;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+    backdrop-filter: blur(4px);
+}
+
+.command-palette.visible { display: flex; }
+
+.command-modal {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    max-height: 70vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.command-input {
+    width: 100%;
+    padding: 18px 20px;
+    border: none;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 16px;
+    font-family: inherit;
+    border-bottom: 1px solid var(--border);
+    box-sizing: border-box;
+}
+
+.command-input:focus { outline: none; }
+.command-input::placeholder { color: var(--text-faint); }
+
+.command-hint {
+    padding: 8px 20px;
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+}
+
+.command-results {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.command-item {
+    padding: 14px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+}
+
+.command-item:hover, .command-item.active {
+    background: var(--accent-soft);
+}
+
+.command-item:last-child { border-bottom: none; }
+
+.command-book-tag {
+    display: inline-block;
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.command-title {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+}
+
+.command-snippet {
+    display: block;
+    color: var(--text-faint);
+    font-size: 12px;
+    margin-top: 4px;
+    line-height: 1.5;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.command-snippet mark {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.command-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--text-faint);
+    font-style: italic;
+    font-size: 13px;
+}
 </style>
 </head>
 <body class="sidebar-collapsed">
@@ -860,6 +1234,7 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
         <div class="divider"></div>
         <button id="music-btn" title="背景音乐 (M)">♪</button>
         <button id="notes-btn" title="笔记 (N)">✎</button>
+        <button id="progress-btn" title="阅读进度 (P)">✓</button>
         <button id="dark-btn" title="暗色模式 (D)">🌙</button>
     </div>
 
@@ -908,8 +1283,62 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
         <button class="close">×</button>
     </div>
 
+    <!-- 进度面板 -->
+    <div class="progress-panel">
+        <div class="progress-modal">
+            <div class="progress-modal-header">
+                <h2>📊 阅读进度</h2>
+                <button class="close">×</button>
+            </div>
+
+            <div class="overall-progress">
+                <div class="big-number"><span id="overall-percent">0</span>%</div>
+                <div class="label"><span id="overall-stats">0 / 0 章</span></div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="overall-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="book-progress-list"></div>
+
+            <div class="calendar">
+                <div class="calendar-title">
+                    <span>📅 阅读日历（过去 365 天）</span>
+                    <div class="calendar-legend">
+                        <span>少</span>
+                        <span class="calendar-day"></span>
+                        <span class="calendar-day level-1"></span>
+                        <span class="calendar-day level-2"></span>
+                        <span class="calendar-day level-3"></span>
+                        <span class="calendar-day level-4"></span>
+                        <span>多</span>
+                    </div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+            </div>
+
+            <div class="progress-actions">
+                <button id="export-progress">📤 导出数据</button>
+                <button id="import-progress">📥 导入数据</button>
+                <button id="reset-progress">🗑 重置进度</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 命令面板（搜索） -->
+    <div class="command-palette">
+        <div class="command-modal">
+            <input type="text" class="command-input" placeholder="🔍 搜索章节标题或内容...">
+            <div class="command-hint">
+                <span>↑↓ 选择 · Enter 跳转 · Esc 关闭</span>
+                <span>Ctrl+K</span>
+            </div>
+            <div class="command-results"></div>
+        </div>
+    </div>
+
     <main class="content">
-        <div class="book-cover"><div class="book-icon-big">📕</div><h1>Multi-Agent in Practice</h1><p>从零到生产：手把手教你构建 Multi-Agent 系统</p><div class="book-stats">10 章 · 7,642 字 · 约 19 分钟</div></div><article id="multi-agent__01-your-first-agent" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">01. 你的第一个 Agent</h1><div class="chapter-meta">约 2 分钟 · 1056 字</div><div class="chapter-content"><h1>01. 你的第一个 Agent</h1>
+        <div class="book-cover"><div class="book-icon-big">📕</div><h1>Multi-Agent in Practice</h1><p>从零到生产：手把手教你构建 Multi-Agent 系统</p><div class="book-stats">10 章 · 7,642 字 · 约 19 分钟</div></div><article id="multi-agent__01-your-first-agent" class="chapter" data-book="multi-agent" data-chap="01-your-first-agent"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">01. 你的第一个 Agent</h1><div class="chapter-meta">约 2 分钟 · 1056 字</div><div class="chapter-content"><h1>01. 你的第一个 Agent</h1>
 <blockquote>
 <p>本章用 30 分钟带你写出能调用工具的 Agent。从零开始，不假设你会 LLM 编程。</p>
 </blockquote>
@@ -1145,7 +1574,7 @@ python multi_agent.py
 <li>错误处理：工具失败怎么办？LLM 返回 malformed JSON 怎么办？</li>
 <li>日志：记录每次决策和工具调用，便于调试</li>
 </ul>
-<p>这些会在第 8 篇 <a href="../08-observability-and-cost/">可观测性与成本</a> 和第 10 篇 <a href="../10-production-checklist/">生产化 Checklist</a> 展开。</p></div><div class="chapter-end">本章完</div></article><article id="multi-agent__02-why-multi-agent" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 02</div><h1 class="chapter-title">02. 为什么需要 Multi-Agent</h1><div class="chapter-meta">约 2 分钟 · 1017 字</div><div class="chapter-content"><h1>02. 为什么需要 Multi-Agent</h1>
+<p>这些会在第 8 篇 <a href="../08-observability-and-cost/">可观测性与成本</a> 和第 10 篇 <a href="../10-production-checklist/">生产化 Checklist</a> 展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__01-your-first-agent">☐ 标记为已读</button></article><article id="multi-agent__02-why-multi-agent" class="chapter" data-book="multi-agent" data-chap="02-why-multi-agent"><div class="chapter-num">CHAPTER 02</div><h1 class="chapter-title">02. 为什么需要 Multi-Agent</h1><div class="chapter-meta">约 2 分钟 · 1017 字</div><div class="chapter-content"><h1>02. 为什么需要 Multi-Agent</h1>
 <blockquote>
 <p>第 1 篇我们用单 Agent 查了天气、用 Multi-Agent 写了短文。本章具体拆解：单 Agent 在哪些场景下会"撑不住"，以及 Multi-Agent 如何解。</p>
 </blockquote>
@@ -1319,7 +1748,7 @@ python multi_agent.py
 <li>失败要 circuit breaker（一个 Agent 失败不能拖垮整个）</li>
 <li>监控每个 Agent 的 token 消耗和延迟</li>
 </ul>
-<p>这些会在 <a href="../08-observability-and-cost/">第 8 章 可观测性与成本</a> 和 <a href="../10-production-checklist/">第 10 章 生产化 Checklist</a> 展开。</p></div><div class="chapter-end">本章完</div></article><article id="multi-agent__03-five-abstractions" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 03</div><h1 class="chapter-title">03. 5 个核心抽象</h1><div class="chapter-meta">约 2 分钟 · 1019 字</div><div class="chapter-content"><h1>03. 5 个核心抽象</h1>
+<p>这些会在 <a href="../08-observability-and-cost/">第 8 章 可观测性与成本</a> 和 <a href="../10-production-checklist/">第 10 章 生产化 Checklist</a> 展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__02-why-multi-agent">☐ 标记为已读</button></article><article id="multi-agent__03-five-abstractions" class="chapter" data-book="multi-agent" data-chap="03-five-abstractions"><div class="chapter-num">CHAPTER 03</div><h1 class="chapter-title">03. 5 个核心抽象</h1><div class="chapter-meta">约 2 分钟 · 1019 字</div><div class="chapter-content"><h1>03. 5 个核心抽象</h1>
 <blockquote>
 <p>上一章我们直觉式地拆出了"研究员 + 写作员"两个 Agent。本章把这种直觉抽象成 5 个核心概念：<strong>Role / Goal / Tool / Memory / Handoff</strong>。理解这 5 个抽象，所有 Multi-Agent 框架都是它们的实现细节。</p>
 </blockquote>
@@ -1543,7 +1972,7 @@ Memory ──&gt; 贯穿所有 Agent
 <li><strong>Tool</strong>：统一错误返回格式、加超时、加重试</li>
 <li><strong>Memory</strong>：短期用 Redis，长期用向量数据库，共享用 LangGraph State</li>
 <li><strong>Handoff</strong>：可视化编排（用 LangGraph Studio / CrewAI Studio）</li>
-</ul></div><div class="chapter-end">本章完</div></article><article id="multi-agent__04-orchestration-patterns" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 04</div><h1 class="chapter-title">04. 编排模式全景</h1><div class="chapter-meta">约 2 分钟 · 978 字</div><div class="chapter-content"><h1>04. 编排模式全景</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__03-five-abstractions">☐ 标记为已读</button></article><article id="multi-agent__04-orchestration-patterns" class="chapter" data-book="multi-agent" data-chap="04-orchestration-patterns"><div class="chapter-num">CHAPTER 04</div><h1 class="chapter-title">04. 编排模式全景</h1><div class="chapter-meta">约 2 分钟 · 978 字</div><div class="chapter-content"><h1>04. 编排模式全景</h1>
 <blockquote>
 <p>第 3 章我们学了 5 个核心抽象（Role / Goal / Tool / Memory / Handoff）。本章把它们组合起来，看 5 种主流的"组合方式"——也就是 <strong>5 种编排模式</strong>。理解这 5 种模式，你就有了 Multi-Agent 系统的"流程图设计语言"。</p>
 </blockquote>
@@ -1775,7 +2204,7 @@ A ──┤      ├─→ D
 <li><strong>GroupChat</strong>：限制最大轮数（防无限讨论），加 cost budget</li>
 <li><strong>Swarm</strong>：所有 handoff 要有日志（难调试，必须有 trace）</li>
 <li><strong>Graph</strong>：用 LangGraph Studio 可视化，分层（subgraph 复用）</li>
-</ul></div><div class="chapter-end">本章完</div></article><article id="multi-agent__05-state-and-communication" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 05</div><h1 class="chapter-title">05. 通信与状态</h1><div class="chapter-meta">约 2 分钟 · 891 字</div><div class="chapter-content"><h1>05. 通信与状态</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__04-orchestration-patterns">☐ 标记为已读</button></article><article id="multi-agent__05-state-and-communication" class="chapter" data-book="multi-agent" data-chap="05-state-and-communication"><div class="chapter-num">CHAPTER 05</div><h1 class="chapter-title">05. 通信与状态</h1><div class="chapter-meta">约 2 分钟 · 891 字</div><div class="chapter-content"><h1>05. 通信与状态</h1>
 <blockquote>
 <p>第 4 章我们看了 5 种编排模式——本质上就是"Agent 之间怎么连"。本章深入一层：连起来之后，<strong>数据怎么传、状态怎么管</strong>。这是 Multi-Agent 系统从 demo 走向生产的关键工程问题。</p>
 </blockquote>
@@ -1988,7 +2417,7 @@ messages.append({&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;
 <li><strong>状态管理</strong>：用 LangGraph 的 TypedDict State，按节点定义读写权限</li>
 <li><strong>监控</strong>：每条消息记录来源、大小、耗时</li>
 <li><strong>告警</strong>：单条消息 &gt; 1MB 告警，单次 session 状态 &gt; 10MB 告警</li>
-</ul></div><div class="chapter-end">本章完</div></article><article id="multi-agent__06-failure-handling" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 06</div><h1 class="chapter-title">06. 失败的艺术</h1><div class="chapter-meta">约 1 分钟 · 714 字</div><div class="chapter-content"><h1>06. 失败的艺术</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__05-state-and-communication">☐ 标记为已读</button></article><article id="multi-agent__06-failure-handling" class="chapter" data-book="multi-agent" data-chap="06-failure-handling"><div class="chapter-num">CHAPTER 06</div><h1 class="chapter-title">06. 失败的艺术</h1><div class="chapter-meta">约 1 分钟 · 714 字</div><div class="chapter-content"><h1>06. 失败的艺术</h1>
 <blockquote>
 <p>Multi-Agent 系统的失败是单 Agent 的 N 倍（N = Agent 数量）。本章系统讲<strong>失败的分类 + 防御模式</strong>——这是从 demo 走向生产的关键一步。</p>
 </blockquote>
@@ -2321,7 +2750,7 @@ app.invoke(Command(resume=&quot;yes&quot;), config=config)
 <li>[ ] State 有 size 限制（防止 OOM）</li>
 <li>[ ] 单 session 有 token budget</li>
 <li>[ ] 失败有日志 + trace（便于事后分析）</li>
-</ul></div><div class="chapter-end">本章完</div></article><article id="multi-agent__07-framework-comparison" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 07</div><h1 class="chapter-title">07. 框架横向对比</h1><div class="chapter-meta">约 2 分钟 · 824 字</div><div class="chapter-content"><h1>07. 框架横向对比</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__06-failure-handling">☐ 标记为已读</button></article><article id="multi-agent__07-framework-comparison" class="chapter" data-book="multi-agent" data-chap="07-framework-comparison"><div class="chapter-num">CHAPTER 07</div><h1 class="chapter-title">07. 框架横向对比</h1><div class="chapter-meta">约 2 分钟 · 824 字</div><div class="chapter-content"><h1>07. 框架横向对比</h1>
 <blockquote>
 <p>第 4 章我们看了 5 种编排模式，本章做一件更实际的事：<strong>用同一需求对比 4 个主流 Multi-Agent 框架的代码风格、调试难度、生产成熟度</strong>。看完你应该能根据自己的场景选框架。</p>
 </blockquote>
@@ -2641,7 +3070,7 @@ response = client.run(agent=researcher, messages=[{&quot;role&quot;: &quot;user&
 <li><strong>加监控层</strong>：不论用哪个框架，都要把 trace / metric 抽到统一 observability 平台</li>
 <li><strong>测试用 mock</strong>：避免每个测试都调 LLM，用 mock 的 LLM client</li>
 <li><strong>版本锁</strong>：框架迭代快，<code>requirements.txt</code> 锁版本</li>
-</ul></div><div class="chapter-end">本章完</div></article><article id="multi-agent__08-observability-and-cost" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 08</div><h1 class="chapter-title">08. 可观测性与成本</h1><div class="chapter-meta">约 1 分钟 · 547 字</div><div class="chapter-content"><h1>08. 可观测性与成本</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__07-framework-comparison">☐ 标记为已读</button></article><article id="multi-agent__08-observability-and-cost" class="chapter" data-book="multi-agent" data-chap="08-observability-and-cost"><div class="chapter-num">CHAPTER 08</div><h1 class="chapter-title">08. 可观测性与成本</h1><div class="chapter-meta">约 1 分钟 · 547 字</div><div class="chapter-content"><h1>08. 可观测性与成本</h1>
 <blockquote>
 <p>第 6 章讲了怎么防止失败，第 7 章讲了怎么选框架。本章讲选完框架之后，<strong>怎么知道系统在干什么、烧了多少钱</strong>。这是生产环境最容易被忽视的两个隐形炸弹。</p>
 </blockquote>
@@ -2929,7 +3358,7 @@ else:
 <li>[ ] 单 session 有成本上限</li>
 <li>[ ] 关键指标有 dashboard</li>
 <li>[ ] 异常有告警（Slack / 钉钉 / 飞书）</li>
-</ul></div><div class="chapter-end">本章完</div></article><article id="multi-agent__09-code-review-project" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 09</div><h1 class="chapter-title">第 9 章：实战 CodeReviewer Multi-Agent</h1><div class="chapter-meta">约 1 分钟 · 78 字</div><div class="chapter-content"><h1>第 9 章：实战 CodeReviewer Multi-Agent</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__08-observability-and-cost">☐ 标记为已读</button></article><article id="multi-agent__09-code-review-project" class="chapter" data-book="multi-agent" data-chap="09-code-review-project"><div class="chapter-num">CHAPTER 09</div><h1 class="chapter-title">第 9 章：实战 CodeReviewer Multi-Agent</h1><div class="chapter-meta">约 1 分钟 · 78 字</div><div class="chapter-content"><h1>第 9 章：实战 CodeReviewer Multi-Agent</h1>
 <h2>项目结构</h2>
 <pre><code>09-code-review-project/
 ├── README.md                    # 项目说明
@@ -2980,7 +3409,7 @@ python main.py --diff &quot;git diff HEAD~1&quot;
 <li>接 Slack / 飞书通知</li>
 <li>高风险评审结果需要人类确认（不能自动 approve）</li>
 <li>评审结果存数据库，做趋势分析</li>
-</ul></div><div class="chapter-end">本章完</div></article><article id="multi-agent__10-production-checklist" class="chapter" data-book="multi-agent"><div class="chapter-num">CHAPTER 10</div><h1 class="chapter-title">10. 生产化 Checklist</h1><div class="chapter-meta">约 1 分钟 · 518 字</div><div class="chapter-content"><h1>10. 生产化 Checklist</h1>
+</ul></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__09-code-review-project">☐ 标记为已读</button></article><article id="multi-agent__10-production-checklist" class="chapter" data-book="multi-agent" data-chap="10-production-checklist"><div class="chapter-num">CHAPTER 10</div><h1 class="chapter-title">10. 生产化 Checklist</h1><div class="chapter-meta">约 1 分钟 · 518 字</div><div class="chapter-content"><h1>10. 生产化 Checklist</h1>
 <blockquote>
 <p>最后这一章：把"能跑"变成"能上生产"。<strong>12 个真实坑</strong>，每个坑配一段"症状—诊断—修复"。这是系列所有内容的工程化总结。</p>
 </blockquote>
@@ -3329,7 +3758,7 @@ def cost_report_by_feature():
 <li>[ ] 用第 10 章的 Checklist 给你的项目打分</li>
 </ul>
 <hr />
-<p><strong>系列完结</strong> 🎉</p></div><div class="chapter-end">本章完</div></article><div class="book-cover"><div class="book-icon-big">📗</div><h1>LLM Prompt 实战</h1><p>从基础到高级的 Prompt 工程指南</p><div class="book-stats">3 章 · 290 字 · 约 1 分钟</div></div><article id="llm-prompt__01-prompt-basics" class="chapter" data-book="llm-prompt"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">Prompt 基础</h1><div class="chapter-meta">约 1 分钟 · 89 字</div><div class="chapter-content"><h1>Prompt 基础</h1>
+<p><strong>系列完结</strong> 🎉</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="multi-agent__10-production-checklist">☐ 标记为已读</button></article><div class="book-cover"><div class="book-icon-big">📗</div><h1>LLM Prompt 实战</h1><p>从基础到高级的 Prompt 工程指南</p><div class="book-stats">3 章 · 290 字 · 约 1 分钟</div></div><article id="llm-prompt__01-prompt-basics" class="chapter" data-book="llm-prompt" data-chap="01-prompt-basics"><div class="chapter-num">CHAPTER 01</div><h1 class="chapter-title">Prompt 基础</h1><div class="chapter-meta">约 1 分钟 · 89 字</div><div class="chapter-content"><h1>Prompt 基础</h1>
 <blockquote>
 <p>Prompt Engineering 是和 LLM 协作的第一课。</p>
 </blockquote>
@@ -3349,7 +3778,7 @@ def cost_report_by_feature():
 <pre><code>找出 3 个安全问题，并给出修复建议。
 </code></pre>
 <h2>下篇</h2>
-<p><a href="../02-few-shot/">02. Few-shot 与示例</a></p></div><div class="chapter-end">本章完</div></article><article id="llm-prompt__02-few-shot" class="chapter" data-book="llm-prompt"><div class="chapter-num">CHAPTER 02</div><h1 class="chapter-title">Few-shot 与示例</h1><div class="chapter-meta">约 1 分钟 · 99 字</div><div class="chapter-content"><h1>Few-shot 与示例</h1>
+<p><a href="../02-few-shot/">02. Few-shot 与示例</a></p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__01-prompt-basics">☐ 标记为已读</button></article><article id="llm-prompt__02-few-shot" class="chapter" data-book="llm-prompt" data-chap="02-few-shot"><div class="chapter-num">CHAPTER 02</div><h1 class="chapter-title">Few-shot 与示例</h1><div class="chapter-meta">约 1 分钟 · 99 字</div><div class="chapter-content"><h1>Few-shot 与示例</h1>
 <blockquote>
 <p>给 LLM 看几个例子，比讲 100 条规则更管用。</p>
 </blockquote>
@@ -3377,7 +3806,7 @@ def cost_report_by_feature():
 <li><strong>3-5 个最佳</strong>：太多反而稀释</li>
 </ol>
 <h2>下篇</h2>
-<p><a href="../03-advanced-patterns/">03. 高级模式</a></p></div><div class="chapter-end">本章完</div></article><article id="llm-prompt__03-advanced-patterns" class="chapter" data-book="llm-prompt"><div class="chapter-num">CHAPTER 03</div><h1 class="chapter-title">高级模式</h1><div class="chapter-meta">约 1 分钟 · 102 字</div><div class="chapter-content"><h1>高级模式</h1>
+<p><a href="../03-advanced-patterns/">03. 高级模式</a></p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__02-few-shot">☐ 标记为已读</button></article><article id="llm-prompt__03-advanced-patterns" class="chapter" data-book="llm-prompt" data-chap="03-advanced-patterns"><div class="chapter-num">CHAPTER 03</div><h1 class="chapter-title">高级模式</h1><div class="chapter-meta">约 1 分钟 · 102 字</div><div class="chapter-content"><h1>高级模式</h1>
 <blockquote>
 <p>Chain-of-Thought / ReAct / Self-Consistency——这些模式让 LLM 的能力跃升一个台阶。</p>
 </blockquote>
@@ -3403,7 +3832,7 @@ def cost_report_by_feature():
 → 通常更准确
 </code></pre>
 <h2>下篇</h2>
-<p>更多高级模式（ToT / Reflexion / Auto-CoT）会在 <a href="../../multi-agent/">Multi-Agent in Practice</a> 系列里展开。</p></div><div class="chapter-end">本章完</div></article>
+<p>更多高级模式（ToT / Reflexion / Auto-CoT）会在 <a href="../../multi-agent/">Multi-Agent in Practice</a> 系列里展开。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="llm-prompt__03-advanced-patterns">☐ 标记为已读</button></article>
     </main>
 
     <script>
@@ -3880,6 +4309,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 's' || e.key === 'S') document.getElementById('sidebar-toggle').click();
     if (e.key === 'm' || e.key === 'M') document.getElementById('music-btn').click();
     if (e.key === 'n' || e.key === 'N') document.getElementById('notes-btn').click();
+    if (e.key === 'p' || e.key === 'P') document.getElementById('progress-btn').click();
     if (e.key === '+' || e.key === '=') {
         const sizes = Object.keys(FONT_SIZES);
         const idx = sizes.indexOf(currentFontSize);
@@ -3894,6 +4324,367 @@ document.addEventListener('keydown', (e) => {
         document.querySelector('.music-panel').classList.remove('visible');
         document.querySelector('.notes-panel').classList.remove('visible');
         document.querySelector('.note-modal').classList.remove('visible');
+        document.querySelector('.progress-panel').classList.remove('visible');
+    }
+});
+
+// ============================================================
+// 进度统计
+// ============================================================
+let progress = JSON.parse(localStorage.getItem('progress') || '{}');
+if (!progress.completed) progress = { completed: {} };
+
+function saveProgress() {
+    localStorage.setItem('progress', JSON.stringify(progress));
+}
+
+function toggleChapter(chapterId) {
+    if (progress.completed[chapterId]) {
+        delete progress.completed[chapterId];
+    } else {
+        progress.completed[chapterId] = Date.now();
+    }
+    saveProgress();
+    refreshCompletionUI();
+}
+
+function refreshCompletionUI() {
+    // 每章 toggle button 状态
+    document.querySelectorAll('.completion-toggle').forEach(btn => {
+        const chapterId = btn.dataset.chapter;
+        const isCompleted = !!progress.completed[chapterId];
+        btn.classList.toggle('completed', isCompleted);
+        btn.textContent = isCompleted ? '✓ 已读 (点击撤销)' : '☐ 标记为已读';
+        // article 加 completed class
+        const article = document.getElementById(chapterId);
+        if (article) article.classList.toggle('completed', isCompleted);
+    });
+
+    // 侧栏每章标记
+    document.querySelectorAll('.book-chapters a').forEach(a => {
+        const chapterId = a.getAttribute('href').slice(1);
+        a.classList.toggle('completed', !!progress.completed[chapterId]);
+    });
+}
+
+document.querySelectorAll('.completion-toggle').forEach(btn => {
+    btn.addEventListener('click', () => toggleChapter(btn.dataset.chapter));
+});
+
+// 打开进度面板
+document.getElementById('progress-btn').addEventListener('click', openProgressPanel);
+document.querySelector('.progress-panel .close').addEventListener('click', () => {
+    document.querySelector('.progress-panel').classList.remove('visible');
+});
+
+function openProgressPanel() {
+    renderProgress();
+    document.querySelector('.progress-panel').classList.add('visible');
+}
+
+function renderProgress() {
+    // 收集所有章节
+    const allChapters = Array.from(document.querySelectorAll('.chapter')).map(c => ({
+        id: c.id,
+        book: c.dataset.book,
+        bookTitle: c.closest('.chapter').dataset.book,
+    }));
+
+    // 按书分组
+    const bookStats = {};
+    allChapters.forEach(c => {
+        const bookGroup = document.querySelector(`[data-book="${c.book}"]`);
+        const bookTitle = bookGroup?.querySelector('.book-title-text')?.textContent || c.book;
+        if (!bookStats[c.book]) {
+            bookStats[c.book] = { title: bookTitle, total: 0, completed: 0 };
+        }
+        bookStats[c.book].total++;
+        if (progress.completed[c.id]) bookStats[c.book].completed++;
+    });
+
+    const totalChapters = allChapters.length;
+    const completedChapters = allChapters.filter(c => progress.completed[c.id]).length;
+    const percent = totalChapters > 0 ? Math.round(completedChapters / totalChapters * 100) : 0;
+
+    document.getElementById('overall-percent').textContent = percent;
+    document.getElementById('overall-stats').textContent = `${completedChapters} / ${totalChapters} 章`;
+    document.getElementById('overall-fill').style.width = percent + '%';
+
+    // 各书进度
+    const bookProgressList = document.getElementById('book-progress-list');
+    bookProgressList.innerHTML = Object.entries(bookStats).map(([slug, stats]) => {
+        const pct = stats.total > 0 ? Math.round(stats.completed / stats.total * 100) : 0;
+        return `
+            <div class="book-progress">
+                <div class="book-progress-header">
+                    <span class="book-progress-name">${stats.title}</span>
+                    <span class="book-progress-stats">${stats.completed} / ${stats.total} · ${pct}%</span>
+                </div>
+                <div class="book-progress-bar">
+                    <div class="book-progress-bar-fill" style="width: ${pct}%"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // 日历
+    renderCalendar();
+}
+
+function renderCalendar() {
+    const grid = document.getElementById('calendar-grid');
+    grid.innerHTML = '';
+
+    // 每天的完成数
+    const daily = {};
+    Object.values(progress.completed).forEach(ts => {
+        const date = new Date(ts).toISOString().slice(0, 10);
+        daily[date] = (daily[date] || 0) + 1;
+    });
+
+    // 365 天
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - 364);
+
+    // 按周分列（GitHub 风格）
+    let currentDate = new Date(startDate);
+    // 调整到最近的周日
+    currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+
+    while (currentDate <= today) {
+        const week = document.createElement('div');
+        week.className = 'calendar-week';
+
+        for (let i = 0; i < 7; i++) {
+            const day = document.createElement('div');
+            day.className = 'calendar-day';
+
+            if (currentDate > today) {
+                day.classList.add('empty');
+            } else {
+                const dateKey = currentDate.toISOString().slice(0, 10);
+                const count = daily[dateKey] || 0;
+
+                if (count === 0) {
+                    // 保持空
+                } else if (count === 1) {
+                    day.classList.add('level-1');
+                } else if (count === 2) {
+                    day.classList.add('level-2');
+                } else if (count <= 4) {
+                    day.classList.add('level-3');
+                } else {
+                    day.classList.add('level-4');
+                }
+
+                day.title = `${dateKey}: ${count} 章`;
+            }
+
+            week.appendChild(day);
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+
+        grid.appendChild(week);
+    }
+}
+
+// 导出/导入/重置
+document.getElementById('export-progress').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(progress, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `knowledge-garden-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+});
+
+document.getElementById('import-progress').addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            try {
+                const imported = JSON.parse(evt.target.result);
+                if (imported.completed) {
+                    progress = imported;
+                    saveProgress();
+                    refreshCompletionUI();
+                    renderProgress();
+                    alert('✓ 数据导入成功');
+                }
+            } catch (err) {
+                alert('✗ 文件格式错误: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+});
+
+document.getElementById('reset-progress').addEventListener('click', () => {
+    if (confirm('确定要重置所有阅读进度吗？此操作不可撤销。')) {
+        progress = { completed: {} };
+        saveProgress();
+        refreshCompletionUI();
+        renderProgress();
+    }
+});
+
+// 初始化
+refreshCompletionUI();
+
+// ============================================================
+// 命令面板（Ctrl+K 全局搜索）
+// ============================================================
+const searchIndex = [];
+document.querySelectorAll('.chapter').forEach(ch => {
+    const titleEl = ch.querySelector('.chapter-title');
+    const contentEl = ch.querySelector('.chapter-content');
+    const title = titleEl?.textContent.trim() || '';
+    const text = contentEl?.textContent.trim() || '';
+    const bookEl = document.querySelector(`[data-book="${ch.dataset.book}"] .book-title-text`);
+    const bookTitle = bookEl?.textContent || ch.dataset.book;
+
+    searchIndex.push({
+        id: ch.id,
+        book: ch.dataset.book,
+        bookTitle,
+        title,
+        text,
+        lower: (title + ' ' + text).toLowerCase(),
+    });
+});
+
+const commandPalette = document.querySelector('.command-palette');
+const commandInput = document.querySelector('.command-input');
+const commandResults = document.querySelector('.command-results');
+let activeCommandIdx = -1;
+
+function highlightSnippet(text, query, len = 100) {
+    const lower = text.toLowerCase();
+    const idx = lower.indexOf(query);
+    if (idx < 0) return text.slice(0, len) + (text.length > len ? '…' : '');
+
+    const start = Math.max(0, idx - 30);
+    const end = Math.min(text.length, idx + query.length + len - 30);
+    let snippet = text.slice(start, end);
+    if (start > 0) snippet = '…' + snippet;
+    if (end < text.length) snippet = snippet + '…';
+
+    const regex = new RegExp(query.replace(/[.*+?^${}()|[\]\]/g, r'\$&'), 'gi');
+    return snippet.replace(regex, m => `<mark>${m}</mark>`);
+}
+
+function performSearch(query) {
+    commandResults.innerHTML = '';
+    activeCommandIdx = -1;
+
+    if (!query) return;
+
+    const q = query.toLowerCase();
+    const results = [];
+
+    for (const item of searchIndex) {
+        if (item.lower.includes(q)) {
+            // 算分数：标题命中 > 内容命中
+            const titleIdx = item.title.toLowerCase().indexOf(q);
+            const score = titleIdx >= 0 ? (100 - titleIdx) : 1;
+            results.push({ ...item, score });
+        }
+    }
+
+    results.sort((a, b) => b.score - a.score);
+    const top = results.slice(0, 10);
+
+    if (top.length === 0) {
+        commandResults.innerHTML = '<div class="command-empty">没有匹配的章节</div>';
+        return;
+    }
+
+    commandResults.innerHTML = top.map((r, i) => `
+        <div class="command-item" data-chapter="${r.id}" data-idx="${i}">
+            <div class="command-book-tag">${r.bookTitle}</div>
+            <div class="command-title">${r.title}</div>
+            <div class="command-snippet">${highlightSnippet(r.text, q)}</div>
+        </div>
+    `).join('');
+
+    commandResults.querySelectorAll('.command-item').forEach(item => {
+        item.addEventListener('click', () => jumpToCommand(item.dataset.chapter));
+        item.addEventListener('mouseenter', () => {
+            commandResults.querySelectorAll('.command-item').forEach(el => el.classList.remove('active'));
+            item.classList.add('active');
+            activeCommandIdx = parseInt(item.dataset.idx);
+        });
+    });
+
+    activeCommandIdx = 0;
+    commandResults.querySelector('.command-item')?.classList.add('active');
+}
+
+function jumpToCommand(chapterId) {
+    commandPalette.classList.remove('visible');
+    commandInput.value = '';
+    const target = document.getElementById(chapterId);
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.pushState(null, '', '#' + chapterId);
+    }
+}
+
+// 打开/关闭
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        commandPalette.classList.add('visible');
+        commandInput.focus();
+        commandInput.select();
+    }
+    if (e.key === 'Escape' && commandPalette.classList.contains('visible')) {
+        commandPalette.classList.remove('visible');
+        commandInput.value = '';
+    }
+    if (commandPalette.classList.contains('visible')) {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const items = commandResults.querySelectorAll('.command-item');
+            if (items.length === 0) return;
+            items.forEach(el => el.classList.remove('active'));
+            activeCommandIdx = Math.min(items.length - 1, activeCommandIdx + 1);
+            items[activeCommandIdx]?.classList.add('active');
+            items[activeCommandIdx]?.scrollIntoView({ block: 'nearest' });
+        }
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const items = commandResults.querySelectorAll('.command-item');
+            if (items.length === 0) return;
+            items.forEach(el => el.classList.remove('active'));
+            activeCommandIdx = Math.max(0, activeCommandIdx - 1);
+            items[activeCommandIdx]?.classList.add('active');
+            items[activeCommandIdx]?.scrollIntoView({ block: 'nearest' });
+        }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const active = commandResults.querySelector('.command-item.active');
+            if (active) jumpToCommand(active.dataset.chapter);
+        }
+    }
+});
+
+commandInput.addEventListener('input', (e) => performSearch(e.target.value.trim()));
+
+// 点击背景关闭
+commandPalette.addEventListener('click', (e) => {
+    if (e.target === commandPalette) {
+        commandPalette.classList.remove('visible');
+        commandInput.value = '';
     }
 });
 </script>
