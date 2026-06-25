@@ -2967,6 +2967,8 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
 .command-results {
     overflow-y: auto;
     flex: 1;
+    min-height: 240px;
+    max-height: 50vh;
 }
 
 .command-item {
