@@ -810,6 +810,14 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     font-style: italic;
 }
 
+.book-chevron {
+    flex-shrink: 0;
+    color: var(--text-faint);
+    transition: transform 0.2s ease;
+}
+
+.book-header.collapsed .book-chevron { transform: rotate(-90deg); }
+
 .book-progress-bar {
     height: 2px;
     background: var(--border);
@@ -3160,20 +3168,37 @@ if (localStorage.getItem('sidebarCollapsed') === 'true') {
     document.getElementById('sidebar-toggle')?.setAttribute('aria-expanded', 'true');
 }
 
-// 书架折叠
+// 书架折叠（默认全部展开，header 点击可折叠）
 document.querySelectorAll('.book-header').forEach(header => {
-    header.addEventListener('click', () => {
-        const chapters = header.nextElementSibling;
-        chapters.classList.toggle('collapsed');
+    header.addEventListener('click', (e) => {
+        // 避免进度条点击时触发折叠
+        if (e.target.closest('.book-progress-bar') || e.target.closest('.book-progress-label')) return;
+        const group = header.closest('.book-group');
+        const chapters = group.querySelector('.book-chapters');
+        const collapsed = chapters.classList.toggle('collapsed');
+        header.classList.toggle('collapsed', collapsed);
+        // 持久化
+        const slug = group.dataset.book;
+        const set = JSON.parse(localStorage.getItem('booksCollapsed') || '[]');
+        if (collapsed && !set.includes(slug)) set.push(slug);
+        else if (!collapsed) {
+            const i = set.indexOf(slug);
+            if (i >= 0) set.splice(i, 1);
+        }
+        localStorage.setItem('booksCollapsed', JSON.stringify(set));
     });
 });
 
-// 默认折叠非首本书
-document.querySelectorAll('.book-group').forEach((group, idx) => {
-    if (idx > 0) {
-        group.querySelector('.book-chapters').classList.add('collapsed');
-    }
-});
+// 默认全部展开；恢复用户上次手动折叠的
+try {
+    const collapsed = JSON.parse(localStorage.getItem('booksCollapsed') || '[]');
+    document.querySelectorAll('.book-group').forEach(group => {
+        if (collapsed.includes(group.dataset.book)) {
+            group.querySelector('.book-chapters').classList.add('collapsed');
+            group.querySelector('.book-header').classList.add('collapsed');
+        }
+    });
+} catch (e) {}
 
 // 系列导览（ch01 顶部）折叠/展开
 document.querySelectorAll('.series-intro-toggle').forEach(btn => {
@@ -5177,6 +5202,7 @@ def build_html():
             f'<span class="book-icon">{book_icons[book_slug]}</span>'
             f'<span class="book-title-text">{meta["title"]}</span>'
             f'<span class="book-chapters-count">{chap_count} 章</span>'
+            f'<span class="book-chevron" aria-hidden="true">{svg_icon("chevron-down", size=14)}</span>'
             f'</div>'
             f'<div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div>'
             f'<div class="book-progress-label">0 / {chap_count}</div>'
