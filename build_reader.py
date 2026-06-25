@@ -29,6 +29,7 @@ import json
 import re
 from io import BytesIO
 from pathlib import Path
+from datetime import datetime
 
 import markdown
 import qrcode
@@ -164,6 +165,38 @@ ICONS = {
     'qr':       '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/>',
     'disc':     '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M6 12c0-1.7 1.3-3 3-3"/>',
 }
+
+
+def build_sitemap(books) -> None:
+    """生成 sitemap.xml (SEO 用), 每章节一条 URL (单页应用 + hash anchor).
+
+    单文件 SPA 风格, 章节都在同一页. 用 hash anchor 让 Google 索引
+    能直接 jump 到具体章节.
+    """
+    today = datetime.now().strftime("%Y-%m-%d")
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>']
+    lines.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    # 主站
+    lines.append("  <url>")
+    lines.append(f"    <loc>{SITE_URL}</loc>")
+    lines.append(f"    <lastmod>{today}</lastmod>")
+    lines.append("    <changefreq>weekly</changefreq>")
+    lines.append("    <priority>1.0</priority>")
+    lines.append("  </url>")
+    # 每章节
+    for book_slug, meta, chapters in books:
+        for chap_slug, _ in chapters:
+            anchor = f"{book_slug}__{chap_slug}"
+            lines.append("  <url>")
+            lines.append(f"    <loc>{SITE_URL}#{anchor}</loc>")
+            lines.append(f"    <lastmod>{today}</lastmod>")
+            lines.append("    <priority>0.8</priority>")
+            lines.append("  </url>")
+    lines.append("</urlset>")
+
+    output = ROOT / "sitemap.xml"
+    output.write_text("\n".join(lines), encoding="utf-8")
+    print(f"生成 {output} ({len(books) * 10 + 1} URLs)")
 
 
 def svg_icon(name, size=16, stroke_width=1.5, classes=""):
@@ -3896,6 +3929,7 @@ def build_html():
     <link rel="manifest" href='data:application/json,{{"name":"个人知识库","short_name":"KB","start_url":"./","display":"standalone","background_color":"%23faf9f5","theme_color":"%23b08968","icons":[{{"src":"{PWA_ICON_DATA_URI}","sizes":"any","type":"image/svg+xml","purpose":"any"}}]}}'>
     <link rel="icon" type="image/svg+xml" href='{PWA_ICON_DATA_URI}'>
     <link rel="apple-touch-icon" href='{PWA_ICON_DATA_URI}'>
+    <link rel="sitemap" type="application/xml" href="sitemap.xml">
     <meta name="theme-color" content="#faf9f5">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -4138,6 +4172,9 @@ def build_html():
     print(f"  系列: {len(books)} | 总章节: {total_chapters} | 总字数: {total_chars:,}")
     for slug, meta, chs in books:
         print(f"    {meta['title']} ({len(chs)} 章)")
+
+    # 生成 sitemap.xml (SEO)
+    build_sitemap(books)
 
 
 if __name__ == "__main__":
