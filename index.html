@@ -9,7 +9,23 @@
     <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj4KICA8cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iI2ZhZjlmNSIgcng9IjMyIi8+CiAgPHRleHQgeD0iOTYiIHk9IjExNSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9Ijc2IiBmb250LXdlaWdodD0iNjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjYjA4OTY4Ij5LPC90ZXh0PgogIDx0ZXh0IHg9Ijk2IiB5PSIxNTgiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxNiIgbGV0dGVyLXNwYWNpbmc9IjMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM4YjZmNDciPktOT1dMRURHRTwvdGV4dD4KPC9zdmc+'>
     <link rel="apple-touch-icon" href='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj4KICA8cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iI2ZhZjlmNSIgcng9IjMyIi8+CiAgPHRleHQgeD0iOTYiIHk9IjExNSIgZm9udC1mYW1pbHk9Ikdlb3JnaWEsIHNlcmlmIiBmb250LXNpemU9Ijc2IiBmb250LXdlaWdodD0iNjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjYjA4OTY4Ij5LPC90ZXh0PgogIDx0ZXh0IHg9Ijk2IiB5PSIxNTgiIGZvbnQtZmFtaWx5PSJHZW9yZ2lhLCBzZXJpZiIgZm9udC1zaXplPSIxNiIgbGV0dGVyLXNwYWNpbmc9IjMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM4YjZmNDciPktOT1dMRURHRTwvdGV4dD4KPC9zdmc+'>
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
+    <link rel="alternate" type="application/rss+xml" title="个人知识库" href="rss.xml">
     <meta name="theme-color" content="#faf9f5">
+
+    <!-- Open Graph / Twitter Card -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mishishi.github.io/knowledge-garden/">
+    <meta property="og:title" content="个人知识库 · 5 个系列 50 章">
+    <meta property="og:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering — 写给造 / 选 harness 的人">
+    <meta property="og:image" content="https://mishishi.github.io/knowledge-garden//assets/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:site_name" content="个人知识库">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="个人知识库 · 5 个系列 50 章">
+    <meta name="twitter:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering">
+    <meta name="twitter:image" content="https://mishishi.github.io/knowledge-garden//assets/og.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="知识库">
@@ -776,6 +792,16 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.ov-ch-time {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: Georgia, serif;
+    font-style: italic;
+    min-width: 50px;
+    text-align: right;
 }
 
 .ov-ch-marker {
@@ -2429,6 +2455,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
                 <div class="help-row"><span>搜索章节 / 内容</span><span><kbd>Ctrl</kbd> <kbd>K</kbd></span></div>
                 <div class="help-row"><span>切换侧栏</span><span><kbd>S</kbd></span></div>
                 <div class="help-row"><span>专注模式</span><span><kbd>F</kbd></span></div>
+                <div class="help-row"><span>上一章 / 下一章</span><span><kbd>K</kbd> / <kbd>J</kbd></span></div>
                 <div class="help-row"><span>跳到顶部</span><span><kbd>G</kbd> <kbd>G</kbd></span></div>
                 <div class="help-row"><span>跳到底部</span><span><kbd>G</kbd> <kbd>G</kbd> <kbd>G</kbd></span></div>
             </div>
@@ -2490,16 +2517,16 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="multi-agent" style="width:0%"></div></div><div class="progress-label" data-book-label="multi-agent">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
-    <li><a href="#multi-agent__01-your-first-agent"><span class="ov-ch-num">01</span><span class="ov-ch-title">你的第一个 Agent</span><span class="ov-ch-marker" data-chapter="multi-agent__01-your-first-agent"></span></a></li>
-    <li><a href="#multi-agent__02-why-multi-agent"><span class="ov-ch-num">02</span><span class="ov-ch-title">为什么需要 Multi-Agent</span><span class="ov-ch-marker" data-chapter="multi-agent__02-why-multi-agent"></span></a></li>
-    <li><a href="#multi-agent__03-five-abstractions"><span class="ov-ch-num">03</span><span class="ov-ch-title">5 个核心抽象</span><span class="ov-ch-marker" data-chapter="multi-agent__03-five-abstractions"></span></a></li>
-    <li><a href="#multi-agent__04-orchestration-patterns"><span class="ov-ch-num">04</span><span class="ov-ch-title">编排模式全景</span><span class="ov-ch-marker" data-chapter="multi-agent__04-orchestration-patterns"></span></a></li>
-    <li><a href="#multi-agent__05-state-and-communication"><span class="ov-ch-num">05</span><span class="ov-ch-title">通信与状态</span><span class="ov-ch-marker" data-chapter="multi-agent__05-state-and-communication"></span></a></li>
-    <li><a href="#multi-agent__06-failure-handling"><span class="ov-ch-num">06</span><span class="ov-ch-title">失败的艺术</span><span class="ov-ch-marker" data-chapter="multi-agent__06-failure-handling"></span></a></li>
-    <li><a href="#multi-agent__07-framework-comparison"><span class="ov-ch-num">07</span><span class="ov-ch-title">框架横向对比</span><span class="ov-ch-marker" data-chapter="multi-agent__07-framework-comparison"></span></a></li>
-    <li><a href="#multi-agent__08-observability-and-cost"><span class="ov-ch-num">08</span><span class="ov-ch-title">可观测性与成本</span><span class="ov-ch-marker" data-chapter="multi-agent__08-observability-and-cost"></span></a></li>
-    <li><a href="#multi-agent__09-code-review-project"><span class="ov-ch-num">09</span><span class="ov-ch-title">第 9 章：实战 CodeReviewer Multi-Agent</span><span class="ov-ch-marker" data-chapter="multi-agent__09-code-review-project"></span></a></li>
-    <li><a href="#multi-agent__10-production-checklist"><span class="ov-ch-num">10</span><span class="ov-ch-title">生产化 Checklist</span><span class="ov-ch-marker" data-chapter="multi-agent__10-production-checklist"></span></a></li>
+    <li><a href="#multi-agent__01-your-first-agent"><span class="ov-ch-num">01</span><span class="ov-ch-title">你的第一个 Agent</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__01-your-first-agent"></span></a></li>
+    <li><a href="#multi-agent__02-why-multi-agent"><span class="ov-ch-num">02</span><span class="ov-ch-title">为什么需要 Multi-Agent</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__02-why-multi-agent"></span></a></li>
+    <li><a href="#multi-agent__03-five-abstractions"><span class="ov-ch-num">03</span><span class="ov-ch-title">5 个核心抽象</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__03-five-abstractions"></span></a></li>
+    <li><a href="#multi-agent__04-orchestration-patterns"><span class="ov-ch-num">04</span><span class="ov-ch-title">编排模式全景</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__04-orchestration-patterns"></span></a></li>
+    <li><a href="#multi-agent__05-state-and-communication"><span class="ov-ch-num">05</span><span class="ov-ch-title">通信与状态</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__05-state-and-communication"></span></a></li>
+    <li><a href="#multi-agent__06-failure-handling"><span class="ov-ch-num">06</span><span class="ov-ch-title">失败的艺术</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__06-failure-handling"></span></a></li>
+    <li><a href="#multi-agent__07-framework-comparison"><span class="ov-ch-num">07</span><span class="ov-ch-title">框架横向对比</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__07-framework-comparison"></span></a></li>
+    <li><a href="#multi-agent__08-observability-and-cost"><span class="ov-ch-num">08</span><span class="ov-ch-title">可观测性与成本</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__08-observability-and-cost"></span></a></li>
+    <li><a href="#multi-agent__09-code-review-project"><span class="ov-ch-num">09</span><span class="ov-ch-title">第 9 章：实战 CodeReviewer Multi-Agent</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__09-code-review-project"></span></a></li>
+    <li><a href="#multi-agent__10-production-checklist"><span class="ov-ch-num">10</span><span class="ov-ch-title">生产化 Checklist</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__10-production-checklist"></span></a></li>
   </ol>
 </article>
 <article class="overview-card" data-book="llm-prompt" style="--book-color: #b08968">
@@ -2513,16 +2540,16 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="llm-prompt" style="width:0%"></div></div><div class="progress-label" data-book-label="llm-prompt">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
-    <li><a href="#llm-prompt__01-prompt-basics"><span class="ov-ch-num">01</span><span class="ov-ch-title">Prompt 基础 + Token 经济学</span><span class="ov-ch-marker" data-chapter="llm-prompt__01-prompt-basics"></span></a></li>
-    <li><a href="#llm-prompt__02-few-shot"><span class="ov-ch-num">02</span><span class="ov-ch-title">Few-shot 实战</span><span class="ov-ch-marker" data-chapter="llm-prompt__02-few-shot"></span></a></li>
-    <li><a href="#llm-prompt__03-advanced-patterns"><span class="ov-ch-num">03</span><span class="ov-ch-title">CoT 思维链</span><span class="ov-ch-marker" data-chapter="llm-prompt__03-advanced-patterns"></span></a></li>
-    <li><a href="#llm-prompt__04-role-system-prompt"><span class="ov-ch-num">04</span><span class="ov-ch-title">Role / System Prompt：persona effect</span><span class="ov-ch-marker" data-chapter="llm-prompt__04-role-system-prompt"></span></a></li>
-    <li><a href="#llm-prompt__05-structured-output"><span class="ov-ch-num">05</span><span class="ov-ch-title">Structured Output</span><span class="ov-ch-marker" data-chapter="llm-prompt__05-structured-output"></span></a></li>
-    <li><a href="#llm-prompt__06-tool-use"><span class="ov-ch-num">06</span><span class="ov-ch-title">Tool Use / Function Calling</span><span class="ov-ch-marker" data-chapter="llm-prompt__06-tool-use"></span></a></li>
-    <li><a href="#llm-prompt__07-prompt-caching"><span class="ov-ch-num">07</span><span class="ov-ch-title">Prompt Caching：降成本 10x</span><span class="ov-ch-marker" data-chapter="llm-prompt__07-prompt-caching"></span></a></li>
-    <li><a href="#llm-prompt__08-prompt-injection"><span class="ov-ch-num">08</span><span class="ov-ch-title">Prompt Injection 防御</span><span class="ov-ch-marker" data-chapter="llm-prompt__08-prompt-injection"></span></a></li>
-    <li><a href="#llm-prompt__09-eval-driven"><span class="ov-ch-num">09</span><span class="ov-ch-title">Eval-driven 迭代</span><span class="ov-ch-marker" data-chapter="llm-prompt__09-eval-driven"></span></a></li>
-    <li><a href="#llm-prompt__10-real-cases"><span class="ov-ch-num">10</span><span class="ov-ch-title">真实场景 4 案例</span><span class="ov-ch-marker" data-chapter="llm-prompt__10-real-cases"></span></a></li>
+    <li><a href="#llm-prompt__01-prompt-basics"><span class="ov-ch-num">01</span><span class="ov-ch-title">Prompt 基础 + Token 经济学</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__01-prompt-basics"></span></a></li>
+    <li><a href="#llm-prompt__02-few-shot"><span class="ov-ch-num">02</span><span class="ov-ch-title">Few-shot 实战</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__02-few-shot"></span></a></li>
+    <li><a href="#llm-prompt__03-advanced-patterns"><span class="ov-ch-num">03</span><span class="ov-ch-title">CoT 思维链</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__03-advanced-patterns"></span></a></li>
+    <li><a href="#llm-prompt__04-role-system-prompt"><span class="ov-ch-num">04</span><span class="ov-ch-title">Role / System Prompt：persona effect</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__04-role-system-prompt"></span></a></li>
+    <li><a href="#llm-prompt__05-structured-output"><span class="ov-ch-num">05</span><span class="ov-ch-title">Structured Output</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__05-structured-output"></span></a></li>
+    <li><a href="#llm-prompt__06-tool-use"><span class="ov-ch-num">06</span><span class="ov-ch-title">Tool Use / Function Calling</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__06-tool-use"></span></a></li>
+    <li><a href="#llm-prompt__07-prompt-caching"><span class="ov-ch-num">07</span><span class="ov-ch-title">Prompt Caching：降成本 10x</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__07-prompt-caching"></span></a></li>
+    <li><a href="#llm-prompt__08-prompt-injection"><span class="ov-ch-num">08</span><span class="ov-ch-title">Prompt Injection 防御</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__08-prompt-injection"></span></a></li>
+    <li><a href="#llm-prompt__09-eval-driven"><span class="ov-ch-num">09</span><span class="ov-ch-title">Eval-driven 迭代</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__09-eval-driven"></span></a></li>
+    <li><a href="#llm-prompt__10-real-cases"><span class="ov-ch-num">10</span><span class="ov-ch-title">真实场景 4 案例</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__10-real-cases"></span></a></li>
   </ol>
 </article>
 <article class="overview-card" data-book="crewai" style="--book-color: #6c63ff">
@@ -2536,16 +2563,16 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="crewai" style="width:0%"></div></div><div class="progress-label" data-book-label="crewai">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
-    <li><a href="#crewai__01-getting-started"><span class="ov-ch-num">01</span><span class="ov-ch-title">上手：跑通第一个 Crew</span><span class="ov-ch-marker" data-chapter="crewai__01-getting-started"></span></a></li>
-    <li><a href="#crewai__02-crew-orchestration"><span class="ov-ch-num">02</span><span class="ov-ch-title">Crew 编排：Process 选型与协作</span><span class="ov-ch-marker" data-chapter="crewai__02-crew-orchestration"></span></a></li>
-    <li><a href="#crewai__03-agent-tuning"><span class="ov-ch-num">03</span><span class="ov-ch-title">Agent 调优：让 agent 听指挥</span><span class="ov-ch-marker" data-chapter="crewai__03-agent-tuning"></span></a></li>
-    <li><a href="#crewai__04-tools-and-mcp"><span class="ov-ch-num">04</span><span class="ov-ch-title">Tools 与 MCP：给 agent 接手和脚</span><span class="ov-ch-marker" data-chapter="crewai__04-tools-and-mcp"></span></a></li>
-    <li><a href="#crewai__05-memory-and-knowledge"><span class="ov-ch-num">05</span><span class="ov-ch-title">Memory + Knowledge：让 agent 有记忆</span><span class="ov-ch-marker" data-chapter="crewai__05-memory-and-knowledge"></span></a></li>
-    <li><a href="#crewai__06-structured-output"><span class="ov-ch-num">06</span><span class="ov-ch-title">结构化输出与 Guardrail</span><span class="ov-ch-marker" data-chapter="crewai__06-structured-output"></span></a></li>
-    <li><a href="#crewai__07-flows"><span class="ov-ch-num">07</span><span class="ov-ch-title">Flows：状态化的事件驱动编排</span><span class="ov-ch-marker" data-chapter="crewai__07-flows"></span></a></li>
-    <li><a href="#crewai__08-skills-and-prod"><span class="ov-ch-num">08</span><span class="ov-ch-title">Skills 与生产化基础</span><span class="ov-ch-marker" data-chapter="crewai__08-skills-and-prod"></span></a></li>
-    <li><a href="#crewai__09-side-projects"><span class="ov-ch-num">09</span><span class="ov-ch-title">实战：2 个 Side-Project 串起来</span><span class="ov-ch-marker" data-chapter="crewai__09-side-projects"></span></a></li>
-    <li><a href="#crewai__10-prod-cases"><span class="ov-ch-num">10</span><span class="ov-ch-title">公司生产案例 + 社区实战拆解</span><span class="ov-ch-marker" data-chapter="crewai__10-prod-cases"></span></a></li>
+    <li><a href="#crewai__01-getting-started"><span class="ov-ch-num">01</span><span class="ov-ch-title">上手：跑通第一个 Crew</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="crewai__01-getting-started"></span></a></li>
+    <li><a href="#crewai__02-crew-orchestration"><span class="ov-ch-num">02</span><span class="ov-ch-title">Crew 编排：Process 选型与协作</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="crewai__02-crew-orchestration"></span></a></li>
+    <li><a href="#crewai__03-agent-tuning"><span class="ov-ch-num">03</span><span class="ov-ch-title">Agent 调优：让 agent 听指挥</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="crewai__03-agent-tuning"></span></a></li>
+    <li><a href="#crewai__04-tools-and-mcp"><span class="ov-ch-num">04</span><span class="ov-ch-title">Tools 与 MCP：给 agent 接手和脚</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="crewai__04-tools-and-mcp"></span></a></li>
+    <li><a href="#crewai__05-memory-and-knowledge"><span class="ov-ch-num">05</span><span class="ov-ch-title">Memory + Knowledge：让 agent 有记忆</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="crewai__05-memory-and-knowledge"></span></a></li>
+    <li><a href="#crewai__06-structured-output"><span class="ov-ch-num">06</span><span class="ov-ch-title">结构化输出与 Guardrail</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="crewai__06-structured-output"></span></a></li>
+    <li><a href="#crewai__07-flows"><span class="ov-ch-num">07</span><span class="ov-ch-title">Flows：状态化的事件驱动编排</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="crewai__07-flows"></span></a></li>
+    <li><a href="#crewai__08-skills-and-prod"><span class="ov-ch-num">08</span><span class="ov-ch-title">Skills 与生产化基础</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="crewai__08-skills-and-prod"></span></a></li>
+    <li><a href="#crewai__09-side-projects"><span class="ov-ch-num">09</span><span class="ov-ch-title">实战：2 个 Side-Project 串起来</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="crewai__09-side-projects"></span></a></li>
+    <li><a href="#crewai__10-prod-cases"><span class="ov-ch-num">10</span><span class="ov-ch-title">公司生产案例 + 社区实战拆解</span><span class="ov-ch-time">~6 分钟</span><span class="ov-ch-marker" data-chapter="crewai__10-prod-cases"></span></a></li>
   </ol>
 </article>
 <article class="overview-card" data-book="rag" style="--book-color: #0d9488">
@@ -2559,16 +2586,16 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="rag" style="width:0%"></div></div><div class="progress-label" data-book-label="rag">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
-    <li><a href="#rag__01-why-rag"><span class="ov-ch-num">01</span><span class="ov-ch-title">为什么需要 RAG</span><span class="ov-ch-marker" data-chapter="rag__01-why-rag"></span></a></li>
-    <li><a href="#rag__02-embedding-models"><span class="ov-ch-num">02</span><span class="ov-ch-title">Embedding 模型选型</span><span class="ov-ch-marker" data-chapter="rag__02-embedding-models"></span></a></li>
-    <li><a href="#rag__03-vector-databases"><span class="ov-ch-num">03</span><span class="ov-ch-title">向量数据库选型</span><span class="ov-ch-marker" data-chapter="rag__03-vector-databases"></span></a></li>
-    <li><a href="#rag__04-chunking-strategies"><span class="ov-ch-num">04</span><span class="ov-ch-title">Chunking 策略</span><span class="ov-ch-marker" data-chapter="rag__04-chunking-strategies"></span></a></li>
-    <li><a href="#rag__05-retrieval-and-reranking"><span class="ov-ch-num">05</span><span class="ov-ch-title">检索与 Reranking</span><span class="ov-ch-marker" data-chapter="rag__05-retrieval-and-reranking"></span></a></li>
-    <li><a href="#rag__06-prompt-design"><span class="ov-ch-num">06</span><span class="ov-ch-title">Prompt 设计：把检索结果喂给 LLM</span><span class="ov-ch-marker" data-chapter="rag__06-prompt-design"></span></a></li>
-    <li><a href="#rag__07-hybrid-search"><span class="ov-ch-num">07</span><span class="ov-ch-title">混合检索：向量 + 关键词</span><span class="ov-ch-marker" data-chapter="rag__07-hybrid-search"></span></a></li>
-    <li><a href="#rag__08-evaluation"><span class="ov-ch-num">08</span><span class="ov-ch-title">RAG 评测：怎么知道你的系统真的有用？</span><span class="ov-ch-marker" data-chapter="rag__08-evaluation"></span></a></li>
-    <li><a href="#rag__09-advanced-patterns"><span class="ov-ch-num">09</span><span class="ov-ch-title">高级 RAG 模式</span><span class="ov-ch-marker" data-chapter="rag__09-advanced-patterns"></span></a></li>
-    <li><a href="#rag__10-prod-checklist"><span class="ov-ch-num">10</span><span class="ov-ch-title">RAG 生产化 Checklist</span><span class="ov-ch-marker" data-chapter="rag__10-prod-checklist"></span></a></li>
+    <li><a href="#rag__01-why-rag"><span class="ov-ch-num">01</span><span class="ov-ch-title">为什么需要 RAG</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__01-why-rag"></span></a></li>
+    <li><a href="#rag__02-embedding-models"><span class="ov-ch-num">02</span><span class="ov-ch-title">Embedding 模型选型</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__02-embedding-models"></span></a></li>
+    <li><a href="#rag__03-vector-databases"><span class="ov-ch-num">03</span><span class="ov-ch-title">向量数据库选型</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="rag__03-vector-databases"></span></a></li>
+    <li><a href="#rag__04-chunking-strategies"><span class="ov-ch-num">04</span><span class="ov-ch-title">Chunking 策略</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__04-chunking-strategies"></span></a></li>
+    <li><a href="#rag__05-retrieval-and-reranking"><span class="ov-ch-num">05</span><span class="ov-ch-title">检索与 Reranking</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__05-retrieval-and-reranking"></span></a></li>
+    <li><a href="#rag__06-prompt-design"><span class="ov-ch-num">06</span><span class="ov-ch-title">Prompt 设计：把检索结果喂给 LLM</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__06-prompt-design"></span></a></li>
+    <li><a href="#rag__07-hybrid-search"><span class="ov-ch-num">07</span><span class="ov-ch-title">混合检索：向量 + 关键词</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__07-hybrid-search"></span></a></li>
+    <li><a href="#rag__08-evaluation"><span class="ov-ch-num">08</span><span class="ov-ch-title">RAG 评测：怎么知道你的系统真的有用？</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__08-evaluation"></span></a></li>
+    <li><a href="#rag__09-advanced-patterns"><span class="ov-ch-num">09</span><span class="ov-ch-title">高级 RAG 模式</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__09-advanced-patterns"></span></a></li>
+    <li><a href="#rag__10-prod-checklist"><span class="ov-ch-num">10</span><span class="ov-ch-title">RAG 生产化 Checklist</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="rag__10-prod-checklist"></span></a></li>
   </ol>
 </article>
 <article class="overview-card" data-book="harness-engineering" style="--book-color: #c2410c">
@@ -2582,16 +2609,16 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="harness-engineering" style="width:0%"></div></div><div class="progress-label" data-book-label="harness-engineering">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
-    <li><a href="#harness-engineering__01-what-is-harness"><span class="ov-ch-num">01</span><span class="ov-ch-title">什么是 Harness：从裸 API 到能干活 Agent 的距离</span><span class="ov-ch-marker" data-chapter="harness-engineering__01-what-is-harness"></span></a></li>
-    <li><a href="#harness-engineering__02-agent-loop"><span class="ov-ch-num">02</span><span class="ov-ch-title">Agent Loop：把 `while not done` 展开成 8 种变体</span><span class="ov-ch-marker" data-chapter="harness-engineering__02-agent-loop"></span></a></li>
-    <li><a href="#harness-engineering__03-tool-design"><span class="ov-ch-num">03</span><span class="ov-ch-title">Tool 设计：Tool 是 LLM 的手，怎么造好这只手</span><span class="ov-ch-marker" data-chapter="harness-engineering__03-tool-design"></span></a></li>
-    <li><a href="#harness-engineering__04-context-management"><span class="ov-ch-num">04</span><span class="ov-ch-title">Context 管理：Context Window 爆了怎么办</span><span class="ov-ch-marker" data-chapter="harness-engineering__04-context-management"></span></a></li>
-    <li><a href="#harness-engineering__05-permissions-sandbox"><span class="ov-ch-num">05</span><span class="ov-ch-title">Permissions / Sandbox：怎么拦 LLM 不删你文件</span><span class="ov-ch-marker" data-chapter="harness-engineering__05-permissions-sandbox"></span></a></li>
-    <li><a href="#harness-engineering__06-observability"><span class="ov-ch-num">06</span><span class="ov-ch-title">Observability：Agent 在生产里跑，trajectory、cost、latency 怎么观测</span><span class="ov-ch-marker" data-chapter="harness-engineering__06-observability"></span></a></li>
-    <li><a href="#harness-engineering__07-memory-layers"><span class="ov-ch-num">07</span><span class="ov-ch-title">Memory 分层：LLM 没记忆，Agent 需要</span><span class="ov-ch-marker" data-chapter="harness-engineering__07-memory-layers"></span></a></li>
-    <li><a href="#harness-engineering__08-failure-recovery"><span class="ov-ch-num">08</span><span class="ov-ch-title">Failure Recovery：Agent 出错了怎么恢复</span><span class="ov-ch-marker" data-chapter="harness-engineering__08-failure-recovery"></span></a></li>
-    <li><a href="#harness-engineering__09-eval-driven"><span class="ov-ch-num">09</span><span class="ov-ch-title">Eval-Driven Development：Harness 怎么测自己</span><span class="ov-ch-marker" data-chapter="harness-engineering__09-eval-driven"></span></a></li>
-    <li><a href="#harness-engineering__10-build-from-scratch"><span class="ov-ch-num">10</span><span class="ov-ch-title">从零造一个 Harness：把前 9 章串起来</span><span class="ov-ch-marker" data-chapter="harness-engineering__10-build-from-scratch"></span></a></li>
+    <li><a href="#harness-engineering__01-what-is-harness"><span class="ov-ch-num">01</span><span class="ov-ch-title">什么是 Harness：从裸 API 到能干活 Agent 的距离</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__01-what-is-harness"></span></a></li>
+    <li><a href="#harness-engineering__02-agent-loop"><span class="ov-ch-num">02</span><span class="ov-ch-title">Agent Loop：把 `while not done` 展开成 8 种变体</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__02-agent-loop"></span></a></li>
+    <li><a href="#harness-engineering__03-tool-design"><span class="ov-ch-num">03</span><span class="ov-ch-title">Tool 设计：Tool 是 LLM 的手，怎么造好这只手</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__03-tool-design"></span></a></li>
+    <li><a href="#harness-engineering__04-context-management"><span class="ov-ch-num">04</span><span class="ov-ch-title">Context 管理：Context Window 爆了怎么办</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__04-context-management"></span></a></li>
+    <li><a href="#harness-engineering__05-permissions-sandbox"><span class="ov-ch-num">05</span><span class="ov-ch-title">Permissions / Sandbox：怎么拦 LLM 不删你文件</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__05-permissions-sandbox"></span></a></li>
+    <li><a href="#harness-engineering__06-observability"><span class="ov-ch-num">06</span><span class="ov-ch-title">Observability：Agent 在生产里跑，trajectory、cost、latency 怎么观测</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__06-observability"></span></a></li>
+    <li><a href="#harness-engineering__07-memory-layers"><span class="ov-ch-num">07</span><span class="ov-ch-title">Memory 分层：LLM 没记忆，Agent 需要</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__07-memory-layers"></span></a></li>
+    <li><a href="#harness-engineering__08-failure-recovery"><span class="ov-ch-num">08</span><span class="ov-ch-title">Failure Recovery：Agent 出错了怎么恢复</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__08-failure-recovery"></span></a></li>
+    <li><a href="#harness-engineering__09-eval-driven"><span class="ov-ch-num">09</span><span class="ov-ch-title">Eval-Driven Development：Harness 怎么测自己</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__09-eval-driven"></span></a></li>
+    <li><a href="#harness-engineering__10-build-from-scratch"><span class="ov-ch-num">10</span><span class="ov-ch-title">从零造一个 Harness：把前 9 章串起来</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__10-build-from-scratch"></span></a></li>
   </ol>
 </article>
 </section>
@@ -15183,6 +15210,37 @@ links.forEach(link => {
     });
 });
 
+// j/k 章节跳转：找视口里最顶部的 chapter, 跳到上一个/下一个
+function jumpToAdjacentChapter(direction) {
+    if (!CHAPTERS || CHAPTERS.length === 0) return;
+    // 找当前最接近视口顶部的 chapter
+    const viewportTop = window.scrollY + 80;  // 80px 缓冲, 避免误判
+    let currentIdx = 0;
+    for (let i = CHAPTERS.length - 1; i >= 0; i--) {
+        const el = document.getElementById(CHAPTERS[i]);
+        if (el && el.offsetTop <= viewportTop) {
+            currentIdx = i;
+            break;
+        }
+    }
+    // 边界: 第一章按 k 跳到 overview, 最后一章按 j 不动
+    const targetIdx = currentIdx + direction;
+    if (targetIdx < 0) {
+        showOverview();
+        return;
+    }
+    if (targetIdx >= CHAPTERS.length) return;
+    const targetId = CHAPTERS[targetIdx];
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    hideOverview();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.pushState(null, '', '#' + targetId);
+    if (window.innerWidth < 900) {
+        document.body.classList.add('sidebar-collapsed');
+    }
+}
+
 // 快捷键
 document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -15210,6 +15268,16 @@ document.addEventListener('keydown', (e) => {
         // 单按 g → 跳顶
         window.scrollTo({ top: 0, behavior: 'smooth' });
         window._lastG = now;
+        return;
+    }
+    if (e.key === 'j' || e.key === 'J') {
+        e.preventDefault();
+        jumpToAdjacentChapter(1);
+        return;
+    }
+    if (e.key === 'k' || e.key === 'K') {
+        e.preventDefault();
+        jumpToAdjacentChapter(-1);
         return;
     }
 
@@ -15276,6 +15344,11 @@ document.getElementById('help-close').addEventListener('click', () => {
 helpPanel.addEventListener('click', (e) => {
     if (e.target === helpPanel) helpPanel.classList.remove('visible');
 });
+
+// ============================================================
+// 章节顺序 (j/k 跳转用)
+// ============================================================
+const CHAPTERS = ["multi-agent__01-your-first-agent", "multi-agent__02-why-multi-agent", "multi-agent__03-five-abstractions", "multi-agent__04-orchestration-patterns", "multi-agent__05-state-and-communication", "multi-agent__06-failure-handling", "multi-agent__07-framework-comparison", "multi-agent__08-observability-and-cost", "multi-agent__09-code-review-project", "multi-agent__10-production-checklist", "llm-prompt__01-prompt-basics", "llm-prompt__02-few-shot", "llm-prompt__03-advanced-patterns", "llm-prompt__04-role-system-prompt", "llm-prompt__05-structured-output", "llm-prompt__06-tool-use", "llm-prompt__07-prompt-caching", "llm-prompt__08-prompt-injection", "llm-prompt__09-eval-driven", "llm-prompt__10-real-cases", "crewai__01-getting-started", "crewai__02-crew-orchestration", "crewai__03-agent-tuning", "crewai__04-tools-and-mcp", "crewai__05-memory-and-knowledge", "crewai__06-structured-output", "crewai__07-flows", "crewai__08-skills-and-prod", "crewai__09-side-projects", "crewai__10-prod-cases", "rag__01-why-rag", "rag__02-embedding-models", "rag__03-vector-databases", "rag__04-chunking-strategies", "rag__05-retrieval-and-reranking", "rag__06-prompt-design", "rag__07-hybrid-search", "rag__08-evaluation", "rag__09-advanced-patterns", "rag__10-prod-checklist", "harness-engineering__01-what-is-harness", "harness-engineering__02-agent-loop", "harness-engineering__03-tool-design", "harness-engineering__04-context-management", "harness-engineering__05-permissions-sandbox", "harness-engineering__06-observability", "harness-engineering__07-memory-layers", "harness-engineering__08-failure-recovery", "harness-engineering__09-eval-driven", "harness-engineering__10-build-from-scratch"];
 
 // ============================================================
 // 进度统计

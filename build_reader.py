@@ -29,7 +29,7 @@ import json
 import re
 from io import BytesIO
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 import markdown
 import qrcode
@@ -199,6 +199,59 @@ def build_sitemap(books) -> None:
     print(f"生成 {output} ({len(books) * 10 + 1} URLs)")
 
 
+def build_rss(books) -> None:
+    """生成 rss.xml, 每章一条 item. 单页 SPA 风格, link 用 hash anchor."""
+    from email.utils import format_datetime
+    import html as _html
+
+    now = format_datetime(datetime.now(timezone.utc))
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>']
+    lines.append('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">')
+    lines.append('<channel>')
+    lines.append('  <title>个人知识库</title>')
+    lines.append(f'  <link>{SITE_URL}</link>')
+    lines.append('  <description>5 个系列 · 50 章 · Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering</description>')
+    lines.append(f'  <lastBuildDate>{now}</lastBuildDate>')
+    lines.append(f'  <atom:link href="{SITE_URL}/rss.xml" rel="self" type="application/rss+xml"/>')
+
+    for book_slug, meta, chapters in books:
+        for chap_slug, chap_path in chapters:
+            md_text = chap_path.read_text(encoding="utf-8")
+            display_title = chapter_display_title(md_text, chap_slug)
+            anchor = f"{book_slug}__{chap_slug}"
+
+            # description: 抽第一段纯文本 (去 markdown 标记)
+            first_para = ""
+            for line in md_text.split("\n"):
+                line = line.strip()
+                if not line or line.startswith("#") or line.startswith("```"):
+                    continue
+                if line.startswith("!") or line.startswith("[") or line.startswith("-"):
+                    continue
+                # 简单去标点
+                plain = re.sub(r"[*_`\[\]()>]", "", line)
+                if len(plain) > 30:
+                    first_para = plain[:200].strip()
+                    break
+
+            item_title = f"{meta['title']} · {display_title}"
+            lines.append('  <item>')
+            lines.append(f'    <title>{_html.escape(item_title)}</title>')
+            lines.append(f'    <link>{SITE_URL}#{anchor}</link>')
+            lines.append(f'    <guid isPermaLink="false">{anchor}</guid>')
+            lines.append(f'    <pubDate>{now}</pubDate>')
+            if first_para:
+                lines.append(f'    <description>{_html.escape(first_para)}</description>')
+            lines.append('  </item>')
+
+    lines.append('</channel>')
+    lines.append('</rss>')
+
+    output = ROOT / "rss.xml"
+    output.write_text("\n".join(lines), encoding="utf-8")
+    print(f"生成 {output} ({len(books) * 10} items)")
+
+
 def chapter_display_title(md_text: str, fallback_slug: str) -> str:
     """从 markdown 第一个 # 标题取展示名，剥掉序号前缀。复用 build_html 内的逻辑。"""
     display = fallback_slug
@@ -290,10 +343,13 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
             md_text = chap_path.read_text(encoding="utf-8")
             display_title = chapter_display_title(md_text, chap_slug)
             anchor = f"{book_slug}__{chap_slug}"
+            chars = count_words(md_text)
+            minutes = max(1, chars // 400)
             parts.append(
                 f'    <li><a href="#{anchor}">'
                 f'<span class="ov-ch-num">{chap_idx:02d}</span>'
                 f'<span class="ov-ch-title">{display_title}</span>'
+                f'<span class="ov-ch-time">~{minutes} 分钟</span>'
                 f'<span class="ov-ch-marker" data-chapter="{anchor}"></span>'
                 f'</a></li>'
             )
@@ -1110,6 +1166,16 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.ov-ch-time {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: Georgia, serif;
+    font-style: italic;
+    min-width: 50px;
+    text-align: right;
 }
 
 .ov-ch-marker {
@@ -3202,6 +3268,37 @@ links.forEach(link => {
     });
 });
 
+// j/k 章节跳转：找视口里最顶部的 chapter, 跳到上一个/下一个
+function jumpToAdjacentChapter(direction) {
+    if (!CHAPTERS || CHAPTERS.length === 0) return;
+    // 找当前最接近视口顶部的 chapter
+    const viewportTop = window.scrollY + 80;  // 80px 缓冲, 避免误判
+    let currentIdx = 0;
+    for (let i = CHAPTERS.length - 1; i >= 0; i--) {
+        const el = document.getElementById(CHAPTERS[i]);
+        if (el && el.offsetTop <= viewportTop) {
+            currentIdx = i;
+            break;
+        }
+    }
+    // 边界: 第一章按 k 跳到 overview, 最后一章按 j 不动
+    const targetIdx = currentIdx + direction;
+    if (targetIdx < 0) {
+        showOverview();
+        return;
+    }
+    if (targetIdx >= CHAPTERS.length) return;
+    const targetId = CHAPTERS[targetIdx];
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    hideOverview();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    history.pushState(null, '', '#' + targetId);
+    if (window.innerWidth < 900) {
+        document.body.classList.add('sidebar-collapsed');
+    }
+}
+
 // 快捷键
 document.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -3229,6 +3326,16 @@ document.addEventListener('keydown', (e) => {
         // 单按 g → 跳顶
         window.scrollTo({ top: 0, behavior: 'smooth' });
         window._lastG = now;
+        return;
+    }
+    if (e.key === 'j' || e.key === 'J') {
+        e.preventDefault();
+        jumpToAdjacentChapter(1);
+        return;
+    }
+    if (e.key === 'k' || e.key === 'K') {
+        e.preventDefault();
+        jumpToAdjacentChapter(-1);
         return;
     }
 
@@ -3295,6 +3402,11 @@ document.getElementById('help-close').addEventListener('click', () => {
 helpPanel.addEventListener('click', (e) => {
     if (e.target === helpPanel) helpPanel.classList.remove('visible');
 });
+
+// ============================================================
+// 章节顺序 (j/k 跳转用)
+// ============================================================
+const CHAPTERS = __CHAPTERS_JSON__;
 
 // ============================================================
 // 进度统计
@@ -4337,6 +4449,7 @@ commandPalette.addEventListener('click', (e) => {
 
 
 def build_html():
+    global JS
     books = discover_books()
 
     if not books:
@@ -4348,6 +4461,7 @@ def build_html():
     content_parts = []
     total_chars = 0
     total_chapters = 0
+    chapter_anchors = []  # j/k 跳转用, 按文档顺序
 
     book_icons = {}  # slug -> svg (sidebar 小图标，16px)
     book_icons_big = {}  # slug -> svg (封面大图标，72px)
@@ -4397,6 +4511,7 @@ def build_html():
             )
 
             total_chapters += 1
+            chapter_anchors.append(anchor)
 
         # 书的章节数
         chap_count = len(chapters)
@@ -4435,6 +4550,12 @@ def build_html():
     # 生成首页 TOC (overview section)
     overview_html = build_overview_html(books, total_chapters, total_chars, total_minutes)
 
+    # j/k 跳转的章节列表 (JSON array, 按文档顺序)
+    import json as _json
+    chapter_anchors_json = _json.dumps(chapter_anchors, ensure_ascii=False)
+    # JS 不是 f-string, 用占位符后替换
+    JS = JS.replace("__CHAPTERS_JSON__", chapter_anchors_json)
+
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -4446,7 +4567,23 @@ def build_html():
     <link rel="icon" type="image/svg+xml" href='{PWA_ICON_DATA_URI}'>
     <link rel="apple-touch-icon" href='{PWA_ICON_DATA_URI}'>
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
+    <link rel="alternate" type="application/rss+xml" title="个人知识库" href="rss.xml">
     <meta name="theme-color" content="#faf9f5">
+
+    <!-- Open Graph / Twitter Card -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{SITE_URL}">
+    <meta property="og:title" content="个人知识库 · 5 个系列 50 章">
+    <meta property="og:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering — 写给造 / 选 harness 的人">
+    <meta property="og:image" content="{SITE_URL}/assets/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:site_name" content="个人知识库">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="个人知识库 · 5 个系列 50 章">
+    <meta name="twitter:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering">
+    <meta name="twitter:image" content="{SITE_URL}/assets/og.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="知识库">
@@ -4636,6 +4773,7 @@ def build_html():
                 <div class="help-row"><span>搜索章节 / 内容</span><span><kbd>Ctrl</kbd> <kbd>K</kbd></span></div>
                 <div class="help-row"><span>切换侧栏</span><span><kbd>S</kbd></span></div>
                 <div class="help-row"><span>专注模式</span><span><kbd>F</kbd></span></div>
+                <div class="help-row"><span>上一章 / 下一章</span><span><kbd>K</kbd> / <kbd>J</kbd></span></div>
                 <div class="help-row"><span>跳到顶部</span><span><kbd>G</kbd> <kbd>G</kbd></span></div>
                 <div class="help-row"><span>跳到底部</span><span><kbd>G</kbd> <kbd>G</kbd> <kbd>G</kbd></span></div>
             </div>
@@ -4692,6 +4830,8 @@ def build_html():
 
     # 生成 sitemap.xml (SEO)
     build_sitemap(books)
+    # 生成 rss.xml (订阅)
+    build_rss(books)
 
 
 if __name__ == "__main__":
