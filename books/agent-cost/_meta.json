@@ -1,0 +1,19 @@
+{
+  "title": "Agent Cost Engineering",
+  "description": "让你的 agent side project 活过 100 个用户：unit economics、model routing、caching、压缩、quota、熔断、cost dashboard",
+  "icon": "coin",
+  "color": "#4f46e5",
+  "priority": 6,
+  "order": [
+    "01-cost-economics",
+    "02-where-tokens-go",
+    "03-model-routing",
+    "04-caching-layers",
+    "05-prompt-compression",
+    "06-batch-vs-stream",
+    "07-user-quota",
+    "08-budget-circuit-breaker",
+    "09-tool-cost",
+    "10-cost-dashboard"
+  ]
+}
