@@ -1,4 +1,4 @@
-# 第 9 章：实战 CodeReviewer Multi-Agent
+# 实战 CodeReviewer Multi-Agent
 
 ## 项目结构
 

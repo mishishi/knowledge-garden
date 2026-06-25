@@ -262,9 +262,11 @@ def chapter_display_title(md_text: str, fallback_slug: str) -> str:
     display = fallback_slug
     first_heading = re.search(r"^#\s+(.+)$", md_text, re.MULTILINE)
     if first_heading:
-        display = re.sub(
-            r"^\s*\d+[\.\u3001\)\]\uff09]\s*", "", first_heading.group(1).strip()
-        )
+        display = first_heading.group(1).strip()
+        # 剥掉 "1." / "1、" / "1)" / "1）" 等数字前缀
+        display = re.sub(r"^\s*\d+[\.\u3001\)\]\uff09]\s*", "", display)
+        # 剥掉 "第 N 章：" / "第 N 章" 前缀（中英文章序号）
+        display = re.sub(r"^\s*第\s*\d+\s*章[\s\uff1a\:]\s*", "", display)
     return display
 
 
@@ -2419,18 +2421,7 @@ body.dark .music-panel { background: rgba(40, 40, 44, 0.95); }
     text-decoration-thickness: 1.5px;
 }
 
-.book-chapters li a.completed::after {
-    content: "";
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    margin-left: 6px;
-    vertical-align: -1px;
-    background: var(--done);
-    opacity: 1;
-    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
-    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
-}
+/* 已完成对勾由 JS 注入 SVG，CSS 不再重复 ::after */
 
 /* === 进度面板 === */
 .progress-panel {
