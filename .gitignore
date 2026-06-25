@@ -26,8 +26,7 @@ env/
 *.log
 tmp/
 
-# 版权音频（不入 git，本地 build 才有；部署到 GitHub Pages 时按钮自动隐藏）
-assets/audio/*.mp3
+# 音频中间分析产物（mp3 入 repo, 但 _analysis.* 不入）
 assets/audio/*.wav
 assets/audio/*.ogg
 assets/audio/*.flac
