@@ -15,5 +15,7 @@
     "08-observability-and-cost",
     "09-code-review-project",
     "10-production-checklist"
-  ]
+  ],
+  "level": 3,
+  "level_name": "进阶"
 }

@@ -15,5 +15,7 @@
     "08-evaluation",
     "09-advanced-patterns",
     "10-prod-checklist"
-  ]
+  ],
+  "level": 2,
+  "level_name": "入门"
 }

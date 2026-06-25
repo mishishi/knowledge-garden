@@ -15,5 +15,7 @@
     "08-prompt-injection",
     "09-eval-driven",
     "10-real-cases"
-  ]
+  ],
+  "level": 2,
+  "level_name": "入门"
 }

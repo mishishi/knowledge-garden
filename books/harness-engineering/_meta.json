@@ -15,5 +15,7 @@
     "08-failure-recovery",
     "09-eval-driven",
     "10-build-from-scratch"
-  ]
+  ],
+  "level": 4,
+  "level_name": "深水"
 }

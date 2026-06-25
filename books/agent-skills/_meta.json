@@ -1,6 +1,6 @@
 {
-  "title": "Agent Skills \u5b9e\u6218",
-  "description": "10 \u7ae0\u4ece 0 \u5230 1 \u5b66\u4f1a\u5199 Claude Agent Skills\uff1aSKILL.md \u7ed3\u6784 + \u89e6\u53d1\u673a\u5236 + CLAUDE.md \u5206\u5de5 + 8 \u5927\u5b9e\u7528 Skill \u62c6\u89e3 + \u6027\u80fd\u4f18\u5316\u4e0e\u751f\u6001",
+  "title": "Agent Skills 实战",
+  "description": "10 章从 0 到 1 学会写 Claude Agent Skills：SKILL.md 结构 + 触发机制 + CLAUDE.md 分工 + 8 大实用 Skill 拆解 + 性能优化与生态",
   "icon": "sparkles",
   "color": "#ec4899",
   "priority": 9,
@@ -15,5 +15,7 @@
     "08-token-cost-optimization",
     "09-marketplace-and-sharing",
     "10-ecosystem-and-future"
-  ]
+  ],
+  "level": 3,
+  "level_name": "进阶"
 }

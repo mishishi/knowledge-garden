@@ -15,5 +15,7 @@
     "08-budget-circuit-breaker",
     "09-tool-cost",
     "10-cost-dashboard"
-  ]
+  ],
+  "level": 3,
+  "level_name": "进阶"
 }

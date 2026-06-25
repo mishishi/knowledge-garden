@@ -310,6 +310,20 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     )
     parts.append('</div>')
 
+    # ---- 个人数据看板（运行时由 JS 填） ----
+    parts.append('<div class="personal-dashboard" id="personal-dashboard">')
+    parts.append('<h2 class="dashboard-title">我的阅读</h2>')
+    parts.append('<div class="dashboard-grid">')
+    parts.append('<div class="dashboard-card"><div class="d-num" id="d-read-count">0</div><div class="d-lbl">已读章节</div></div>')
+    parts.append('<div class="dashboard-card"><div class="d-num" id="d-reading-count">0</div><div class="d-lbl">在读</div></div>')
+    parts.append('<div class="dashboard-card"><div class="d-num" id="d-time-spent">0</div><div class="d-lbl">累计分钟</div></div>')
+    parts.append('<div class="dashboard-card"><div class="d-num" id="d-notes-count">0</div><div class="d-lbl">笔记数</div></div>')
+    parts.append('<div class="dashboard-card"><div class="d-num" id="d-bookmarks-count">0</div><div class="d-lbl">书签数</div></div>')
+    parts.append('<div class="dashboard-card"><div class="d-num" id="d-streak-days">0</div><div class="d-lbl">连续天数</div></div>')
+    parts.append('</div>')
+    parts.append('<div class="dashboard-streak" id="dashboard-streak"></div>')
+    parts.append('</div>')
+
     # ---- 5 个 series 卡片 ----
     for book_idx, (book_slug, meta, chapters) in enumerate(books):
         icon_name = meta.get("icon", "book")
@@ -363,6 +377,94 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
         parts.append('  </ol>')
         parts.append('</article>')
 
+    # ============================================================
+    # D2 编辑推荐 — 新人路线
+    # ============================================================
+    RECOMMENDED_PATH = [
+        ("rag", "01-why-rag", "为什么需要 RAG", "LLM 知识截止之后，RAG 是 80% 场景的标准答案"),
+        ("multi-agent", "01-your-first-agent", "你的第一个 Agent", "30 行代码跑通一个 agent 循环，落地最小可行版本"),
+        ("llm-prompt", "03-advanced-patterns", "CoT 思维链", "Let's think step by step — 一句话让 LLM 推理能力跃升一个台阶"),
+        ("context-engineering", "02-context-window-tokens", "Context Window 与 Token", "100K context 到底能用多少？生产里 80% 的 bug 来自这里"),
+        ("crewai", "01-getting-started", "CrewAI 入门", "上手一个 100+ star 的多 agent 框架，3 天能跑生产"),
+    ]
+    parts.append('<div class="recommended-path">')
+    parts.append('<h2 class="section-h2">新人路线 · 5 章入门</h2>')
+    parts.append('<p class="section-desc">不知道从哪开始？按这个顺序读，1 周内建立完整的 AI 应用开发心智模型。</p>')
+    parts.append('<ol class="rec-path-list">')
+    for idx, (slug, chap, title, why) in enumerate(RECOMMENDED_PATH, 1):
+        # 查找这本书的标题和颜色
+        bm = next((m for s, m, _ in books if s == slug), None)
+        btitle = bm["title"] if bm else slug
+        bcolor = bm.get("color", "#b08968") if bm else "#b08968"
+        bicon = bm.get("icon", "book") if bm else "book"
+        anchor = f"{slug}__{chap}"
+        parts.append(
+            f'<li class="rec-path-item">'
+            f'<span class="rec-step">{idx:02d}</span>'
+            f'<a class="rec-link" href="#{anchor}">'
+            f'<span class="rec-icon" style="color:{bcolor}">{svg_icon(bicon, size=18)}</span>'
+            f'<span class="rec-title">{title}</span>'
+            f'<span class="rec-book">{btitle}</span>'
+            f'</a>'
+            f'<span class="rec-why">{why}</span>'
+            f'</li>'
+        )
+    parts.append('</ol>')
+    parts.append('</div>')
+
+    # ============================================================
+    # D3 每周回顾（运行时由 JS 填）
+    # ============================================================
+    parts.append('<div class="weekly-recap" id="weekly-recap">')
+    parts.append('<h2 class="section-h2">本周回顾</h2>')
+    parts.append('<div class="weekly-grid" id="weekly-grid"></div>')
+    parts.append('</div>')
+
+    # ============================================================
+    # D4 系列对比表
+    # ============================================================
+    parts.append('<div class="series-compare">')
+    parts.append('<h2 class="section-h2">系列对比</h2>')
+    parts.append('<p class="section-desc">10 个系列的难度、篇幅、适合谁。先看这张表选你的下一步。</p>')
+    parts.append('<div class="compare-table-wrap">')
+    parts.append('<table class="compare-table">')
+    parts.append('<thead><tr><th>系列</th><th>难度</th><th>章节</th><th>字数</th><th>预计</th><th>适合谁</th></tr></thead>')
+    parts.append('<tbody>')
+    AUDIENCE = {
+        "multi-agent": "做 multi-agent 系统的工程师",
+        "llm-prompt": "所有用 LLM 的人",
+        "crewai": "想用框架快速搭建 agent 的人",
+        "rag": "做知识库 / 文档问答的工程师",
+        "harness-engineering": "严肃做 agent 基础设施的人",
+        "agent-cost": "关心成本和性能上限的人",
+        "indie-ai-product": "独立开发 / 产品经理",
+        "context-engineering": "做长 context agent 的人",
+        "agent-skills": "想给 LLM 装可复用能力的人",
+        "claude-code": "用 Claude Code / CLI 的人",
+    }
+    for slug, meta, chapters in books:
+        chars = sum(count_words(p.read_text(encoding="utf-8")) for _, p in chapters)
+        mins = max(1, chars // 400)
+        level = meta.get("level", 3)
+        level_dots = "●" * level + "○" * (5 - level)
+        audience = AUDIENCE.get(slug, "")
+        parts.append(
+            f'<tr>'
+            f'<td><a href="#{slug}__{chapters[0][0]}" class="compare-book">'
+            f'<span class="compare-icon" style="color:{meta.get("color","#b08968")}">{svg_icon(meta.get("icon","book"), size=16)}</span>'
+            f'{meta["title"]}'
+            f'</a></td>'
+            f'<td class="compare-level" data-level="{level}"><span class="compare-dots">{level_dots}</span></td>'
+            f'<td>{len(chapters)}</td>'
+            f'<td>{chars:,}</td>'
+            f'<td>{mins} 分钟</td>'
+            f'<td class="compare-audience">{audience}</td>'
+            f'</tr>'
+        )
+    parts.append('</tbody></table>')
+    parts.append('</div>')
+    parts.append('</div>')
+
     parts.append('</section>')
     return "\n".join(parts)
 
@@ -381,10 +483,24 @@ def svg_icon(name, size=16, stroke_width=1.5, classes=""):
 
 
 def md_to_html(md_text: str) -> str:
-    return markdown.markdown(
+    html = markdown.markdown(
         md_text,
         extensions=["fenced_code", "tables", "nl2br", "sane_lists", "toc"],
     )
+    # 长代码块 (>10 行) 自动加行号
+    import re as _re_ln
+    def _add_lines(m):
+        body = m.group(3)
+        if body.count("\n") < 10:
+            return m.group(0)
+        lines = body.split("\n")
+        if lines and lines[-1] == "":
+            lines = lines[:-1]
+        new_body = "\n".join(f'<span class="line"><span class="ln"></span>{ln}</span>' for ln in lines)
+        cls = m.group(2) or ''
+        return f'<pre{m.group(1)} class="with-lines {cls.strip()}"><code>{new_body}\n</code></pre>'
+    html = _re_ln.sub(r'<pre([^>]*)>\s*<code([^>]*)>([\s\S]*?)</code>\s*</pre>', _add_lines, html)
+    return html
 
 
 def extract_toc(content_html: str) -> list[dict]:
@@ -460,8 +576,7 @@ body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font-family: "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC",
-                 "Songti SC", "STSong", Charter, Georgia, "Times New Roman", serif;
+    font-family: var(--font-body, "Source Han Serif SC", "Source Han Serif CN", "Noto Serif CJK SC", "Songti SC", "STSong", Charter, Georgia, "Times New Roman", serif);
     font-size: var(--font-base);
     line-height: 1.85;
     -webkit-font-smoothing: antialiased;
@@ -533,6 +648,42 @@ body.dark {
     --hl-pink: rgba(180, 100, 140, 0.4);
     --done: #7ba888;
 }
+
+body.sepia {
+    --bg: #f4ecd8;
+    --bg-soft: #ebe2c7;
+    --text: #3d2e1c;
+    --text-soft: #6b5536;
+    --text-faint: #99805a;
+    --accent: #8b5a2b;
+    --accent-soft: rgba(139, 90, 43, 0.15);
+    --border: #d8c89a;
+    --code-bg: #ebe2c7;
+    --link: #6b3e0e;
+    --done: #6b7a3e;
+}
+
+body.green {
+    --bg: #cce8cf;
+    --bg-soft: #b5d6b8;
+    --text: #1f3a1f;
+    --text-soft: #3e5e3e;
+    --text-faint: #6a8a6a;
+    --accent: #3d6b3d;
+    --accent-soft: rgba(61, 107, 61, 0.18);
+    --border: #94c095;
+    --code-bg: #b5d6b8;
+    --link: #2a5a2a;
+    --done: #5a8a5a;
+}
+
+/* 字体族 */
+:root { --font-serif: 'Source Serif Pro', 'Source Han Serif SC', 'Noto Serif CJK SC', 'Songti SC', Georgia, 'Times New Roman', serif; }
+:root { --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif; }
+:root { --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Source Code Pro', Consolas, Menlo, monospace; }
+body.font-serif { --font-body: var(--font-serif); }
+body.font-sans  { --font-body: var(--font-sans); }
+body.font-mono  { --font-body: var(--font-mono); }
 
 .progress {
     position: fixed;
@@ -617,6 +768,29 @@ body.dark .toolbar-menu { background: rgba(28, 28, 30, 0.95); }
     padding: 6px 0;
     text-align: center;
 }
+.toolbar-section.width-sizes {
+    display: flex;
+    gap: 2px;
+    padding: 4px 6px;
+}
+.toolbar-section.width-sizes button {
+    flex: 1;
+    padding: 6px 0;
+    text-align: center;
+    font-size: 12px;
+}
+.toolbar-section .active,
+button.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+}
+
+/* 阅读宽度 — 只影响 chapter-content（章节正文），不影响右侧 TOC */
+body.width-narrow .chapter-content { max-width: 580px; }
+body.width-medium .chapter-content { max-width: 700px; }
+body.width-wide .chapter-content { max-width: 880px; }
+.chapter-content { max-width: 700px; transition: max-width .25s ease; }
 
 .toolbar-divider {
     height: 1px;
@@ -1012,8 +1186,249 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     text-indent: 0;
 }
 
-.overview-stats {
+/* ============================================================
+   Section 通用标题
+   ============================================================ */
+.section-h2 {
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    text-align: center;
+    margin: 80px 0 8px;
+    font-family: var(--font-body);
+}
+.section-desc {
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 14px;
+    margin: 0 auto 32px;
+    max-width: 600px;
+}
+
+/* ============================================================
+   D2 编辑推荐 — 新人路线
+   ============================================================ */
+.recommended-path {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.rec-path-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.rec-path-item {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 16px;
+    align-items: center;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    transition: border-color .15s, transform .15s;
+}
+.rec-path-item:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+}
+.rec-step {
+    grid-row: 1 / 3;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+.rec-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+}
+.rec-link:hover .rec-title { color: var(--accent); }
+.rec-icon { display: inline-flex; }
+.rec-title { font-size: 15px; }
+.rec-book {
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--bg);
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+}
+.rec-why {
+    font-size: 13px;
+    color: var(--text-soft);
+    line-height: 1.6;
+}
+
+/* ============================================================
+   D3 每周回顾
+   ============================================================ */
+.weekly-recap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.weekly-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+}
+.weekly-cell {
+    text-align: center;
+}
+.weekly-num {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+.weekly-lbl {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+.weekly-empty {
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+    padding: 16px;
+    font-style: italic;
+}
+
+/* ============================================================
+   D4 系列对比表
+   ============================================================ */
+.series-compare {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+}
+.compare-table-wrap {
+    overflow-x: auto;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.compare-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-weight: 500;
+    color: var(--text-faint);
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+}
+.compare-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.compare-table tr:hover td { background: var(--bg); }
+.compare-book {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 500;
+}
+.compare-book:hover { color: var(--accent); }
+.compare-icon { display: inline-flex; }
+.compare-dots { letter-spacing: 1px; font-size: 11px; }
+.compare-level[data-level="1"] .compare-dots,
+.compare-level[data-level="2"] .compare-dots { color: #16a34a; }
+.compare-level[data-level="3"] .compare-dots { color: #d97706; }
+.compare-level[data-level="4"] .compare-dots,
+.compare-level[data-level="5"] .compare-dots { color: #dc2626; }
+.compare-audience { color: var(--text-soft); font-size: 13px; }
+
+/* ============================================================
+   个人数据看板
+   ============================================================ */
+.personal-dashboard {
+    max-width: 920px;
+    margin: 56px auto 0;
+    padding: 0 20px;
+}
+.dashboard-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-faint);
+    text-align: center;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin: 0 0 24px;
+    font-style: normal;
+}
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.dashboard-card {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 12px;
+    text-align: center;
+    transition: transform .15s, border-color .15s;
+}
+.dashboard-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+.d-num {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
+}
+.d-lbl {
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+.dashboard-streak {
+    font-size: 12px;
+    color: var(--text-faint);
+    text-align: center;
+    margin-top: 8px;
+    min-height: 18px;
+}
+.dashboard-streak .flame {
+    color: var(--accent);
+    margin-right: 4px;
+}
+.overview-stats {    display: flex;
     justify-content: center;
     gap: 48px;
     flex-wrap: wrap;
@@ -1336,6 +1751,42 @@ body.overview-mode .content {
 }
 
 /* ============================================================
+   难度标签
+   ============================================================ */
+.level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    font-style: normal;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    color: var(--text-faint);
+    margin-left: 8px;
+    vertical-align: 2px;
+}
+.level-dots {
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+.level-badge[data-level="1"] .level-dots,
+.level-badge[data-level="2"] .level-dots {
+    color: #16a34a;
+}
+.level-badge[data-level="3"] .level-dots {
+    color: #d97706;
+}
+.level-badge[data-level="4"] .level-dots,
+.level-badge[data-level="5"] .level-dots {
+    color: #dc2626;
+}
+.level-name {
+    font-weight: 500;
+}
+
+/* ============================================================
    章节顶部 progress 条
    ============================================================ */
 .chap-progress {
@@ -1471,6 +1922,35 @@ body.overview-mode .content {
 
 .chapter-content { font-feature-settings: "kern", "liga", "calt"; }
 
+/* TL;DR 摘要卡 */
+.tldr-card {
+    background: linear-gradient(135deg, var(--accent-soft, #fdf6e3), transparent);
+    border-left: 3px solid var(--accent, #b08968);
+    padding: 14px 20px 16px;
+    margin: 0 0 48px;
+    border-radius: 0 8px 8px 0;
+}
+.tldr-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--accent, #b08968);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-style: normal;
+}
+.tldr-text {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    margin: 0;
+    font-style: normal;
+    text-indent: 0;
+}
+body.dark .tldr-card {
+    background: linear-gradient(135deg, rgba(176, 137, 104, 0.12), transparent);
+}
+
 .chapter-content p {
     margin: 0 0 1.2em 0;
     text-indent: 2em;
@@ -1525,6 +2005,18 @@ body.overview-mode .content {
 }
 
 .chapter-content a:hover { border-bottom-color: var(--accent); }
+
+/* 交叉引用 — 「第 N 章」链接 */
+.chapter-content a.chapter-ref {
+    color: var(--accent);
+    border-bottom: 1px dashed var(--accent);
+    text-decoration: none;
+    padding: 0 1px;
+}
+.chapter-content a.chapter-ref:hover {
+    background: var(--accent-soft, rgba(176, 137, 104, 0.12));
+    border-bottom-style: solid;
+}
 
 .chapter-content blockquote {
     margin: 2em 0;
@@ -1619,6 +2111,118 @@ body.overview-mode .content {
     background: transparent;
 }
 body.dark .chapter-content pre .code-copy:hover { background: #1f1f22; }
+
+/* 代码跳转（Run/Explain） */
+.chapter-content pre .code-jump {
+    position: absolute;
+    top: 8px;
+    right: 76px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: var(--bg-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s;
+    text-decoration: none;
+    font-family: var(--font-sans, -apple-system, sans-serif);
+}
+.chapter-content pre:hover .code-jump { opacity: 1; }
+.chapter-content pre .code-jump:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* 行号 */
+.chapter-content pre.with-lines {
+    padding-left: 56px;
+    counter-reset: line;
+}
+.chapter-content pre.with-lines .line {
+    display: block;
+    min-height: 1.6em;
+    position: relative;
+}
+.chapter-content pre.with-lines .ln {
+    position: absolute;
+    left: -48px;
+    top: 0;
+    width: 36px;
+    text-align: right;
+    color: var(--text-faint);
+    font-size: 11px;
+    user-select: none;
+    pointer-events: none;
+    border-right: 1px solid var(--border);
+    padding-right: 8px;
+    counter-increment: line;
+}
+.chapter-content pre.with-lines .ln::before {
+    content: counter(line);
+}
+body.dark .chapter-content pre.with-lines .ln { color: #5a5a5e; border-right-color: #2a2a2e; }
+
+/* Mermaid */
+.mermaid {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    margin: 1.5em 0;
+    text-align: center;
+    overflow-x: auto;
+}
+body.dark .mermaid { background: #18181b; }
+
+/* 图片 lightbox */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.88);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+.lightbox.open { display: flex; }
+.lightbox img {
+    max-width: 100%;
+    max-height: 80vh;
+    object-fit: contain;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+}
+.lightbox-caption {
+    color: #ccc;
+    font-size: 13px;
+    margin-top: 16px;
+    text-align: center;
+    max-width: 600px;
+}
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 28px;
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 32px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    opacity: 0.7;
+    transition: opacity .15s;
+}
+.lightbox-close:hover { opacity: 1; }
+.chapter-content img { max-width: 100%; }
 
 .chapter-content table {
     border-collapse: collapse;
@@ -3227,19 +3831,84 @@ document.querySelectorAll('.font-btn').forEach(btn => {
 
 setFontSize(currentFontSize);
 
+// 阅读宽度
+let currentWidth = localStorage.getItem('readingWidth') || 'medium';
+function setWidth(width) {
+    document.body.classList.remove('width-narrow', 'width-medium', 'width-wide');
+    document.body.classList.add('width-' + width);
+    document.querySelectorAll('.width-btn').forEach(b => b.classList.toggle('active', b.dataset.width === width));
+    localStorage.setItem('readingWidth', width);
+}
+document.querySelectorAll('.width-btn').forEach(btn => {
+    btn.addEventListener('click', () => setWidth(btn.dataset.width));
+});
+setWidth(currentWidth);
+
+// ============================================================
+// 图片 lightbox — 点击放大
+// ============================================================
+const _lightbox = document.createElement('div');
+_lightbox.className = 'lightbox';
+_lightbox.innerHTML = '<button class="lightbox-close" aria-label="关闭">×</button><img alt=""><div class="lightbox-caption"></div>';
+document.body.appendChild(_lightbox);
+const _lbImg = _lightbox.querySelector('img');
+const _lbCap = _lightbox.querySelector('.lightbox-caption');
+const _lbClose = _lightbox.querySelector('.lightbox-close');
+_lbClose.addEventListener('click', () => _lightbox.classList.remove('open'));
+_lightbox.addEventListener('click', (e) => { if (e.target === _lightbox) _lightbox.classList.remove('open'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') _lightbox.classList.remove('open'); });
+function setupLightbox() {
+    document.querySelectorAll('.chapter-content img').forEach(img => {
+        if (img.dataset.lbReady) return;
+        img.dataset.lbReady = '1';
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', () => {
+            _lbImg.src = img.src;
+            _lbImg.alt = img.alt || '';
+            _lbCap.textContent = img.alt || '';
+            _lightbox.classList.add('open');
+        });
+    });
+}
+setupLightbox();
+
+
 function toggleDark() {
-    document.body.classList.toggle('dark');
-    const isDark = document.body.classList.contains('dark');
-    localStorage.setItem('dark', isDark);
-    document.getElementById('dark-btn').classList.toggle('active', isDark);
+    setTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
 }
 
 document.getElementById('dark-btn').addEventListener('click', toggleDark);
 
-if (localStorage.getItem('dark') === 'true') {
-    document.body.classList.add('dark');
-    document.getElementById('dark-btn').classList.add('active');
+// 主题切换：light / dark / sepia / green
+function setTheme(theme) {
+    document.body.classList.remove('dark', 'sepia', 'green');
+    if (theme === 'dark') document.body.classList.add('dark');
+    else if (theme === 'sepia') document.body.classList.add('sepia');
+    else if (theme === 'green') document.body.classList.add('green');
+    localStorage.setItem('theme', theme);
+    const db = document.getElementById('dark-btn');
+    if (db) db.classList.toggle('active', theme === 'dark');
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
 }
+document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => setTheme(btn.dataset.theme));
+});
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme && savedTheme !== 'light') setTheme(savedTheme);
+else if (localStorage.getItem('dark') === 'true') setTheme('dark');
+
+// 字体族切换：serif / sans / mono
+function setFontFam(fam) {
+    document.body.classList.remove('font-serif', 'font-sans', 'font-mono');
+    document.body.classList.add('font-' + fam);
+    localStorage.setItem('fontFamily', fam);
+    document.querySelectorAll('.fam-btn').forEach(b => b.classList.toggle('active', b.dataset.fam === fam));
+}
+document.querySelectorAll('.fam-btn').forEach(btn => {
+    btn.addEventListener('click', () => setFontFam(btn.dataset.fam));
+});
+const savedFam = localStorage.getItem('fontFamily') || 'serif';
+setFontFam(savedFam);
 
 // === QR 扫码弹窗 ===
 const qrModal = document.getElementById('qr-modal');
@@ -3535,13 +4204,36 @@ chapters.forEach(ch => observer.observe(ch));
 // === 代码块：复制按钮 + 语言标签 ===
 (function() {
     const LANG_MAP = { py: 'python', js: 'javascript', ts: 'typescript', sh: 'bash', md: 'markdown', yml: 'yaml', json: 'json' };
+
+    // ----- Mermaid：找到 mermaid 块，转 <div class="mermaid">，延迟加载 mermaid.js -----
+    const mermaidBlocks = [];
+    document.querySelectorAll('.chapter-content pre code.language-mermaid').forEach(code => {
+        const pre = code.parentNode;
+        const div = document.createElement('div');
+        div.className = 'mermaid';
+        div.textContent = code.textContent;
+        pre.parentNode.replaceChild(div, pre);
+        mermaidBlocks.push(div);
+    });
+    if (mermaidBlocks.length > 0) {
+        const script = document.createElement('script');
+        script.src = 'assets/mermaid.min.js';
+        script.onload = () => {
+            if (window.mermaid) {
+                mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose', flowchart: { useMaxWidth: true, htmlLabels: true } });
+                mermaid.run({ nodes: mermaidBlocks });
+            }
+        };
+        document.head.appendChild(script);
+    }
+
     document.querySelectorAll('.chapter-content pre').forEach(pre => {
         const code = pre.querySelector('code');
         if (!code) return;
         // 提取语言：<code class="language-python"> → python
         let lang = '';
         const cls = code.className || '';
-        const m = cls.match(/language-(\S+)/);
+        const m = cls.match(/language-([A-Za-z0-9_+-]+)/);
         if (m) lang = LANG_MAP[m[1]] || m[1];
         if (lang) {
             const langEl = document.createElement('span');
@@ -3556,6 +4248,34 @@ chapters.forEach(ch => observer.observe(ch));
         btn.setAttribute('aria-label', '复制代码');
         btn.innerHTML = '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
         pre.appendChild(btn);
+
+        // 跳转按钮：python → Replit，bash → explainshell
+        const langKey = (m && m[1]) ? m[1] : '';
+        if (langKey === 'py' || langKey === 'python') {
+            const runBtn = document.createElement('a');
+            runBtn.className = 'code-jump';
+            runBtn.href = 'https://replit.com/languages/python3';
+            runBtn.target = '_blank';
+            runBtn.rel = 'noopener';
+            runBtn.title = '复制代码后在新标签打开 Replit';
+            runBtn.innerHTML = '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>Run</span>';
+            runBtn.addEventListener('click', async () => {
+                try { await navigator.clipboard.writeText(code.innerText); } catch(e) {}
+            });
+            pre.appendChild(runBtn);
+        } else if (langKey === 'bash' || langKey === 'sh' || langKey === 'shell') {
+            const runBtn = document.createElement('a');
+            runBtn.className = 'code-jump';
+            runBtn.href = 'https://explainshell.com/';
+            runBtn.target = '_blank';
+            runBtn.rel = 'noopener';
+            runBtn.title = '复制命令到剪贴板后在新标签打开 explainshell';
+            runBtn.innerHTML = '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>Explain</span>';
+            runBtn.addEventListener('click', async () => {
+                try { await navigator.clipboard.writeText(code.innerText); } catch(e) {}
+            });
+            pre.appendChild(runBtn);
+        }
         btn.addEventListener('click', async () => {
             const text = code.innerText;
             try {
@@ -4187,6 +4907,62 @@ helpPanel.addEventListener('click', (e) => {
 // 章节顺序 (j/k 跳转用)
 // ============================================================
 const CHAPTERS = __CHAPTERS_JSON__;
+const CHAPTER_REFS = __CHAPTER_REFS__;
+
+// ============================================================
+// 交叉引用：「第 N 章」自动转链接（同书内）
+// ============================================================
+function linkifyChapterRefs(root) {
+    const article = root.closest ? root.closest('.chapter') : null;
+    if (!article) return;
+    const book = article.dataset.book;
+    const refs = CHAPTER_REFS[book];
+    if (!refs) return;
+    // 合并：递归遍历 text node，跳过 a / code / pre
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(n) {
+            const p = n.parentNode;
+            if (!p) return NodeFilter.FILTER_REJECT;
+            const tag = p.nodeName;
+            if (tag === 'A' || tag === 'CODE' || tag === 'PRE' || tag === 'SCRIPT' || tag === 'STYLE') {
+                return NodeFilter.FILTER_REJECT;
+            }
+            return NodeFilter.FILTER_ACCEPT;
+        }
+    });
+    const re = /第\\s*(\\d{1,2})\\s*章/g;
+    const targets = [];
+    let n;
+    while ((n = walker.nextNode())) {
+        if (re.test(n.nodeValue)) targets.push(n);
+        re.lastIndex = 0;
+    }
+    targets.forEach(node => {
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        const text = node.nodeValue;
+        let m;
+        re.lastIndex = 0;
+        while ((m = re.exec(text)) !== null) {
+            const num = parseInt(m[1], 10);
+            const ref = refs.find(r => r.num === num);
+            if (!ref) continue;
+            if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+            const a = document.createElement('a');
+            a.href = '#' + ref.anchor;
+            a.className = 'chapter-ref';
+            a.title = '第 ' + num + ' 章 · ' + ref.title;
+            a.textContent = m[0];
+            frag.appendChild(a);
+            last = m.index + m[0].length;
+        }
+        if (last === 0) return;
+        if (last < text.length) frag.appendChild(document.createTextNode(text.slice(last)));
+        node.parentNode.replaceChild(frag, node);
+    });
+}
+document.querySelectorAll('.chapter-content').forEach(c => linkifyChapterRefs(c));
+
 
 // ============================================================
 // 进度统计
@@ -4330,6 +5106,89 @@ function renderOverview() {
         const done = Object.keys(progress.completed).length;
         const pct = total > 0 ? Math.round(done / total * 100) : 0;
         overallPctEl.textContent = pct;
+    }
+
+    // 4. 个人数据看板
+    const setText = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n; };
+    const completedCount = Object.keys(progress.completed).length;
+    setText('d-read-count', completedCount);
+    const inProgress = Object.values(progress.readPct || {}).filter(p => p > 0 && p < 100).length;
+    setText('d-reading-count', inProgress);
+    const totalSeconds = Object.values(progress.timeSpent || {}).reduce((a, b) => a + b, 0);
+    setText('d-time-spent', Math.round(totalSeconds / 60));
+    const notesCount = Object.values(notes).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
+    setText('d-notes-count', notesCount);
+    const bookmarksCount = Object.values(bookmarks).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
+    setText('d-bookmarks-count', bookmarksCount);
+    // 连续阅读天数（基于 dailyTime）
+    const daily = progress.dailyTime || {};
+    const dates = Object.keys(daily).sort();
+    let streak = 0;
+    if (dates.length) {
+        const oneDay = 86400000;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        for (let i = 0; i < 365; i++) {
+            const d = new Date(today.getTime() - i * oneDay);
+            const k = d.toISOString().slice(0, 10);
+            if (daily[k] && daily[k] > 0) streak++;
+            else if (i > 0) break;
+        }
+    }
+    setText('d-streak-days', streak);
+    const streakEl = document.getElementById('dashboard-streak');
+    if (streakEl) {
+        if (streak >= 1) {
+            const msg = streak >= 7 ? '太稳了！保持这个节奏。' : streak >= 3 ? '正在养成习惯。' : '继续，节奏起来了。';
+            streakEl.innerHTML = '<span class="flame">●</span> 已连续 ' + streak + ' 天阅读 · ' + msg;
+        } else {
+            streakEl.textContent = '开始你的第一次阅读，建立连续记录。';
+        }
+    }
+
+    // 5. 每周回顾（基于 dailyTime + completed 时间戳）
+    const weeklyGrid = document.getElementById('weekly-grid');
+    if (weeklyGrid) {
+        const oneDay = 86400000;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let weekSec = 0, weekCount = 0;
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(today.getTime() - i * oneDay);
+            const k = d.toISOString().slice(0, 10);
+            weekSec += (daily[k] || 0);
+        }
+        // 本周已读章节（基于 completed 字典的 value 时间戳）
+        for (const [cid, ts] of Object.entries(progress.completed || {})) {
+            if (!ts || typeof ts !== 'number') continue;
+            const dt = new Date(ts);
+            const diff = today.getTime() - new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
+            if (diff >= 0 && diff < 7 * oneDay) weekCount++;
+        }
+        // 本周新增笔记（notes 字典里每个数组元素的 timestamp 字段）
+        let weekNotes = 0;
+        for (const arr of Object.values(notes)) {
+            for (const n of (Array.isArray(arr) ? arr : [])) {
+                if (!n || typeof n.timestamp !== 'number') continue;
+                const dt = new Date(n.timestamp);
+                const diff = today.getTime() - new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
+                if (diff >= 0 && diff < 7 * oneDay) weekNotes++;
+            }
+        }
+        const cells = [
+            { num: weekCount, lbl: '已读章节' },
+            { num: Math.round(weekSec / 60), lbl: '阅读分钟' },
+            { num: weekNotes, lbl: '新增笔记' },
+            { num: streak, lbl: '连续天数' },
+        ];
+        const hasAny = cells.some(c => c.num > 0);
+        if (hasAny) {
+            weeklyGrid.innerHTML = cells.map(c =>
+                '<div class="weekly-cell"><div class="weekly-num">' + c.num + '</div><div class="weekly-lbl">' + c.lbl + '</div></div>'
+            ).join('');
+        } else {
+            weeklyGrid.innerHTML = '<div class="weekly-empty">本周还没有阅读记录 — 去读一章开始累计。</div>';
+        }
     }
 
     // 4. 继续阅读卡 (有 lastRead 才显示)
@@ -5285,12 +6144,16 @@ def build_html():
 
     book_icons = {}  # slug -> svg (sidebar 小图标，16px)
     book_icons_big = {}  # slug -> svg (封面大图标，72px)
+    book_levels = {}  # slug -> (level_int, level_name) 难度
 
     for book_idx, (book_slug, meta, chapters) in enumerate(books):
         icon_name = meta.get("icon", "book")
         book_icons[book_slug] = svg_icon(icon_name, size=16)
         book_icons_big[book_slug] = svg_icon(icon_name, size=72)
         book_color = meta.get("color", "#b08968")
+        book_level = meta.get("level", 3)
+        book_level_name = meta.get("level_name", "进阶")
+        book_levels[book_slug] = (book_level, book_level_name)
 
         # 书架章节列表
         chapter_items = []
@@ -5308,6 +6171,49 @@ def build_html():
             chars = count_words(md_text)
             total_chars += chars
             minutes = max(1, chars // 400)
+
+            # TL;DR：从首段提炼摘要（自动去 markdown 标记）
+            import re as _re
+            _plain = _re.sub(r"`([^`]+)`", r"\1", md_text)
+            _plain = _re.sub(r"\*\*([^*]+)\*\*", r"\1", _plain)
+            _plain = _re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", _plain)
+            _first_para = ""
+            _first_quote = ""
+            for _line in _plain.split("\n\n"):
+                _line = _line.strip()
+                if not _line or _line.startswith("#"):
+                    continue
+                # 跳过代码块
+                if "```" in _line or _line.startswith("    "):
+                    continue
+                if _line.startswith(">"):
+                    if not _first_quote:
+                        _first_quote = _re.sub(r"^>\s*", "", _line)
+                    continue
+                # 跳过 - 列表
+                if _line.startswith(("-", "*", "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.")):
+                    continue
+                if not _first_para or len(_first_para) < 20:
+                    _first_para = _line
+                    if len(_first_para) > 20:
+                        break
+            # 截断到 ~140 字，加省略号
+            tldr_html = ""
+            # 优先用 blockquote（一般是作者写的导语），如果没有或太短，用首段
+            if _first_quote and len(_first_quote) > 15:
+                _tldr_source = _first_quote
+            else:
+                _tldr_source = _first_para
+            if _tldr_source and len(_tldr_source) > 15:
+                _tldr_text = _tldr_source[:140].rstrip("，。、；：")
+                if len(_tldr_source) > 140:
+                    _tldr_text += "…"
+                tldr_html = (
+                    f'<aside class="tldr-card">'
+                    f'<div class="tldr-label">TL;DR</div>'
+                    f'<p class="tldr-text">{_tldr_text}</p>'
+                    f'</aside>'
+                )
 
             # 提取章节内 TOC (H2/H3 标题)
             toc_items = extract_toc(content_html)
@@ -5414,15 +6320,25 @@ def build_html():
                     f'</aside>'
                 )
 
+            level_dots = "●" * book_level + "○" * (5 - book_level)
+            level_badge = (
+                f'<span class="level-badge" data-level="{book_level}" title="难度 {book_level}/5">'
+                f'<span class="level-dots">{level_dots}</span>'
+                f'<span class="level-name">{book_level_name}</span>'
+                f'</span>'
+            )
             book_chapters_html_parts.append(
                 f'<article id="{anchor}" class="chapter" data-book="{book_slug}" data-chap="{chap_slug}">'
                 f'<div class="chapter-num">CHAPTER {chap_idx:02d}</div>'
                 f'<h1 class="chapter-title">{display_title}</h1>'
                 f'{chap_progress_html}'
-                f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字</div>'
+                f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字 · {level_badge}</div>'
                 f'{series_intro_html}'
                 f'<div class="chapter-body">'
-                f'<div class="chapter-content">{content_html}</div>'
+                f'<div class="chapter-content">'
+                f'{tldr_html}'
+                f'{content_html}'
+                f'</div>'
                 f'{toc_html}'
                 f'</div>'
                 f'<div class="chapter-end">本章完</div>'
@@ -5479,8 +6395,21 @@ def build_html():
     # j/k 跳转的章节列表 (JSON array, 按文档顺序)
     import json as _json
     chapter_anchors_json = _json.dumps(chapter_anchors, ensure_ascii=False)
+    # 交叉引用：book -> { 1..10 -> {anchor, title} }
+    chapter_refs = {}
+    for _slug, _meta, _chapters in books:
+        chapter_refs[_slug] = []
+        for _i, (_cslug, _cpath) in enumerate(_chapters, 1):
+            _ct = chapter_display_title(_cpath.read_text(encoding="utf-8"), _cslug)
+            chapter_refs[_slug].append({
+                "num": _i,
+                "anchor": f"{_slug}__{_cslug}",
+                "title": _ct,
+            })
+    chapter_refs_json = _json.dumps(chapter_refs, ensure_ascii=False)
     # JS 不是 f-string, 用占位符后替换
     JS = JS.replace("__CHAPTERS_JSON__", chapter_anchors_json)
+    JS = JS.replace("__CHAPTER_REFS__", chapter_refs_json)
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -5539,6 +6468,23 @@ def build_html():
                 <button class="font-btn" data-size="small" title="小字号 (-)">A−</button>
                 <button class="font-btn" data-size="medium" title="中字号">A</button>
                 <button class="font-btn" data-size="large" title="大字号 (+)">A+</button>
+            </div>
+            <div class="toolbar-section width-sizes">
+                <button class="width-btn" data-width="narrow" title="窄">窄</button>
+                <button class="width-btn" data-width="medium" title="中">中</button>
+                <button class="width-btn" data-width="wide" title="宽">宽</button>
+            </div>
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-section font-families">
+                <button class="fam-btn" data-fam="serif" title="衬线">衬</button>
+                <button class="fam-btn" data-fam="sans" title="无衬线">黑</button>
+                <button class="fam-btn" data-fam="mono" title="等宽">等</button>
+            </div>
+            <div class="toolbar-section themes">
+                <button class="theme-btn" data-theme="light" title="亮">亮</button>
+                <button class="theme-btn" data-theme="dark" title="暗">暗</button>
+                <button class="theme-btn" data-theme="sepia" title="羊皮纸">纸</button>
+                <button class="theme-btn" data-theme="green" title="护眼绿">绿</button>
             </div>
             <div class="toolbar-divider"></div>
             <div class="toolbar-actions">
