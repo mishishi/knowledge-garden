@@ -1666,11 +1666,23 @@ body.dark .chapter-content pre .code-copy:hover { background: #1f1f22; }
 .chapter-content pre.with-lines {
     padding-left: 56px;
     counter-reset: line;
+    line-height: 1.55;
+}
+.chapter-content pre.with-lines code {
+    line-height: 1.55;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    white-space: normal;  /* 让 
+ 文本节点不再产生行高 */
 }
 .chapter-content pre.with-lines .line {
     display: block;
-    min-height: 1.6em;
     position: relative;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0;
+    white-space: pre;  /* 单独保留缩进 */
 }
 .chapter-content pre.with-lines .ln {
     position: absolute;
