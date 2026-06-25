@@ -4526,7 +4526,12 @@ function startMusic(scene) {
         // 真实录音：用 <audio> 元素 + WebAudio GainNode 控制音量
         const audioEl = document.getElementById('woju-audio');
         if (!audioEl || !audioEl.querySelector('source, [src]') && !audioEl.src) {
-            console.log('woju scene: audio file not found, fallback to off');
+            console.log('woju scene: audio file not found, fallback to white');
+            musicNodes = startWhiteNoise(ctx, mainGain, 'white');
+            currentScene = 'white';
+            localStorage.setItem('musicScene', 'white');
+            // 同步 UI 高亮
+            document.querySelectorAll('.scene-btn').forEach(b => b.classList.toggle('active', b.dataset.scene === 'white'));
             return;
         }
         const source = ctx.createMediaElementSource(audioEl);
@@ -4535,6 +4540,9 @@ function startMusic(scene) {
         audioEl.currentTime = 0;
         audioEl.play().catch(e => console.log('audio play failed:', e));
         musicNodes = { source: audioEl, gain: mainGain, isAudio: true };
+    } else if (scene === 'white' || scene === 'rain') {
+        // Web Audio 合成的环境音 — 零文件, 部署到 GitHub Pages 也能用
+        musicNodes = startWhiteNoise(ctx, mainGain, scene);
     }
     localStorage.setItem('musicScene', scene);
 }
@@ -4552,6 +4560,35 @@ function stopMusic() {
     musicNodes = null;
     currentScene = 'off';
     localStorage.setItem('musicScene', 'off');
+}
+
+// Web Audio 合成的环境音 scene — 零音频文件, 部署到 GitHub Pages 也能用
+function startWhiteNoise(ctx, mainGain, kind) {
+    // kind: 'white' (低通风感) / 'rain' (高频雨声)
+    const bufferSize = 2 * ctx.sampleRate;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    noise.loop = true;
+    const filter = ctx.createBiquadFilter();
+    if (kind === 'rain') {
+        filter.type = 'bandpass';
+        filter.frequency.value = 1800;
+        filter.Q.value = 0.5;
+    } else {
+        filter.type = 'lowpass';
+        filter.frequency.value = 600;
+        filter.Q.value = 0.4;
+    }
+    const gain = ctx.createGain();
+    gain.gain.value = kind === 'rain' ? 0.6 : 0.5;
+    noise.connect(filter).connect(gain).connect(mainGain);
+    noise.start();
+    return { source: noise, gain, isAudio: false };
 }
 
 document.querySelectorAll('.scene-btn').forEach(btn => {
@@ -4576,20 +4613,18 @@ document.querySelector('.volume input').addEventListener('input', (e) => {
 });
 
 document.querySelector('.volume input').value = volume * 100;
-// 进入页面：默认开背景音（首次访问/之前选过 woju 都自动开；只有用户明确选过「静音」才不开）
-const savedScene = localStorage.getItem('musicScene') || 'woju';
+// 进入页面：默认开白噪音背景音（Web Audio 合成, 部署到 GitHub Pages 也能用）
+// 用户明确选过「静音」才不开
+const savedScene = localStorage.getItem('musicScene') || 'white';
 if (savedScene !== 'off') {
     startMusic(savedScene);
-    // 浏览器 autoplay policy：play() 可能被静默拦截
-    // 兜底：监听首次用户交互，resume audioCtx + 再 play 一次
-    if (musicNodes && musicNodes.isAudio && musicNodes.source.paused) {
+    // 浏览器 autoplay policy: audioCtx 可能被 suspended, 需要用户首次交互时 resume
+    // (Web Audio 合成 scene 也一样需要 resume)
+    if (audioCtx && audioCtx.state === 'suspended') {
         const handler = () => {
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume().catch(() => {});
-            }
-            if (musicNodes && musicNodes.isAudio) {
-                musicNodes.source.play().catch(() => {});
-            }
+            audioCtx.resume().catch(() => {});
+            document.removeEventListener('click', handler);
+            document.removeEventListener('keydown', handler);
         };
         document.addEventListener('click', handler, { once: true });
         document.addEventListener('keydown', handler, { once: true });
@@ -6816,6 +6851,8 @@ def build_html():
         <h4>背景音 <button class="close">×</button></h4>
         <div class="scenes">
             <button class="scene-btn" data-scene="off">{svg_icon('mute')} 静音</button>
+            <button class="scene-btn" data-scene="white">{svg_icon('disc')} 白噪音</button>
+            <button class="scene-btn" data-scene="rain">{svg_icon('disc')} 雨声</button>
             <button class="scene-btn" data-scene="woju">{svg_icon('disc')} 且听风吟</button>
         </div>
         <div class="volume">{svg_icon('volume')} <input type="range" min="0" max="100" value="30"> {svg_icon('volume', size=18)}</div>
