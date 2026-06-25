@@ -497,8 +497,13 @@ def md_to_html(md_text: str) -> str:
         if lines and lines[-1] == "":
             lines = lines[:-1]
         new_body = "\n".join(f'<span class="line"><span class="ln"></span>{ln}</span>' for ln in lines)
-        cls = m.group(2) or ''
-        return f'<pre{m.group(1)} class="with-lines {cls.strip()}"><code>{new_body}\n</code></pre>'
+        # 从 <code class="language-X"> 提取 X，拼到 pre 的 class
+        code_attrs = m.group(2) or ''
+        lang_match = _re_ln.search(r'class="language-([A-Za-z0-9_+-]+)"', code_attrs)
+        lang = lang_match.group(1) if lang_match else ''
+        lang_cls = (' ' + lang) if lang else ''
+        pre_attrs = m.group(1) or ''
+        return f'<pre{pre_attrs} class="with-lines{lang_cls}"><code class="language-{lang}">{new_body}\n</code></pre>' if lang else f'<pre{pre_attrs} class="with-lines"><code>{new_body}\n</code></pre>'
     html = _re_ln.sub(r'<pre([^>]*)>\s*<code([^>]*)>([\s\S]*?)</code>\s*</pre>', _add_lines, html)
     return html
 
