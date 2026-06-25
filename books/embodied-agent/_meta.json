@@ -1,0 +1,21 @@
+{
+  "title": "具身智能实战",
+  "description": "10 章讲透 embodied agent：世界模型 + 仿真训练 + 真实机器人 + 机械臂 + 导航 + 家庭服务 + 未来 2-3 年趋势",
+  "icon": "bot",
+  "color": "#dc2626",
+  "priority": 14,
+  "order": [
+    "01-what-is-embodied",
+    "02-three-pillars",
+    "03-world-models",
+    "04-simulation-train",
+    "05-simulation-platforms",
+    "06-real-robot",
+    "07-manipulation",
+    "08-navigation",
+    "09-home-service",
+    "10-future-outlook"
+  ],
+  "level": 4,
+  "level_name": "深水"
+}

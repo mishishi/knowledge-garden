@@ -1,0 +1,21 @@
+{
+  "title": "AI 内容创作经济",
+  "description": "10 章讲透 AI 重塑内容产业：AIGC 工具 + 工作流改造 + Newsletter 经济 + Substack / Beehiiv + 内容平台对比 + 变现路径 + AI 协作 + 版权问题 + 未来创作者",
+  "icon": "pen-tool",
+  "color": "#ec4899",
+  "priority": 15,
+  "order": [
+    "01-industry-reshuffle",
+    "02-aigc-tools",
+    "03-workflow-rebuild",
+    "04-newsletter-economy",
+    "05-substack-beehiiv",
+    "06-content-platform-comparison",
+    "07-monetization-paths",
+    "08-ai-co-creation",
+    "09-copyright-and-rights",
+    "10-future-creator"
+  ],
+  "level": 3,
+  "level_name": "进阶"
+}

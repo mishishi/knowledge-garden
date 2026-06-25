@@ -1,0 +1,21 @@
+{
+  "title": "A2A + 多 Agent 互操作",
+  "description": "10 章讲透 agent 间通信：A2A 协议 + Agent Card + 4 种协作范式（管道/辩论/分层/市场）+ 安全边界 + 真实落地架构",
+  "icon": "network",
+  "color": "#0ea5e9",
+  "priority": 12,
+  "order": [
+    "01-what-is-a2a",
+    "02-a2a-vs-mcp",
+    "03-agent-card",
+    "04-four-collaboration-patterns",
+    "05-pipeline-mode",
+    "06-debate-mode",
+    "07-hierarchical-mode",
+    "08-market-mode",
+    "09-security-boundary",
+    "10-real-architecture"
+  ],
+  "level": 4,
+  "level_name": "深水"
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Vibe Coding 实战",
+  "description": "10 章讲透 vibe coding：Karpathy 定义 + 工具全景 + 三段式口述 + 三个真坑（N+1 / 字段割裂 / 安全）+ 多文件重构 + 中文本地化 + 边界 + 个人工作流",
+  "icon": "wind",
+  "color": "#7c3aed",
+  "priority": 11,
+  "order": [
+    "01-what-is-vibe-coding",
+    "02-tools-landscape",
+    "03-three-stage-method",
+    "04-pitfall-n-plus-one",
+    "05-pitfall-naming",
+    "06-pitfall-security",
+    "07-multi-file-refactor",
+    "08-chinese-localized",
+    "09-boundaries",
+    "10-my-workflow"
+  ],
+  "level": 3,
+  "level_name": "进阶"
+}

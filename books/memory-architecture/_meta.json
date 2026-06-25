@@ -1,0 +1,21 @@
+{
+  "title": "长期记忆系统",
+  "description": "10 章讲透 agent 长期记忆：三层架构（工作/情景/语义）+ 向量数据库 + 知识图谱 + 混合检索 + 写入策略 + 真实生产系统",
+  "icon": "brain",
+  "color": "#f59e0b",
+  "priority": 13,
+  "order": [
+    "01-why-memory-matters",
+    "02-three-layer-memory",
+    "03-working-memory",
+    "04-episodic-memory",
+    "05-semantic-memory",
+    "06-vector-db",
+    "07-knowledge-graph",
+    "08-hybrid-retrieval",
+    "09-memory-write-strategy",
+    "10-real-system"
+  ],
+  "level": 4,
+  "level_name": "深水"
+}
