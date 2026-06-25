@@ -736,7 +736,7 @@ body.dark #more-btn { background: rgba(40, 40, 44, 0.85); }
     position: absolute;
     top: 48px;
     right: 0;
-    width: 720px;
+    width: 400px;
     max-width: calc(100vw - 32px);
     background: var(--bg);
     border: 1px solid var(--border);
@@ -759,9 +759,12 @@ body.dark .toolbar-menu { background: rgba(28, 28, 30, 0.95); }
     letter-spacing: 0.8px;
     text-transform: uppercase;
 }
-/* 工具栏内的设置面板：1 行 4 组（字号 / 宽度 / 字体 / 主题） */
+/* 工具栏内的设置面板：2 行 × 2 组（字号/宽度，字体/主题） */
 .toolbar-grid {
     padding: 10px 12px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 .t-row {
     display: flex;
@@ -771,39 +774,40 @@ body.dark .toolbar-menu { background: rgba(28, 28, 30, 0.95); }
 .t-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 4px 4px 4px 8px;
+    padding: 6px 6px 6px 12px;
     min-width: 0;
     flex: 1 1 0;
 }
 .t-lbl {
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-faint);
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     flex-shrink: 0;
-    min-width: 24px;
+    min-width: 28px;
     text-align: left;
     text-transform: uppercase;
+    font-weight: 500;
 }
 .t-btns {
     display: flex;
-    gap: 2px;
+    gap: 4px;
     flex: 1;
     min-width: 0;
 }
 .opt-btn {
     flex: 1;
     min-width: 0;
-    padding: 5px 6px;
+    padding: 6px 10px;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 3px;
+    border-radius: 4px;
     color: var(--text-soft);
-    font-size: 12px;
-    line-height: 1.2;
+    font-size: 13px;
+    line-height: 1.3;
     cursor: pointer;
     text-align: center;
     transition: background .12s, color .12s;
@@ -6518,6 +6522,8 @@ def build_html():
                             <button class="opt-btn width-btn" data-width="wide" title="宽">宽</button>
                         </div>
                     </div>
+                </div>
+                <div class="t-row">
                     <div class="t-group">
                         <span class="t-lbl">字体</span>
                         <div class="t-btns">
