@@ -4,7 +4,7 @@
 
 A personal knowledge garden. Multiple Markdown book series compiled into a single-file immersive HTML reader with notes, highlights, ambient music, and PWA offline support.
 
-我自己的个人知识库。写了 5 个 AI/Agent 工程系列的笔记，每一本都能做笔记、画高亮、配背景音乐。手机可加到主屏幕离线阅读。整套部署在 GitHub Pages，访问 [mishishi.github.io/knowledge-garden](https://mishishi.github.io/knowledge-garden/)。
+我自己的个人知识库。写了 10 个 AI/Agent 工程系列的笔记（Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / 成本工程 / Indie 产品 / Context Engineering / Agent Skills / Claude Code），每一本都能做笔记、画高亮、配背景音乐。手机可加到主屏幕离线阅读。整套部署在 GitHub Pages，访问 [mishishi.github.io/knowledge-garden](https://mishishi.github.io/knowledge-garden/)。
 
 ## 为什么做这个
 
@@ -16,7 +16,7 @@ A personal knowledge garden. Multiple Markdown book series compiled into a singl
 
 ## 当前书目
 
-5 个系列 / 50 章节 / 5 万字。
+10 个系列 / 100 章节 / 12.1 万字。
 
 **Multi-Agent in Practice（10 章）**——从零到 production 的 multi-agent 系统。第一章讲为什么需要 multi-agent（单 agent 的 3 个真实局限），最后一章讲 prod checklist（性能 / 质量 / 安全三维度）。中间 8 章拆解 5 个抽象、orchestration 模式、state / communication、failure handling、框架对比、observability。
 
@@ -32,7 +32,7 @@ A personal knowledge garden. Multiple Markdown book series compiled into a singl
 
 ## 读者体验
 
-打开 `index.html` 看到左侧书架列出 5 个系列，点进任一系列展开章节列表。
+打开 `index.html` 看到左侧书架列出 10 个系列，点进任一系列展开章节列表。
 
 主阅读区支持：选中文字弹笔记 / 高亮按钮（localStorage 存）、drop cap + 米白护眼底色、暗色模式（D 键切换）、字号调节（+/-）、背景白噪音（M 键打开面板）、章节进度自动追踪（每章阅读时间 + 完成度）、Cmd+K 全局搜索 + 系列 filter、聚焦模式（F 键隐藏侧栏 + 工具栏）、段落书签（点击书侧栏 bookmark 跳回 + 高亮 4 秒）、笔记 + 书签一键导出为 Markdown。
 

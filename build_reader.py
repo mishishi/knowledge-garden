@@ -172,11 +172,95 @@ ICONS = {
 }
 
 
-def build_sitemap(books) -> None:
-    """生成 sitemap.xml (SEO 用), 每章节一条 URL (单页应用 + hash anchor).
+def build_per_chapter_pages(books) -> int:
+    """为每本书的每章生成 1 个静态 HTML 入口页.
 
-    单文件 SPA 风格, 章节都在同一页. 用 hash anchor 让 Google 索引
-    能直接 jump 到具体章节.
+    设计: 真实 URL (`/books/<slug>/<chapter>.html`), 含专属 OG meta + meta refresh
+    跳转回 index.html#anchor. 用户访问时立刻 302 到 SPA, 但 Google 看到的是独立
+    URL + 该章 OG (转发到 V2EX/推特时显示对应书色卡).
+    """
+    from html import escape as _esc
+
+    pages_dir = ROOT / "books_pages"
+    # 清理旧产物 — 重新生成时避免遗留文件
+    if pages_dir.exists():
+        import shutil
+        shutil.rmtree(pages_dir)
+    pages_dir.mkdir(parents=True, exist_ok=True)
+
+    total = 0
+    for book_slug, meta, chapters in books:
+        book_title = meta.get("title", book_slug)
+        for chap_slug, chap_path in chapters:
+            md_text = chap_path.read_text(encoding="utf-8")
+            display_title = chapter_display_title(md_text, chap_slug)
+
+            # 抽首段做 og:description
+            first_para = ""
+            for line in md_text.split("\n"):
+                line = line.strip()
+                if not line or line.startswith("#") or line.startswith("```"):
+                    continue
+                if line.startswith("!") or line.startswith("[") or line.startswith("-"):
+                    continue
+                plain = re.sub(r"[*_`\[\]()>]", "", line)
+                if len(plain) > 30:
+                    first_para = plain[:180].strip()
+                    break
+
+            anchor = f"{book_slug}__{chap_slug}"
+            page_url = f"{SITE_URL}books_pages/{book_slug}/{chap_slug}.html"
+            target_url = f"{SITE_URL}index.html#{anchor}"
+            og_image = f"{SITE_URL}assets/og-{book_slug}.png"
+            full_title = f"{display_title} · {book_title} · 个人知识库"
+
+            html = f'''<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{_esc(full_title)}</title>
+<meta http-equiv="refresh" content="0; url={_esc(target_url)}">
+<link rel="canonical" href="{_esc(page_url)}">
+<meta property="og:type" content="article">
+<meta property="og:url" content="{_esc(page_url)}">
+<meta property="og:title" content="{_esc(full_title)}">
+<meta property="og:description" content="{_esc(first_para or book_title)}">
+<meta property="og:image" content="{_esc(og_image)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:site_name" content="个人知识库">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{_esc(full_title)}">
+<meta name="twitter:description" content="{_esc(first_para or book_title)}">
+<meta name="twitter:image" content="{_esc(og_image)}">
+<style>
+body {{ font-family: -apple-system, "PingFang SC", sans-serif; max-width: 600px; margin: 80px auto; padding: 0 20px; text-align: center; color: #5a5a5a; }}
+a {{ color: #b08968; }}
+</style>
+</head>
+<body>
+<p>正在跳转到 <a href="{_esc(target_url)}">{_esc(display_title)}</a> …</p>
+<script>window.location.replace({target_url!r});</script>
+</body>
+</html>
+'''
+            out_dir = pages_dir / book_slug
+            out_dir.mkdir(parents=True, exist_ok=True)
+            (out_dir / f"{chap_slug}.html").write_text(html, encoding="utf-8")
+            total += 1
+
+    print(f"生成 {pages_dir}/  ({total} 章静态页, 每章 ~3KB)")
+    return total
+
+
+def build_sitemap(books) -> None:
+    """生成 sitemap.xml (SEO 用). 每章一条真实 URL (per-chapter 静态页),
+    主站单条.
+
+    改造前: 每条都是 SITE_URL#hash_anchor, Google 当成 1 个 URL.
+    改造后: 每章 1 个独立 URL, 100 章 = 100 条可索引页面.
     """
     today = datetime.now().strftime("%Y-%m-%d")
     lines = ['<?xml version="1.0" encoding="UTF-8"?>']
@@ -188,24 +272,30 @@ def build_sitemap(books) -> None:
     lines.append("    <changefreq>weekly</changefreq>")
     lines.append("    <priority>1.0</priority>")
     lines.append("  </url>")
-    # 每章节
+    # 每本书
     for book_slug, meta, chapters in books:
+        lines.append("  <url>")
+        lines.append(f"    <loc>{SITE_URL}books_pages/{book_slug}/</loc>")
+        lines.append(f"    <lastmod>{today}</lastmod>")
+        lines.append("    <changefreq>weekly</changefreq>")
+        lines.append("    <priority>0.9</priority>")
+        lines.append("  </url>")
+        # 每章
         for chap_slug, _ in chapters:
-            anchor = f"{book_slug}__{chap_slug}"
             lines.append("  <url>")
-            lines.append(f"    <loc>{SITE_URL}#{anchor}</loc>")
+            lines.append(f"    <loc>{SITE_URL}books_pages/{book_slug}/{chap_slug}.html</loc>")
             lines.append(f"    <lastmod>{today}</lastmod>")
             lines.append("    <priority>0.8</priority>")
             lines.append("  </url>")
-    lines.append("</urlset>")
+    lines.append('</urlset>')
 
     output = ROOT / "sitemap.xml"
     output.write_text("\n".join(lines), encoding="utf-8")
-    print(f"生成 {output} ({len(books) * 10 + 1} URLs)")
+    print(f"生成 {output} ({sum(len(c) for _, _, c in books) + len(books) + 1} URLs)")
 
 
 def build_rss(books) -> None:
-    """生成 rss.xml, 每章一条 item. 单页 SPA 风格, link 用 hash anchor."""
+    """生成 rss.xml, 每章一条 item. link 用真实 per-chapter 静态页 URL."""
     from email.utils import format_datetime
     import html as _html
 
@@ -215,15 +305,15 @@ def build_rss(books) -> None:
     lines.append('<channel>')
     lines.append('  <title>个人知识库</title>')
     lines.append(f'  <link>{SITE_URL}</link>')
-    lines.append('  <description>5 个系列 · 50 章 · Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering</description>')
+    total_chapters = sum(len(c) for _, _, c in books)
+    lines.append(f'  <description>{len(books)} 个系列 · {total_chapters} 章 · Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering / Cost / Indie / Context / Skills / Claude Code</description>')
     lines.append(f'  <lastBuildDate>{now}</lastBuildDate>')
-    lines.append(f'  <atom:link href="{SITE_URL}/rss.xml" rel="self" type="application/rss+xml"/>')
+    lines.append(f'  <atom:link href="{SITE_URL}rss.xml" rel="self" type="application/rss+xml"/>')
 
     for book_slug, meta, chapters in books:
         for chap_slug, chap_path in chapters:
             md_text = chap_path.read_text(encoding="utf-8")
             display_title = chapter_display_title(md_text, chap_slug)
-            anchor = f"{book_slug}__{chap_slug}"
 
             # description: 抽第一段纯文本 (去 markdown 标记)
             first_para = ""
@@ -240,10 +330,11 @@ def build_rss(books) -> None:
                     break
 
             item_title = f"{meta['title']} · {display_title}"
+            item_link = f"{SITE_URL}books_pages/{book_slug}/{chap_slug}.html"
             lines.append('  <item>')
             lines.append(f'    <title>{_html.escape(item_title)}</title>')
-            lines.append(f'    <link>{SITE_URL}#{anchor}</link>')
-            lines.append(f'    <guid isPermaLink="false">{anchor}</guid>')
+            lines.append(f'    <link>{item_link}</link>')
+            lines.append(f'    <guid isPermaLink="true">{item_link}</guid>')
             lines.append(f'    <pubDate>{now}</pubDate>')
             if first_para:
                 lines.append(f'    <description>{_html.escape(first_para)}</description>')
@@ -254,7 +345,20 @@ def build_rss(books) -> None:
 
     output = ROOT / "rss.xml"
     output.write_text("\n".join(lines), encoding="utf-8")
-    print(f"生成 {output} ({len(books) * 10} items)")
+    print(f"生成 {output} ({sum(len(c) for _, _, c in books)} items)")
+
+
+def build_robots() -> None:
+    """生成 robots.txt — 允许全部 + 指 sitemap."""
+    output = ROOT / "robots.txt"
+    content = f"""# robots.txt — knowledge-garden
+User-agent: *
+Allow: /
+
+Sitemap: {SITE_URL}sitemap.xml
+"""
+    output.write_text(content, encoding="utf-8")
+    print(f"生成 {output}")
 
 
 def chapter_display_title(md_text: str, fallback_slug: str) -> str:
@@ -5331,7 +5435,61 @@ window.addEventListener('hashchange', () => {
     } else {
         showOverview();
     }
+    updateOgMeta();
 });
+
+// 动态 OG meta: 章节切换时同步 og:title / og:description / og:image / og:url
+// 这样用户复制分享链接或某些爬虫现场抓取时拿到对应书的 OG 卡
+function updateOgMeta() {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) {
+        // overview 模式: 用全站 OG
+        const ogTitle = `个人知识库 · ${CHAPTERS.length / 10} 个系列 · 100 章`;
+        setMeta('og-title', ogTitle);
+        setMeta('og-desc', 'Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / Cost / Indie / Context / Skills / Claude Code');
+        setMeta('og-image', `${SITE_URL}assets/og.png`);
+        setMeta('tw-title', ogTitle);
+        setMeta('tw-desc', 'Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / Cost / Indie / Context / Skills / Claude Code');
+        setMeta('tw-image', `${SITE_URL}assets/og.png`);
+        setMeta('og-url', SITE_URL);
+        return;
+    }
+    const book = CHAPTER_BOOK_MAP[hash];
+    const chapTitle = CHAPTER_TITLES_MAP[hash];
+    if (!book || !chapTitle) return;
+    const bookMeta = BOOK_META[book] || { title: book };
+    const fullTitle = `${chapTitle} · ${bookMeta.title} · 个人知识库`;
+    const pageUrl = `${SITE_URL}books_pages/${book}/${hash.split('__')[1]}.html`;
+    setMeta('og-title', fullTitle);
+    setMeta('og-desc', chapTitle);
+setMeta('og-image', `${SITE_URL}assets/og-${book}.png`);
+        setMeta('tw-title', fullTitle);
+        setMeta('tw-desc', chapTitle);
+        setMeta('tw-image', `${SITE_URL}assets/og-${book}.png`);
+    setMeta('og-url', pageUrl);
+}
+function setMeta(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('content', val);
+}
+// 初始化 BOOK_META (title 映射) — 从 sidebar 里的 data-book 反推
+const BOOK_META = (() => {
+    const out = {};
+    document.querySelectorAll('[data-book]').forEach(el => {
+        const slug = el.dataset.book;
+        if (out[slug]) return;
+        // 优先取 overview-card 的 .overview-card-title, fallback 到 book-title-text
+        const card = el.closest('.overview-card');
+        const titleEl = card ? card.querySelector('.overview-card-title') : el.querySelector('.book-title-text');
+        if (titleEl) out[slug] = { title: titleEl.textContent.trim() };
+    });
+    return out;
+})();
+const CHAPTER_BOOK_MAP = __CHAPTER_BOOK_MAP__;
+const CHAPTER_TITLES_MAP = __CHAPTER_TITLES_MAP__;
+const SITE_URL = '__SITE_URL__';
+// 初始化一次 (处理用户直接带 hash 进入的情况)
+updateOgMeta();
 
 // sidebar 的 h1 点 = 回首页
 const sidebarH1 = document.querySelector('.sidebar h1');
@@ -6237,6 +6395,7 @@ def build_html():
     total_chars = 0
     total_chapters = 0
     chapter_anchors = []  # j/k 跳转用, 按文档顺序
+    chapter_book_map = {}  # anchor -> book_slug (动态 OG meta 切换用)
 
     book_icons = {}  # slug -> svg (sidebar 小图标，16px)
     book_icons_big = {}  # slug -> svg (封面大图标，72px)
@@ -6447,6 +6606,7 @@ def build_html():
 
             total_chapters += 1
             chapter_anchors.append(anchor)
+            chapter_book_map[anchor] = book_slug
 
         # 书的章节数
         chap_count = len(chapters)
@@ -6503,9 +6663,20 @@ def build_html():
                 "title": _ct,
             })
     chapter_refs_json = _json.dumps(chapter_refs, ensure_ascii=False)
+    chapter_book_map_json = _json.dumps(chapter_book_map, ensure_ascii=False)
+    chapter_titles_map = {}
+    for _slug, _meta, _chs in books:
+        for _cs, _cp in _chs:
+            _anchor = f"{_slug}__{_cs}"
+            _md = _cp.read_text(encoding="utf-8")
+            chapter_titles_map[_anchor] = chapter_display_title(_md, _cs)
+    chapter_titles_map_json = _json.dumps(chapter_titles_map, ensure_ascii=False)
     # JS 不是 f-string, 用占位符后替换
     JS = JS.replace("__CHAPTERS_JSON__", chapter_anchors_json)
     JS = JS.replace("__CHAPTER_REFS__", chapter_refs_json)
+    JS = JS.replace("__CHAPTER_BOOK_MAP__", chapter_book_map_json)
+    JS = JS.replace("__CHAPTER_TITLES_MAP__", chapter_titles_map_json)
+    JS = JS.replace("__SITE_URL__", SITE_URL)
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -6524,17 +6695,17 @@ def build_html():
     <!-- Open Graph / Twitter Card -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{SITE_URL}">
-    <meta property="og:title" content="个人知识库 · 5 个系列 50 章">
-    <meta property="og:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering — 写给造 / 选 harness 的人">
-    <meta property="og:image" content="{SITE_URL}/assets/og.png">
+    <meta property="og:title" content="个人知识库 · {len(books)} 个系列 · {total_chapters} 章" id="og-title">
+    <meta property="og:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering / Cost / Indie / Context / Skills / Claude Code" id="og-desc">
+    <meta property="og:image" content="{SITE_URL}assets/og.png" id="og-image">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="zh_CN">
     <meta property="og:site_name" content="个人知识库">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="个人知识库 · 5 个系列 50 章">
-    <meta name="twitter:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering">
-    <meta name="twitter:image" content="{SITE_URL}/assets/og.png">
+    <meta name="twitter:title" content="个人知识库 · {len(books)} 个系列 · {total_chapters} 章" id="tw-title">
+    <meta name="twitter:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / Cost / Indie / Context / Skills / Claude Code" id="tw-desc">
+    <meta name="twitter:image" content="{SITE_URL}assets/og.png" id="tw-image">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="知识库">
@@ -6837,6 +7008,10 @@ def build_html():
     build_sitemap(books)
     # 生成 rss.xml (订阅)
     build_rss(books)
+    # 生成 robots.txt
+    build_robots()
+    # 生成 per-chapter 静态页 (100 个, 每章专属 OG + 跳转 index.html#anchor)
+    build_per_chapter_pages(books)
 
 
 if __name__ == "__main__":

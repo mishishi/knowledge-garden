@@ -1,0 +1,5 @@
+# robots.txt — knowledge-garden
+User-agent: *
+Allow: /
+
+Sitemap: https://mishishi.github.io/knowledge-garden/sitemap.xml

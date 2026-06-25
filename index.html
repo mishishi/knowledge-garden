@@ -15,17 +15,17 @@
     <!-- Open Graph / Twitter Card -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mishishi.github.io/knowledge-garden/">
-    <meta property="og:title" content="个人知识库 · 5 个系列 50 章">
-    <meta property="og:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering — 写给造 / 选 harness 的人">
-    <meta property="og:image" content="https://mishishi.github.io/knowledge-garden//assets/og.png">
+    <meta property="og:title" content="个人知识库 · 10 个系列 · 100 章" id="og-title">
+    <meta property="og:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering / Cost / Indie / Context / Skills / Claude Code" id="og-desc">
+    <meta property="og:image" content="https://mishishi.github.io/knowledge-garden/assets/og.png" id="og-image">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="zh_CN">
     <meta property="og:site_name" content="个人知识库">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="个人知识库 · 5 个系列 50 章">
-    <meta name="twitter:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering">
-    <meta name="twitter:image" content="https://mishishi.github.io/knowledge-garden//assets/og.png">
+    <meta name="twitter:title" content="个人知识库 · 10 个系列 · 100 章" id="tw-title">
+    <meta name="twitter:description" content="Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / Cost / Indie / Context / Skills / Claude Code" id="tw-desc">
+    <meta name="twitter:image" content="https://mishishi.github.io/knowledge-garden/assets/og.png" id="tw-image">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="知识库">
@@ -26249,7 +26249,61 @@ window.addEventListener('hashchange', () => {
     } else {
         showOverview();
     }
+    updateOgMeta();
 });
+
+// 动态 OG meta: 章节切换时同步 og:title / og:description / og:image / og:url
+// 这样用户复制分享链接或某些爬虫现场抓取时拿到对应书的 OG 卡
+function updateOgMeta() {
+    const hash = window.location.hash.replace('#', '');
+    if (!hash) {
+        // overview 模式: 用全站 OG
+        const ogTitle = `个人知识库 · ${CHAPTERS.length / 10} 个系列 · 100 章`;
+        setMeta('og-title', ogTitle);
+        setMeta('og-desc', 'Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / Cost / Indie / Context / Skills / Claude Code');
+        setMeta('og-image', `${SITE_URL}assets/og.png`);
+        setMeta('tw-title', ogTitle);
+        setMeta('tw-desc', 'Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / Cost / Indie / Context / Skills / Claude Code');
+        setMeta('tw-image', `${SITE_URL}assets/og.png`);
+        setMeta('og-url', SITE_URL);
+        return;
+    }
+    const book = CHAPTER_BOOK_MAP[hash];
+    const chapTitle = CHAPTER_TITLES_MAP[hash];
+    if (!book || !chapTitle) return;
+    const bookMeta = BOOK_META[book] || { title: book };
+    const fullTitle = `${chapTitle} · ${bookMeta.title} · 个人知识库`;
+    const pageUrl = `${SITE_URL}books_pages/${book}/${hash.split('__')[1]}.html`;
+    setMeta('og-title', fullTitle);
+    setMeta('og-desc', chapTitle);
+setMeta('og-image', `${SITE_URL}assets/og-${book}.png`);
+        setMeta('tw-title', fullTitle);
+        setMeta('tw-desc', chapTitle);
+        setMeta('tw-image', `${SITE_URL}assets/og-${book}.png`);
+    setMeta('og-url', pageUrl);
+}
+function setMeta(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.setAttribute('content', val);
+}
+// 初始化 BOOK_META (title 映射) — 从 sidebar 里的 data-book 反推
+const BOOK_META = (() => {
+    const out = {};
+    document.querySelectorAll('[data-book]').forEach(el => {
+        const slug = el.dataset.book;
+        if (out[slug]) return;
+        // 优先取 overview-card 的 .overview-card-title, fallback 到 book-title-text
+        const card = el.closest('.overview-card');
+        const titleEl = card ? card.querySelector('.overview-card-title') : el.querySelector('.book-title-text');
+        if (titleEl) out[slug] = { title: titleEl.textContent.trim() };
+    });
+    return out;
+})();
+const CHAPTER_BOOK_MAP = {"multi-agent__01-your-first-agent": "multi-agent", "multi-agent__02-why-multi-agent": "multi-agent", "multi-agent__03-five-abstractions": "multi-agent", "multi-agent__04-orchestration-patterns": "multi-agent", "multi-agent__05-state-and-communication": "multi-agent", "multi-agent__06-failure-handling": "multi-agent", "multi-agent__07-framework-comparison": "multi-agent", "multi-agent__08-observability-and-cost": "multi-agent", "multi-agent__09-code-review-project": "multi-agent", "multi-agent__10-production-checklist": "multi-agent", "llm-prompt__01-prompt-basics": "llm-prompt", "llm-prompt__02-few-shot": "llm-prompt", "llm-prompt__03-advanced-patterns": "llm-prompt", "llm-prompt__04-role-system-prompt": "llm-prompt", "llm-prompt__05-structured-output": "llm-prompt", "llm-prompt__06-tool-use": "llm-prompt", "llm-prompt__07-prompt-caching": "llm-prompt", "llm-prompt__08-prompt-injection": "llm-prompt", "llm-prompt__09-eval-driven": "llm-prompt", "llm-prompt__10-real-cases": "llm-prompt", "crewai__01-getting-started": "crewai", "crewai__02-crew-orchestration": "crewai", "crewai__03-agent-tuning": "crewai", "crewai__04-tools-and-mcp": "crewai", "crewai__05-memory-and-knowledge": "crewai", "crewai__06-structured-output": "crewai", "crewai__07-flows": "crewai", "crewai__08-skills-and-prod": "crewai", "crewai__09-side-projects": "crewai", "crewai__10-prod-cases": "crewai", "rag__01-why-rag": "rag", "rag__02-embedding-models": "rag", "rag__03-vector-databases": "rag", "rag__04-chunking-strategies": "rag", "rag__05-retrieval-and-reranking": "rag", "rag__06-prompt-design": "rag", "rag__07-hybrid-search": "rag", "rag__08-evaluation": "rag", "rag__09-advanced-patterns": "rag", "rag__10-prod-checklist": "rag", "harness-engineering__01-what-is-harness": "harness-engineering", "harness-engineering__02-agent-loop": "harness-engineering", "harness-engineering__03-tool-design": "harness-engineering", "harness-engineering__04-context-management": "harness-engineering", "harness-engineering__05-permissions-sandbox": "harness-engineering", "harness-engineering__06-observability": "harness-engineering", "harness-engineering__07-memory-layers": "harness-engineering", "harness-engineering__08-failure-recovery": "harness-engineering", "harness-engineering__09-eval-driven": "harness-engineering", "harness-engineering__10-build-from-scratch": "harness-engineering", "agent-cost__01-cost-economics": "agent-cost", "agent-cost__02-where-tokens-go": "agent-cost", "agent-cost__03-model-routing": "agent-cost", "agent-cost__04-caching-layers": "agent-cost", "agent-cost__05-prompt-compression": "agent-cost", "agent-cost__06-batch-vs-stream": "agent-cost", "agent-cost__07-user-quota": "agent-cost", "agent-cost__08-budget-circuit-breaker": "agent-cost", "agent-cost__09-tool-cost": "agent-cost", "agent-cost__10-cost-dashboard": "agent-cost", "indie-ai-product__01-indie-math": "indie-ai-product", "indie-ai-product__02-idea-to-scope": "indie-ai-product", "indie-ai-product__03-validate-without-code": "indie-ai-product", "indie-ai-product__04-design-with-ai": "indie-ai-product", "indie-ai-product__05-write-with-ai": "indie-ai-product", "indie-ai-product__06-pmf-signals": "indie-ai-product", "indie-ai-product__07-distribution": "indie-ai-product", "indie-ai-product__08-pricing": "indie-ai-product", "indie-ai-product__09-first-paying-users": "indie-ai-product", "indie-ai-product__10-retention-vs-growth": "indie-ai-product", "context-engineering__01-why-context-engineering": "context-engineering", "context-engineering__02-context-window-tokens": "context-engineering", "context-engineering__03-write-storage-memory": "context-engineering", "context-engineering__04-select-rag-retrieval": "context-engineering", "context-engineering__05-compress-strategies": "context-engineering", "context-engineering__06-isolate-structure": "context-engineering", "context-engineering__07-tools-and-mcp": "context-engineering", "context-engineering__08-multi-agent-context": "context-engineering", "context-engineering__09-agentic-rag": "context-engineering", "context-engineering__10-production-antipatterns": "context-engineering", "agent-skills__01-what-is-skill": "agent-skills", "agent-skills__02-skill-md-structure": "agent-skills", "agent-skills__03-trigger-mechanism": "agent-skills", "agent-skills__04-claudemd-vs-skills": "agent-skills", "agent-skills__05-eight-essential-skills": "agent-skills", "agent-skills__06-write-your-first-skill": "agent-skills", "agent-skills__07-test-and-evaluate": "agent-skills", "agent-skills__08-token-cost-optimization": "agent-skills", "agent-skills__09-marketplace-and-sharing": "agent-skills", "agent-skills__10-ecosystem-and-future": "agent-skills", "claude-code__01-what-is-claude-code": "claude-code", "claude-code__02-install-and-config": "claude-code", "claude-code__03-claudemd-deep-dive": "claude-code", "claude-code__04-skills-and-hooks": "claude-code", "claude-code__05-subagent-and-worktree": "claude-code", "claude-code__06-mcp-integration": "claude-code", "claude-code__07-slash-commands": "claude-code", "claude-code__08-ten-real-scenarios": "claude-code", "claude-code__09-cost-and-performance": "claude-code", "claude-code__10-limits-and-future": "claude-code"};
+const CHAPTER_TITLES_MAP = {"multi-agent__01-your-first-agent": "你的第一个 Agent", "multi-agent__02-why-multi-agent": "为什么需要 Multi-Agent", "multi-agent__03-five-abstractions": "5 个核心抽象", "multi-agent__04-orchestration-patterns": "编排模式全景", "multi-agent__05-state-and-communication": "通信与状态", "multi-agent__06-failure-handling": "失败的艺术", "multi-agent__07-framework-comparison": "框架横向对比", "multi-agent__08-observability-and-cost": "可观测性与成本", "multi-agent__09-code-review-project": "实战 CodeReviewer Multi-Agent", "multi-agent__10-production-checklist": "生产化 Checklist", "llm-prompt__01-prompt-basics": "Prompt 基础 + Token 经济学", "llm-prompt__02-few-shot": "Few-shot 实战", "llm-prompt__03-advanced-patterns": "CoT 思维链", "llm-prompt__04-role-system-prompt": "Role / System Prompt：persona effect", "llm-prompt__05-structured-output": "Structured Output", "llm-prompt__06-tool-use": "Tool Use / Function Calling", "llm-prompt__07-prompt-caching": "Prompt Caching：降成本 10x", "llm-prompt__08-prompt-injection": "Prompt Injection 防御", "llm-prompt__09-eval-driven": "Eval-driven 迭代", "llm-prompt__10-real-cases": "真实场景 4 案例", "crewai__01-getting-started": "上手：跑通第一个 Crew", "crewai__02-crew-orchestration": "Crew 编排：Process 选型与协作", "crewai__03-agent-tuning": "Agent 调优：让 agent 听指挥", "crewai__04-tools-and-mcp": "Tools 与 MCP：给 agent 接手和脚", "crewai__05-memory-and-knowledge": "Memory + Knowledge：让 agent 有记忆", "crewai__06-structured-output": "结构化输出与 Guardrail", "crewai__07-flows": "Flows：状态化的事件驱动编排", "crewai__08-skills-and-prod": "Skills 与生产化基础", "crewai__09-side-projects": "实战：2 个 Side-Project 串起来", "crewai__10-prod-cases": "公司生产案例 + 社区实战拆解", "rag__01-why-rag": "为什么需要 RAG", "rag__02-embedding-models": "Embedding 模型选型", "rag__03-vector-databases": "向量数据库选型", "rag__04-chunking-strategies": "Chunking 策略", "rag__05-retrieval-and-reranking": "检索与 Reranking", "rag__06-prompt-design": "Prompt 设计：把检索结果喂给 LLM", "rag__07-hybrid-search": "混合检索：向量 + 关键词", "rag__08-evaluation": "RAG 评测：怎么知道你的系统真的有用？", "rag__09-advanced-patterns": "高级 RAG 模式", "rag__10-prod-checklist": "RAG 生产化 Checklist", "harness-engineering__01-what-is-harness": "什么是 Harness：从裸 API 到能干活 Agent 的距离", "harness-engineering__02-agent-loop": "Agent Loop：把 `while not done` 展开成 8 种变体", "harness-engineering__03-tool-design": "Tool 设计：Tool 是 LLM 的手，怎么造好这只手", "harness-engineering__04-context-management": "Context 管理：Context Window 爆了怎么办", "harness-engineering__05-permissions-sandbox": "Permissions / Sandbox：怎么拦 LLM 不删你文件", "harness-engineering__06-observability": "Observability：Agent 在生产里跑，trajectory、cost、latency 怎么观测", "harness-engineering__07-memory-layers": "Memory 分层：LLM 没记忆，Agent 需要", "harness-engineering__08-failure-recovery": "Failure Recovery：Agent 出错了怎么恢复", "harness-engineering__09-eval-driven": "Eval-Driven Development：Harness 怎么测自己", "harness-engineering__10-build-from-scratch": "从零造一个 Harness：把前 9 章串起来", "agent-cost__01-cost-economics": "为什么 Agent 经济学跟 SaaS 不一样", "agent-cost__02-where-tokens-go": "Token 是怎么烧的", "agent-cost__03-model-routing": "Model routing 101", "agent-cost__04-caching-layers": "Caching 三层", "agent-cost__05-prompt-compression": "Prompt 压缩", "agent-cost__06-batch-vs-stream": "Batch vs Stream", "agent-cost__07-user-quota": "用户粒度 quota", "agent-cost__08-budget-circuit-breaker": "预算告警 + 熔断", "agent-cost__09-tool-cost": "工具调用省钱模式", "agent-cost__10-cost-dashboard": "Cost dashboard 自建", "indie-ai-product__01-indie-math": "2026 一个人做产品的数学", "indie-ai-product__02-idea-to-scope": "从模糊 idea 到\"明早能开工\"的方案", "indie-ai-product__03-validate-without-code": "不写代码先做调研", "indie-ai-product__04-design-with-ai": "用 AI 设计产品", "indie-ai-product__05-write-with-ai": "用 AI 写文案", "indie-ai-product__06-pmf-signals": "PMF 信号怎么看", "indie-ai-product__07-distribution": "100 个人怎么找到你", "indie-ai-product__08-pricing": "AI 产品的定价", "indie-ai-product__09-first-paying-users": "第一个 10 个付费用户", "indie-ai-product__10-retention-vs-growth": "留存 vs 增长", "context-engineering__01-why-context-engineering": "为什么需要 Context Engineering", "context-engineering__02-context-window-tokens": "上下文窗口与 token 基础", "context-engineering__03-write-storage-memory": "Write 策略：外部存储与记忆架构", "context-engineering__04-select-rag-retrieval": "Select 策略：RAG 与检索", "context-engineering__05-compress-strategies": "Compress 策略：摘要与上下文压缩", "context-engineering__06-isolate-structure": "Isolate 策略：结构化与隔离", "context-engineering__07-tools-and-mcp": "工具调用与 MCP", "context-engineering__08-multi-agent-context": "多 Agent 上下文管理", "context-engineering__09-agentic-rag": "自主 Agentic RAG", "context-engineering__10-production-antipatterns": "生产反模式与未来", "agent-skills__01-what-is-skill": "Skills 是什么", "agent-skills__02-skill-md-structure": "SKILL.md 文件结构", "agent-skills__03-trigger-mechanism": "Skills 触发机制", "agent-skills__04-claudemd-vs-skills": "CLAUDE.md vs Skills：最关键的边界", "agent-skills__05-eight-essential-skills": "8 大实用 Skills 拆解", "agent-skills__06-write-your-first-skill": "写你的第一个 Skill", "agent-skills__07-test-and-evaluate": "Skills 测试与评估", "agent-skills__08-token-cost-optimization": "Token 成本与性能优化", "agent-skills__09-marketplace-and-sharing": "Skills 市场与共享", "agent-skills__10-ecosystem-and-future": "生态与未来", "claude-code__01-what-is-claude-code": "Claude Code 是什么", "claude-code__02-install-and-config": "安装与 10 个关键设置", "claude-code__03-claudemd-deep-dive": "CLAUDE.md 深入：项目记忆的写法", "claude-code__04-skills-and-hooks": "Skills 与 Hooks：工作流自动化", "claude-code__05-subagent-and-worktree": "SubAgent 与 Worktree：并行任务", "claude-code__06-mcp-integration": "MCP 集成：连接外部工具", "claude-code__07-slash-commands": "Slash Commands：自定义命令", "claude-code__08-ten-real-scenarios": "10 个真实场景", "claude-code__09-cost-and-performance": "Token 成本与性能调优", "claude-code__10-limits-and-future": "局限 + 未来：Claude Code vs Cursor vs Codex vs TRAE"};
+const SITE_URL = 'https://mishishi.github.io/knowledge-garden/';
+// 初始化一次 (处理用户直接带 hash 进入的情况)
+updateOgMeta();
 
 // sidebar 的 h1 点 = 回首页
 const sidebarH1 = document.querySelector('.sidebar h1');

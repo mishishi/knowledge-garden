@@ -15,14 +15,14 @@ FONT_SERIF = r"C:\Windows\Fonts\NotoSerifSC-VF.ttf"   # 思源宋体替代 — t
 FONT_SANS  = r"C:\Windows\Fonts\NotoSansSC-VF.ttf"    # 思源黑体替代 — subtitle/meta
 FONT_YAHEI = r"C:\Windows\Fonts\msyh.ttc"             # fallback
 
-# 7 个 book 的元数据
+# 10 个 book 的元数据 (跟 _meta.json 同步)
 BOOKS = [
     {
         "slug": "multi-agent",
         "title": "Multi-Agent 实战",
         "subtitle": "10 章学透多 Agent 系统架构",
         "chapters": 10,
-        "chars": 23000,
+        "chars": 8758,
         "color": (91, 140, 133),       # #5b8c85
         "icon": "M4 12h16M4 6h16M4 18h7",  # agent nodes
     },
@@ -31,7 +31,7 @@ BOOKS = [
         "title": "LLM Prompt 实战",
         "subtitle": "10 章掌握 prompt 工程方法论",
         "chapters": 10,
-        "chars": 18000,
+        "chars": 11944,
         "color": (176, 137, 104),      # #b08968
         "icon": "M9 5l7 7-7 7",         # arrow
     },
@@ -40,7 +40,7 @@ BOOKS = [
         "title": "CrewAI 入门到实战",
         "subtitle": "10 章搭起多 Agent 协作框架",
         "chapters": 10,
-        "chars": 20000,
+        "chars": 12371,
         "color": (108, 99, 255),       # #6c63ff
         "icon": "M16 11a3 3 0 1 0-6 0 3 3 0 0 0 6 0zM8 11a3 3 0 1 0-6 0 3 3 0 0 0 6 0z",  # 2 dots
     },
@@ -49,16 +49,16 @@ BOOKS = [
         "title": "RAG 实战",
         "subtitle": "10 章从 0 搭建检索增强生成系统",
         "chapters": 10,
-        "chars": 21000,
+        "chars": 7102,
         "color": (13, 148, 136),       # #0d9488
         "icon": "M9 12h6M9 16h6M9 8h6",  # lines
     },
     {
-        "slug": "harness",
+        "slug": "harness-engineering",
         "title": "Harness Engineering",
         "subtitle": "10 章搭起 Agent 评测与 harness",
         "chapters": 10,
-        "chars": 24000,
+        "chars": 14725,
         "color": (194, 65, 12),        # #c2410c
         "icon": "M3 6h18M3 12h18M3 18h12",  # layers
     },
@@ -67,18 +67,45 @@ BOOKS = [
         "title": "Agent 成本工程",
         "subtitle": "10 章压住 AI Agent 的烧钱速度",
         "chapters": 10,
-        "chars": 19000,
+        "chars": 9083,
         "color": (79, 70, 229),        # #4f46e5
         "icon": "M12 2v20M5 9l7-7 7 7",  # funnel-like
     },
     {
-        "slug": "indie-ai",
+        "slug": "indie-ai-product",
         "title": "Indie + AI",
         "subtitle": "10 章做 AI 时代的产品方法论",
         "chapters": 10,
-        "chars": 27000,
+        "chars": 18120,
         "color": (217, 119, 6),        # #d97706
         "icon": "M4.5 16.5l-2 2M19.5 5.5l2-2M12 15l-3-3",  # rocket
+    },
+    {
+        "slug": "context-engineering",
+        "title": "Context Engineering 实战",
+        "subtitle": "10 章从 prompt 跨进上下文工程",
+        "chapters": 10,
+        "chars": 15084,
+        "color": (124, 58, 237),       # #7c3aed
+        "icon": "M4 6h16M4 12h12M4 18h8",  # context lines
+    },
+    {
+        "slug": "agent-skills",
+        "title": "Agent Skills 实战",
+        "subtitle": "10 章学会写 Claude Agent Skills",
+        "chapters": 10,
+        "chars": 12770,
+        "color": (236, 72, 153),       # #ec4899
+        "icon": "M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5L12 2z",  # star
+    },
+    {
+        "slug": "claude-code",
+        "title": "Claude Code 实战",
+        "subtitle": "10 章上手 Claude Code 工作流",
+        "chapters": 10,
+        "chars": 11506,
+        "color": (5, 150, 105),        # #059669
+        "icon": "M4 17l6-6-6-6M12 19h8",  # terminal chevron
     },
 ]
 
@@ -212,6 +239,19 @@ def draw_simple_icon(draw, x, y, size, color, icon_kind):
             (cx - size*0.08, y + size*0.75), (cx + size*0.08, y + size*0.75),
             (cx, y + size*0.9)
         ], fill=color)
+    elif icon_kind == "star":
+        # 5 角星
+        import math
+        cx = x + size // 2
+        cy = y + size // 2
+        r_outer = size * 0.45
+        r_inner = size * 0.2
+        pts = []
+        for i in range(10):
+            angle = -math.pi / 2 + i * math.pi / 5
+            r = r_outer if i % 2 == 0 else r_inner
+            pts.append((cx + r * math.cos(angle), cy + r * math.sin(angle)))
+        draw.polygon(pts, outline=color, width=3)
 
 
 ICON_MAP = {
@@ -219,9 +259,12 @@ ICON_MAP = {
     "llm-prompt": "arrow",
     "crewai": "team",
     "rag": "doc",
-    "harness": "stack",
+    "harness-engineering": "stack",
     "agent-cost": "funnel",
-    "indie-ai": "rocket",
+    "indie-ai-product": "rocket",
+    "context-engineering": "stack",
+    "agent-skills": "star",
+    "claude-code": "arrow",
 }
 
 
