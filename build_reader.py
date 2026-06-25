@@ -3154,6 +3154,7 @@ if (qrCopyBtn) {
     });
 }
 
+
 document.getElementById('sidebar-toggle').addEventListener('click', () => {
     document.body.classList.toggle('sidebar-collapsed');
     const collapsed = document.body.classList.contains('sidebar-collapsed');
@@ -4990,12 +4991,14 @@ document.addEventListener('keydown', (e) => {
 });
 
 // 打开/关闭
+function openCommandPalette() {
+    commandPalette.classList.add('visible');
+    setTimeout(() => { commandInput.focus(); commandInput.select(); }, 30);
+}
 document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        commandPalette.classList.add('visible');
-        commandInput.focus();
-        commandInput.select();
+        openCommandPalette();
     }
     if (e.key === 'Escape' && commandPalette.classList.contains('visible')) {
         commandPalette.classList.remove('visible');
@@ -5029,6 +5032,10 @@ document.addEventListener('keydown', (e) => {
 });
 
 commandInput.addEventListener('input', (e) => performSearch(e.target.value.trim()));
+
+// 工具栏搜索按钮 → 打开命令面板
+const searchTriggerBtn = document.getElementById('search-trigger-btn');
+if (searchTriggerBtn) searchTriggerBtn.addEventListener('click', openCommandPalette);
 
 // 点击背景关闭
 commandPalette.addEventListener('click', (e) => {
@@ -5296,6 +5303,7 @@ def build_html():
             </div>
             <div class="toolbar-divider"></div>
             <div class="toolbar-actions">
+                <button id="search-trigger-btn">{svg_icon('search')}<span>搜索</span><kbd>⌘K</kbd></button>
                 <button id="music-btn">{svg_icon('music')}<span>背景音乐</span><kbd>M</kbd></button>
                 <button id="notes-btn">{svg_icon('notes')}<span>笔记</span><kbd>N</kbd></button>
                 <button id="progress-btn">{svg_icon('progress')}<span>阅读进度</span><kbd>P</kbd></button>

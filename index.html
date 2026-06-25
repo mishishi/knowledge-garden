@@ -2724,6 +2724,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
             </div>
             <div class="toolbar-divider"></div>
             <div class="toolbar-actions">
+                <button id="search-trigger-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>搜索</span><kbd>⌘K</kbd></button>
                 <button id="music-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>背景音乐</span><kbd>M</kbd></button>
                 <button id="notes-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg><span>笔记</span><kbd>N</kbd></button>
                 <button id="progress-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg><span>阅读进度</span><kbd>P</kbd></button>
@@ -24123,6 +24124,7 @@ if (qrCopyBtn) {
     });
 }
 
+
 document.getElementById('sidebar-toggle').addEventListener('click', () => {
     document.body.classList.toggle('sidebar-collapsed');
     const collapsed = document.body.classList.contains('sidebar-collapsed');
@@ -25959,12 +25961,14 @@ document.addEventListener('keydown', (e) => {
 });
 
 // 打开/关闭
+function openCommandPalette() {
+    commandPalette.classList.add('visible');
+    setTimeout(() => { commandInput.focus(); commandInput.select(); }, 30);
+}
 document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
-        commandPalette.classList.add('visible');
-        commandInput.focus();
-        commandInput.select();
+        openCommandPalette();
     }
     if (e.key === 'Escape' && commandPalette.classList.contains('visible')) {
         commandPalette.classList.remove('visible');
@@ -25998,6 +26002,10 @@ document.addEventListener('keydown', (e) => {
 });
 
 commandInput.addEventListener('input', (e) => performSearch(e.target.value.trim()));
+
+// 工具栏搜索按钮 → 打开命令面板
+const searchTriggerBtn = document.getElementById('search-trigger-btn');
+if (searchTriggerBtn) searchTriggerBtn.addEventListener('click', openCommandPalette);
 
 // 点击背景关闭
 commandPalette.addEventListener('click', (e) => {
