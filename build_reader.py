@@ -383,8 +383,25 @@ def svg_icon(name, size=16, stroke_width=1.5, classes=""):
 def md_to_html(md_text: str) -> str:
     return markdown.markdown(
         md_text,
-        extensions=["fenced_code", "tables", "nl2br", "sane_lists"],
+        extensions=["fenced_code", "tables", "nl2br", "sane_lists", "toc"],
     )
+
+
+def extract_toc(content_html: str) -> list[dict]:
+    """从已渲染的 HTML 提取 h2/h3，生成章节内 TOC。
+
+    markdown.toc 扩展给 heading 加了 id="..." 属性。返回:
+    [{"level": 2, "text": "通信的 3 个层次", "id": "通信-的-3-个-层次"}, ...]
+    """
+    import re as _re
+    items = []
+    for m in _re.finditer(r'<(h[23])[^>]*\bid="([^"]+)"[^>]*>([^<]+)</\1>', content_html):
+        level = int(m.group(1)[1])
+        text = _re.sub(r"<[^>]+>", "", m.group(3)).strip()
+        if not text:
+            continue
+        items.append({"level": level, "text": text, "id": m.group(2)})
+    return items
 
 
 def count_words(md_text: str) -> int:
@@ -1602,6 +1619,63 @@ body.overview-mode .content {
     letter-spacing: 8px;
     font-style: italic;
 }
+
+/* 章节内目录（右侧 sticky） */
+.chapter-toc {
+    display: none;
+    position: sticky;
+    top: 80px;
+    float: right;
+    margin: 60px -260px 0 40px;
+    width: 220px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.6;
+}
+@media (min-width: 1400px) {
+    .chapter-toc { display: block; }
+}
+.chapter-toc .toc-title {
+    color: var(--text-faint);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+}
+.chapter-toc .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.chapter-toc .toc-list li {
+    margin: 0;
+}
+.chapter-toc .toc-list a {
+    display: block;
+    color: var(--text-soft);
+    text-decoration: none;
+    padding: 4px 0 4px 10px;
+    border-left: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.chapter-toc .toc-list a:hover { color: var(--text); }
+.chapter-toc .toc-list a.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    font-weight: 600;
+}
+.chapter-toc .toc-list .toc-l3 a {
+    padding-left: 24px;
+    font-size: 11px;
+}
+body.dark .chapter-toc .toc-list a { color: #b0b0b4; }
+body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
 
 .chapter-end::before { content: "———"; color: var(--accent); letter-spacing: 8px; }
 
@@ -3362,6 +3436,47 @@ const observer = new IntersectionObserver((entries) => {
 
 chapters.forEach(ch => observer.observe(ch));
 
+// === 章节内 mini-TOC：监听 heading 滚动高亮 ===
+(function() {
+    const tocLinks = Array.from(document.querySelectorAll('.chapter-toc a[data-toc-id]'));
+    if (tocLinks.length === 0) return;
+    const idToLink = new Map();
+    tocLinks.forEach(a => idToLink.set(a.dataset.tocId, a));
+    const headings = Array.from(document.querySelectorAll('.chapter-content h2[id], .chapter-content h3[id]'));
+    if (headings.length === 0) return;
+
+    function setActive(id) {
+        tocLinks.forEach(a => a.classList.remove('active'));
+        const link = idToLink.get(id);
+        if (link) link.classList.add('active');
+    }
+    // 点击平滑滚动 + hash 同步
+    tocLinks.forEach(a => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            const id = a.dataset.tocId;
+            const target = document.getElementById(id);
+            if (!target) return;
+            const top = target.getBoundingClientRect().top + window.scrollY - 70;
+            window.scrollTo({ top, behavior: 'smooth' });
+            history.replaceState(null, '', '#' + id);
+            setActive(id);
+        });
+    });
+    // 进入视口最上方的 heading 设为 active
+    const tocObserver = new IntersectionObserver((entries) => {
+        // 取所有当前在视口内的 headings
+        const visible = entries
+            .filter(e => e.isIntersecting)
+            .map(e => ({ id: e.target.id, top: e.boundingClientRect.top }))
+            .sort((a, b) => a.top - b.top);
+        if (visible.length > 0) {
+            setActive(visible[0].id);
+        }
+    }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
+    headings.forEach(h => tocObserver.observe(h));
+})();
+
 // 背景音乐（与 v3 相同）
 let audioCtx = null;
 let musicNodes = null;
@@ -5090,6 +5205,21 @@ def build_html():
             total_chars += chars
             minutes = max(1, chars // 400)
 
+            # 提取章节内 TOC (H2/H3 标题)
+            toc_items = extract_toc(content_html)
+            toc_html = ""
+            if len(toc_items) >= 3:  # 至少 3 个才显示
+                toc_links = "".join(
+                    f'<li class="toc-l{item["level"]}"><a href="#{item["id"]}" data-toc-id="{item["id"]}">{item["text"]}</a></li>'
+                    for item in toc_items
+                )
+                toc_html = (
+                    f'<aside class="chapter-toc" aria-label="本章目录">'
+                    f'<div class="toc-title">本章目录</div>'
+                    f'<ul class="toc-list">{toc_links}</ul>'
+                    f'</aside>'
+                )
+
             # 用目录名（去掉数字前缀）作为展示标题
             display_title = chap_titles[chap_idx - 1]
 
@@ -5188,6 +5318,7 @@ def build_html():
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字</div>'
                 f'{series_intro_html}'
                 f'<div class="chapter-content">{content_html}</div>'
+                f'{toc_html}'
                 f'<div class="chapter-end">本章完</div>'
                 f'{chap_nav_html}'
                 f'<button class="completion-toggle" data-chapter="{anchor}">'
