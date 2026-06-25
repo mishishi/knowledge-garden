@@ -1,0 +1,19 @@
+{
+  "title": "Agent Skills \u5b9e\u6218",
+  "description": "10 \u7ae0\u4ece 0 \u5230 1 \u5b66\u4f1a\u5199 Claude Agent Skills\uff1aSKILL.md \u7ed3\u6784 + \u89e6\u53d1\u673a\u5236 + CLAUDE.md \u5206\u5de5 + 8 \u5927\u5b9e\u7528 Skill \u62c6\u89e3 + \u6027\u80fd\u4f18\u5316\u4e0e\u751f\u6001",
+  "icon": "sparkles",
+  "color": "#ec4899",
+  "priority": 9,
+  "order": [
+    "01-what-is-skill",
+    "02-skill-md-structure",
+    "03-trigger-mechanism",
+    "04-claudemd-vs-skills",
+    "05-eight-essential-skills",
+    "06-write-your-first-skill",
+    "07-test-and-evaluate",
+    "08-token-cost-optimization",
+    "09-marketplace-and-sharing",
+    "10-ecosystem-and-future"
+  ]
+}
