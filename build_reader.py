@@ -1431,6 +1431,87 @@ body.overview-mode .content {
 .chapter-end::before { content: "———"; color: var(--accent); letter-spacing: 8px; }
 
 /* ============================================================
+   章节底部 prev/next 导航
+   ============================================================ */
+.chap-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 48px auto 32px;
+    max-width: 760px;
+}
+.chap-nav-link {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    background: var(--surface);
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+.chap-nav-link:hover {
+    border-color: var(--accent);
+    background: var(--surface-hover, var(--surface-2));
+    transform: translateY(-1px);
+}
+.chap-nav-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.chap-nav-prev {
+    grid-template-columns: auto 1fr;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.chap-nav-prev .chap-nav-arrow { display: none; }
+.chap-nav-next {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+    font-weight: 500;
+}
+.chap-nav-overview {
+    text-align: center;
+}
+.chap-nav-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-faint);
+    margin-right: 8px;
+    white-space: nowrap;
+}
+.chap-nav-num {
+    font-family: Georgia, 'Noto Serif SC', serif;
+    font-size: 12px;
+    color: var(--text-faint);
+    white-space: nowrap;
+    font-style: italic;
+}
+.chap-nav-title {
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 16px;
+}
+.chap-nav-prev .chap-nav-title { color: var(--text-muted); font-size: 14px; }
+.chap-nav-next .chap-nav-title { color: var(--text); font-weight: 500; }
+.chap-nav-arrow {
+    font-size: 20px;
+    color: var(--accent);
+    margin-left: 8px;
+}
+@media (min-width: 720px) {
+    .chap-nav-link { grid-template-columns: 1fr auto; }
+    .chap-nav-prev { grid-template-columns: auto 1fr; }
+}
+@media (prefers-color-scheme: dark) {
+    .chap-nav-next { background: linear-gradient(135deg, var(--surface) 0%, rgba(217, 119, 6, 0.08) 100%); }
+}
+
+/* ============================================================
    a11y: skip link, focus ring, reduced motion
    ============================================================ */
 .skip-link {
@@ -4539,6 +4620,12 @@ def build_html():
         chapter_items = []
         book_chapters_html_parts = []
 
+        # 预计算所有章节展示标题（用于底部 prev/next 导航）
+        chap_titles = []
+        for chap_slug, chap_path in chapters:
+            md_text = chap_path.read_text(encoding="utf-8")
+            chap_titles.append(chapter_display_title(md_text, chap_slug))
+
         for chap_idx, (chap_slug, chap_path) in enumerate(chapters, 1):
             md_text = chap_path.read_text(encoding="utf-8")
             content_html = md_to_html(md_text)
@@ -4547,7 +4634,7 @@ def build_html():
             minutes = max(1, chars // 400)
 
             # 用目录名（去掉数字前缀）作为展示标题
-            display_title = chapter_display_title(md_text, chap_slug)
+            display_title = chap_titles[chap_idx - 1]
 
             # 章节锚点：bookSlug__chapterSlug
             anchor = f"{book_slug}__{chap_slug}"
@@ -4560,6 +4647,51 @@ def build_html():
                 f'</a></li>'
             )
 
+            # 上一章 / 下一章信息
+            prev_link = ''
+            next_link = ''
+            if chap_idx > 1:
+                prev_slug = chapters[chap_idx - 2][0]
+                prev_anchor = f"{book_slug}__{prev_slug}"
+                prev_title = chap_titles[chap_idx - 2]
+                prev_link = (
+                    f'<a class="chap-nav-link chap-nav-prev" href="#{prev_anchor}">'
+                    f'<span class="chap-nav-label">\u4e0a\u4e00\u7ae0</span>'
+                    f'<span class="chap-nav-num">{chap_idx - 1:02d} / {len(chapters):02d}</span>'
+                    f'<span class="chap-nav-title">{prev_title}</span>'
+                    f'</a>'
+                )
+            if chap_idx < len(chapters):
+                next_slug = chapters[chap_idx][0]
+                next_anchor = f"{book_slug}__{next_slug}"
+                next_title = chap_titles[chap_idx]
+                next_link = (
+                    f'<a class="chap-nav-link chap-nav-next" href="#{next_anchor}">'
+                    f'<span class="chap-nav-label">\u4e0b\u4e00\u7ae0</span>'
+                    f'<span class="chap-nav-num">{chap_idx + 1:02d} / {len(chapters):02d}</span>'
+                    f'<span class="chap-nav-title">{next_title}</span>'
+                    f'<span class="chap-nav-arrow">\u2192</span>'
+                    f'</a>'
+                )
+            else:
+                # 最后一章 → 回到目录
+                next_link = (
+                    f'<a class="chap-nav-link chap-nav-next chap-nav-overview" href="#{meta.get("order", [""])[0] and f"{book_slug}__{chapters[0][0]}" or ""}" '
+                    f'onclick="event.preventDefault();window.scrollTo({{top:0,behavior:\'smooth\'}});if(typeof showOverview===\'function\')showOverview();return false;">'
+                    f'<span class="chap-nav-label">\u672c\u4e66\u8bfb\u5b8c\uff0c\u56de\u5230\u76ee\u5f55</span>'
+                    f'<span class="chap-nav-num">\u2605 \u2605 \u2605</span>'
+                    f'<span class="chap-nav-title">{meta.get("title", book_slug)}</span>'
+                    f'<span class="chap-nav-arrow">\u2191</span>'
+                    f'</a>'
+                )
+
+            chap_nav_html = (
+                f'<nav class="chap-nav" aria-label="\u7ae0\u8282\u5bfc\u822a">'
+                f'{prev_link}'
+                f'{next_link}'
+                f'</nav>'
+            ) if prev_link or next_link else ''
+
             book_chapters_html_parts.append(
                 f'<article id="{anchor}" class="chapter" data-book="{book_slug}" data-chap="{chap_slug}">'
                 f'<div class="chapter-num">CHAPTER {chap_idx:02d}</div>'
@@ -4567,6 +4699,7 @@ def build_html():
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字</div>'
                 f'<div class="chapter-content">{content_html}</div>'
                 f'<div class="chapter-end">本章完</div>'
+                f'{chap_nav_html}'
                 f'<button class="completion-toggle" data-chapter="{anchor}">'
                 f'<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>'
                 f'标记为已读</button>'
