@@ -3284,9 +3284,9 @@ window.__devTest = function() {
     return 'queued: writing 6 completed + 2 progress, then reload + open dev panel';
 };
 console.log('%c Knowledge Garden dev tools ', 'background:#d97706;color:#fff;padding:2px 8px;border-radius:2px;',
-    '\n\u8c03\u8bd5\u5de5\u5177\uff1a\n' +
-    '  toggleDevPanel()  - \u6253\u5f00/\u5173\u95ed dev panel\n' +
-    '  renderDevHeatmap() - \u5f3a\u5236\u91cd\u7ed8\u70ed\u529b\u56fe\n' +
+    '\\n\u8c03\u8bd5\u5de5\u5177\uff1a\\n' +
+    '  toggleDevPanel()  - \u6253\u5f00/\u5173\u95ed dev panel\\n' +
+    '  renderDevHeatmap() - \u5f3a\u5236\u91cd\u7ed8\u70ed\u529b\u56fe\\n' +
     '  __devTest()       - \u4e00\u6b21\u6027\u6ce8\u5165 6 \u5df2\u8bfb + 2 \u8fdb\u884c\u4e2d\uff0c\u6253\u5f00 panel');
 
 function playPageFlip() {
