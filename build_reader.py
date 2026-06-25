@@ -199,6 +199,111 @@ def build_sitemap(books) -> None:
     print(f"生成 {output} ({len(books) * 10 + 1} URLs)")
 
 
+def chapter_display_title(md_text: str, fallback_slug: str) -> str:
+    """从 markdown 第一个 # 标题取展示名，剥掉序号前缀。复用 build_html 内的逻辑。"""
+    display = fallback_slug
+    first_heading = re.search(r"^#\s+(.+)$", md_text, re.MULTILINE)
+    if first_heading:
+        display = re.sub(
+            r"^\s*\d+[\.\u3001\)\]\uff09]\s*", "", first_heading.group(1).strip()
+        )
+    return display
+
+
+def build_overview_html(books, total_chapters, total_chars, total_minutes) -> str:
+    """生成 <section id="overview"> HTML.
+
+    落地视图：顶部 stats + 继续阅读（由 JS 在运行时填），底下 5 个 series 卡片，
+    每张卡有进度条 + 章节列表。章节 marker (✓ ◐ ○) 由 JS 在运行时根据
+    localStorage 的 progress 渲染 — 这里只生成空 span 占位。
+    """
+    parts = ['<section id="overview" class="overview">']
+
+    # ---- 顶部 hero ----
+    parts.append('<div class="overview-hero">')
+    parts.append(f'  <h1 class="overview-title">个人知识库</h1>')
+    parts.append(
+        f'  <p class="overview-subtitle">'
+        f'{len(books)} 个系列 · {total_chapters} 章 · 约 {total_minutes} 分钟'
+        f'</p>'
+    )
+    # stats 行：4 个数
+    parts.append('  <div class="overview-stats">')
+    parts.append(f'    <div class="overview-stat"><span class="num">{len(books)}</span><span class="lbl">系列</span></div>')
+    parts.append(f'    <div class="overview-stat"><span class="num">{total_chapters}</span><span class="lbl">章节</span></div>')
+    parts.append(f'    <div class="overview-stat"><span class="num">{total_chars:,}</span><span class="lbl">字</span></div>')
+    parts.append('    <div class="overview-stat"><span class="num" id="overview-read-pct">0</span><span class="lbl">已读</span></div>')
+    parts.append('  </div>')
+    # 继续阅读卡片（运行时由 JS 填，没数据就隐藏）
+    parts.append(
+        '  <a class="overview-resume" id="overview-resume" href="#" style="display:none">'
+        '<div class="resume-icon">'
+        + svg_icon('progress', size=20)
+        + '</div>'
+        '<div class="resume-body">'
+        '<div class="resume-eyebrow">继续阅读</div>'
+        '<div class="resume-title" id="overview-resume-title"></div>'
+        '<div class="resume-meta" id="overview-resume-meta"></div>'
+        '</div>'
+        + svg_icon('plus', size=18, classes='resume-arrow')
+        + '</a>'
+    )
+    parts.append('</div>')
+
+    # ---- 5 个 series 卡片 ----
+    for book_idx, (book_slug, meta, chapters) in enumerate(books):
+        icon_name = meta.get("icon", "book")
+        color = meta.get("color", "#b08968")
+        chap_count = len(chapters)
+        book_chars = sum(count_words(p.read_text(encoding="utf-8")) for _, p in chapters)
+        book_minutes = max(1, book_chars // 400)
+
+        parts.append(
+            f'<article class="overview-card" data-book="{book_slug}" '
+            f'style="--book-color: {color}">'
+        )
+        parts.append('  <header class="overview-card-head">')
+        parts.append(f'    <div class="overview-card-icon">{svg_icon(icon_name, size=28)}</div>')
+        parts.append('    <div class="overview-card-meta">')
+        parts.append(f'      <h2 class="overview-card-title">{meta["title"]}</h2>')
+        parts.append(f'      <p class="overview-card-desc">{meta["description"]}</p>')
+        parts.append(
+            f'      <div class="overview-card-stats">'
+            f'{chap_count} 章 · {book_chars:,} 字 · 约 {book_minutes} 分钟'
+            f'</div>'
+        )
+        parts.append('    </div>')
+        # 进度条（运行时由 JS 填宽度）
+        parts.append(
+            '    <div class="overview-card-progress">'
+            '<div class="progress-bar"><div class="progress-bar-fill" data-book-fill="'
+            + book_slug + '" style="width:0%"></div></div>'
+            '<div class="progress-label" data-book-label="' + book_slug + '">0 / '
+            + str(chap_count) + '</div>'
+            '</div>'
+        )
+        parts.append('  </header>')
+
+        # 章节列表
+        parts.append('  <ol class="overview-chapters">')
+        for chap_idx, (chap_slug, chap_path) in enumerate(chapters, 1):
+            md_text = chap_path.read_text(encoding="utf-8")
+            display_title = chapter_display_title(md_text, chap_slug)
+            anchor = f"{book_slug}__{chap_slug}"
+            parts.append(
+                f'    <li><a href="#{anchor}">'
+                f'<span class="ov-ch-num">{chap_idx:02d}</span>'
+                f'<span class="ov-ch-title">{display_title}</span>'
+                f'<span class="ov-ch-marker" data-chapter="{anchor}"></span>'
+                f'</a></li>'
+            )
+        parts.append('  </ol>')
+        parts.append('</article>')
+
+    parts.append('</section>')
+    return "\n".join(parts)
+
+
 def svg_icon(name, size=16, stroke_width=1.5, classes=""):
     """生成 SVG icon HTML。颜色跟随 currentColor。"""
     if name not in ICONS:
@@ -750,6 +855,308 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     font-size: 13px;
     color: var(--text-faint);
     font-family: Georgia, serif;
+}
+
+/* ============================================================
+   Homepage TOC (overview section)
+   ============================================================ */
+.overview {
+    padding: 80px 20px 60px 20px;
+    max-width: 920px;
+    margin: 0 auto;
+}
+
+.overview-hero {
+    text-align: center;
+    padding-bottom: 50px;
+    margin-bottom: 50px;
+    border-bottom: 1px solid var(--border);
+}
+
+.overview-title {
+    font-size: 2.4em;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    letter-spacing: 2px;
+    color: var(--text);
+}
+
+.overview-subtitle {
+    font-size: 14px;
+    color: var(--text-soft);
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    margin: 0 0 36px 0;
+    text-indent: 0;
+}
+
+.overview-stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+    margin-bottom: 36px;
+}
+
+.overview-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.overview-stat .num {
+    font-size: 2em;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: Georgia, serif;
+    line-height: 1;
+}
+
+.overview-stat .lbl {
+    font-size: 12px;
+    color: var(--text-faint);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.overview-resume {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+    background: var(--accent-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    text-indent: 0;
+    transition: all 0.15s;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.overview-resume:hover {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+
+.overview-resume .resume-icon {
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.overview-resume:hover .resume-icon { color: var(--bg); }
+
+.overview-resume .resume-body {
+    flex: 1;
+    text-align: left;
+    min-width: 0;
+}
+
+.overview-resume .resume-eyebrow {
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.overview-resume:hover .resume-eyebrow { color: var(--bg); opacity: 0.8; }
+
+.overview-resume .resume-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.overview-resume:hover .resume-title { color: var(--bg); }
+
+.overview-resume .resume-meta {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: 2px;
+}
+
+.overview-resume:hover .resume-meta { color: var(--bg); opacity: 0.8; }
+
+.overview-resume .resume-arrow {
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transform: rotate(45deg);
+}
+
+.overview-resume:hover .resume-arrow { color: var(--bg); }
+
+.overview-card {
+    margin-bottom: 48px;
+    padding: 32px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    border-left: 4px solid var(--book-color, var(--accent));
+}
+
+.overview-card-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: start;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.overview-card-icon {
+    color: var(--book-color, var(--accent));
+    flex-shrink: 0;
+    padding-top: 4px;
+}
+
+.overview-card-title {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    color: var(--text);
+    letter-spacing: 1px;
+}
+
+.overview-card-desc {
+    font-size: 14px;
+    color: var(--text-soft);
+    margin: 0 0 8px 0;
+    line-height: 1.6;
+    text-indent: 0;
+    font-style: italic;
+}
+
+.overview-card-stats {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: Georgia, serif;
+}
+
+.overview-card-progress {
+    text-align: right;
+    min-width: 140px;
+}
+
+.overview-card-progress .progress-bar {
+    width: 120px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+    margin-left: auto;
+}
+
+.overview-card-progress .progress-bar-fill {
+    height: 100%;
+    background: var(--book-color, var(--accent));
+    transition: width 0.3s;
+}
+
+.overview-card-progress .progress-label {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: Georgia, serif;
+}
+
+.overview-chapters {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 4px 24px;
+}
+
+.overview-chapters li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 4px;
+    text-indent: 0;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: background 0.1s;
+}
+
+.overview-chapters li a:hover {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.ov-ch-num {
+    font-family: Georgia, serif;
+    font-size: 12px;
+    color: var(--text-faint);
+    font-style: italic;
+    min-width: 22px;
+    text-align: right;
+}
+
+.ov-ch-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ov-ch-marker {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-faint);
+}
+
+.ov-ch-marker.is-done {
+    color: var(--done);
+}
+
+.ov-ch-marker.is-progress {
+    color: var(--accent);
+}
+
+/* overview-mode 切换：隐藏 chapters 和 book covers，只显示 overview */
+body.overview-mode .book-cover,
+body.overview-mode .chapter {
+    display: none;
+}
+
+body.overview-mode .content {
+    padding: 0;
+}
+
+@media (max-width: 640px) {
+    .overview-stats { gap: 28px; }
+    .overview-card { padding: 20px; }
+    .overview-card-head {
+        grid-template-columns: auto 1fr;
+    }
+    .overview-card-progress {
+        grid-column: 1 / -1;
+        text-align: left;
+        margin-top: 12px;
+    }
+    .overview-card-progress .progress-bar {
+        margin-left: 0;
+    }
+    .overview-chapters {
+        grid-template-columns: 1fr;
+    }
 }
 
 .chapter {
@@ -2731,6 +3138,7 @@ function renderNotesList() {
         const idx = parseInt(item.dataset.idx);
         item.addEventListener('click', (e) => {
             if (e.target.classList.contains('note-delete')) return;
+            hideOverview();
             document.getElementById(chapterId)?.scrollIntoView({ behavior: 'smooth' });
         });
         item.querySelector('.note-delete').addEventListener('click', (e) => {
@@ -2785,6 +3193,7 @@ links.forEach(link => {
         const target = document.querySelector(link.getAttribute('href'));
         if (target) {
             e.preventDefault();
+            hideOverview();
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             if (window.innerWidth < 900) {
                 document.body.classList.add('sidebar-collapsed');
@@ -2947,6 +3356,113 @@ function refreshReadPctUI() {
     });
 }
 
+// ============================================================
+// Homepage TOC：渲染 overview section 的进度标记 + 继续阅读卡
+// ============================================================
+const CHECK_SVG = '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const DOT_SVG = '<svg class="icon" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>';
+
+function renderOverview() {
+    // 1. 章节 marker (✓ / ◐ / ○)
+    document.querySelectorAll('.ov-ch-marker').forEach(el => {
+        const id = el.dataset.chapter;
+        const isCompleted = !!progress.completed[id];
+        const pct = progress.readPct[id] || 0;
+        el.classList.remove('is-done', 'is-progress');
+        if (isCompleted) {
+            el.classList.add('is-done');
+            el.innerHTML = CHECK_SVG;
+        } else if (pct >= 10) {
+            el.classList.add('is-progress');
+            el.innerHTML = DOT_SVG;
+        } else {
+            el.innerHTML = '';
+        }
+    });
+
+    // 2. 每个 series 的进度条 + 文字
+    document.querySelectorAll('.overview-card').forEach(card => {
+        const bookSlug = card.dataset.book;
+        const chapters = card.querySelectorAll('.ov-ch-marker');
+        let done = 0;
+        chapters.forEach(m => {
+            const id = m.dataset.chapter;
+            if (progress.completed[id]) done++;
+        });
+        const total = chapters.length;
+        const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        const fill = card.querySelector('[data-book-fill="' + bookSlug + '"]');
+        const label = card.querySelector('[data-book-label="' + bookSlug + '"]');
+        if (fill) fill.style.width = pct + '%';
+        if (label) label.textContent = done + ' / ' + total;
+    });
+
+    // 3. 顶部总览 "已读 %"
+    const overallPctEl = document.getElementById('overview-read-pct');
+    if (overallPctEl) {
+        const total = document.querySelectorAll('.ov-ch-marker').length;
+        const done = Object.keys(progress.completed).length;
+        const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        overallPctEl.textContent = pct;
+    }
+
+    // 4. 继续阅读卡 (有 lastRead 才显示)
+    const resume = document.getElementById('overview-resume');
+    const last = progress.lastRead;
+    if (resume && last && last.chapterId) {
+        const article = document.getElementById(last.chapterId);
+        if (article) {
+            const title = article.querySelector('.chapter-title')?.textContent || last.chapterId;
+            const ago = formatRelativeTime(last.timestamp);
+            document.getElementById('overview-resume-title').textContent = title;
+            document.getElementById('overview-resume-meta').textContent = '上次阅读 ' + ago;
+            resume.href = '#' + last.chapterId;
+            resume.style.display = '';
+        }
+    }
+}
+
+// overview-mode 切换：只看首页 TOC
+function showOverview() {
+    document.body.classList.add('overview-mode');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    if (window.location.hash) history.replaceState(null, '', window.location.pathname);
+}
+
+function hideOverview() {
+    document.body.classList.remove('overview-mode');
+}
+
+// 初始模式：URL 有 hash 跳到章节，否则显示 overview
+function initOverviewMode() {
+    const hash = window.location.hash;
+    if (!hash || hash === '#') {
+        showOverview();
+    } else {
+        hideOverview();
+    }
+}
+
+// 监听 hash 变化
+window.addEventListener('hashchange', () => {
+    if (window.location.hash) {
+        hideOverview();
+    } else {
+        showOverview();
+    }
+});
+
+// sidebar 的 h1 点 = 回首页
+const sidebarH1 = document.querySelector('.sidebar h1');
+if (sidebarH1) {
+    sidebarH1.style.cursor = 'pointer';
+    sidebarH1.title = '回到首页';
+    sidebarH1.addEventListener('click', showOverview);
+}
+
+renderOverview();
+initOverviewMode();
+
 document.querySelectorAll('.completion-toggle').forEach(btn => {
     btn.addEventListener('click', () => toggleChapter(btn.dataset.chapter));
 });
@@ -3071,6 +3587,7 @@ function updateReadPct() {
         }
     });
     refreshReadPctUI();
+    renderOverview();
     // 记录当前阅读位置（chapterId + scrollY）
     const inView = document.querySelector('.chapter');
     if (inView) {
@@ -3101,6 +3618,8 @@ function showResumeToast() {
     if (!article) return;
     // 已经在该章节就不弹
     if (window.location.hash === '#' + last.chapterId) return;
+    // overview 模式下不弹 — 继续阅读卡已经显示在 overview 里
+    if (document.body.classList.contains('overview-mode')) return;
     if (window.scrollY > 0) return;  // 用户已经在滚动了，不打扰
     // 距离上次 < 5 分钟不打扰（说明是连续阅读）
     if (Date.now() - last.timestamp < 5 * 60 * 1000) return;
@@ -3714,6 +4233,7 @@ function jumpToCommand(chapterId, query) {
     const target = document.getElementById(chapterId);
     if (!target) return;
     history.pushState(null, '', '#' + chapterId);
+    hideOverview();
 
     if (searchTerm) {
         const content = target.querySelector('.chapter-content');
@@ -3850,14 +4370,7 @@ def build_html():
             minutes = max(1, chars // 400)
 
             # 用目录名（去掉数字前缀）作为展示标题
-            display_title = chap_slug
-            # 尝试从 README 第一个 # 标题取，并剥掉「01.」「1、」这类序号前缀
-            # （sidebar 已有 ch-num 序号，标题里再带一次会重复）
-            first_heading = re.search(r"^#\s+(.+)$", md_text, re.MULTILINE)
-            if first_heading:
-                display_title = re.sub(
-                    r"^\s*\d+[\.\u3001\)\]\uff09]\s*", "", first_heading.group(1).strip()
-                )
+            display_title = chapter_display_title(md_text, chap_slug)
 
             # 章节锚点：bookSlug__chapterSlug
             anchor = f"{book_slug}__{chap_slug}"
@@ -3918,6 +4431,9 @@ def build_html():
         content_parts.append(book_cover + "".join(book_chapters_html_parts))
 
     total_minutes = max(1, total_chars // 400)
+
+    # 生成首页 TOC (overview section)
+    overview_html = build_overview_html(books, total_chapters, total_chars, total_minutes)
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
@@ -4158,6 +4674,7 @@ def build_html():
     </div>
 
     <main class="content">
+        {overview_html}
         {''.join(content_parts)}
     </main>
 
