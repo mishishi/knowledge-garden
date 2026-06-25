@@ -450,15 +450,15 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
         audience = AUDIENCE.get(slug, "")
         parts.append(
             f'<tr>'
-            f'<td><a href="#{slug}__{chapters[0][0]}" class="compare-book">'
+            f'<td data-label="系列"><a href="#{slug}__{chapters[0][0]}" class="compare-book">'
             f'<span class="compare-icon" style="color:{meta.get("color","#b08968")}">{svg_icon(meta.get("icon","book"), size=16)}</span>'
             f'{meta["title"]}'
             f'</a></td>'
-            f'<td class="compare-level" data-level="{level}"><span class="compare-dots">{level_dots}</span></td>'
-            f'<td>{len(chapters)}</td>'
-            f'<td>{chars:,}</td>'
-            f'<td>{mins} 分钟</td>'
-            f'<td class="compare-audience">{audience}</td>'
+            f'<td class="compare-level" data-level="{level}" data-label="难度"><span class="compare-dots">{level_dots}</span></td>'
+            f'<td data-label="章节">{len(chapters)}</td>'
+            f'<td data-label="字数">{chars:,}</td>'
+            f'<td data-label="预计">{mins} 分钟</td>'
+            f'<td class="compare-audience" data-label="适合谁">{audience}</td>'
             f'</tr>'
         )
     parts.append('</tbody></table>')
@@ -1394,6 +1394,38 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 }
 .compare-table tr:last-child td { border-bottom: none; }
 .compare-table tr:hover td { background: var(--bg); }
+
+/* 系列对比表 - mobile 转卡片布局 */
+@media (max-width: 640px) {
+    .compare-table-wrap { background: transparent; border: none; border-radius: 0; }
+    .compare-table thead { display: none; }
+    .compare-table, .compare-table tbody, .compare-table tr, .compare-table td { display: block; width: 100%; }
+    .compare-table tr {
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 14px 16px;
+    }
+    .compare-table td {
+        padding: 4px 0;
+        border-bottom: 1px dashed var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+    .compare-table td:last-child { border-bottom: none; }
+    .compare-table td::before {
+        content: attr(data-label);
+        font-size: 11px;
+        color: var(--text-faint);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        flex-shrink: 0;
+    }
+    .compare-table td.compare-level { padding-top: 8px; border-top: 1px solid var(--border); }
+}
 .compare-book {
     display: inline-flex;
     align-items: center;
@@ -1671,6 +1703,8 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     font-size: 14px;
     line-height: 1.5;
     transition: background 0.1s;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .overview-chapters li a:hover {
