@@ -356,4 +356,54 @@
     <lastmod>2026-06-25</lastmod>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__01-why-context-engineering</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__02-context-window-tokens</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__03-write-storage-memory</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__04-select-rag-retrieval</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__05-compress-strategies</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__06-isolate-structure</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__07-tools-and-mcp</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__08-multi-agent-context</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__09-agentic-rag</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/#context-engineering__10-production-antipatterns</loc>
+    <lastmod>2026-06-25</lastmod>
+    <priority>0.8</priority>
+  </url>
 </urlset>

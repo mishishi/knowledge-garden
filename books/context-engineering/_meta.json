@@ -1,0 +1,19 @@
+{
+  "title": "Context Engineering \u5b9e\u6218",
+  "description": "10 \u7ae0\u4ece prompt \u8de8\u8fdb\u4e0a\u4e0b\u6587\u5de5\u7a0b\u4f53\u7cfb\uff1aWrite / Select / Compress / Isolate \u56db\u5927\u539f\u5219 + RAG / \u8bb0\u5fc6 / MCP / Agent \u751f\u4ea7\u7ebf\u5b9e\u6218",
+  "icon": "stack",
+  "color": "#7c3aed",
+  "priority": 8,
+  "order": [
+    "01-why-context-engineering",
+    "02-context-window-tokens",
+    "03-write-storage-memory",
+    "04-select-rag-retrieval",
+    "05-compress-strategies",
+    "06-isolate-structure",
+    "07-tools-and-mcp",
+    "08-multi-agent-context",
+    "09-agentic-rag",
+    "10-production-antipatterns"
+  ]
+}
