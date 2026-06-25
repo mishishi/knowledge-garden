@@ -736,7 +736,8 @@ body.dark #more-btn { background: rgba(40, 40, 44, 0.85); }
     position: absolute;
     top: 48px;
     right: 0;
-    min-width: 200px;
+    width: 720px;
+    max-width: calc(100vw - 32px);
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -758,49 +759,55 @@ body.dark .toolbar-menu { background: rgba(28, 28, 30, 0.95); }
     letter-spacing: 0.8px;
     text-transform: uppercase;
 }
-/* 工具栏内的设置面板：2 行 4 组（字号 / 宽度 / 字体 / 主题） */
+/* 工具栏内的设置面板：1 行 4 组（字号 / 宽度 / 字体 / 主题） */
 .toolbar-grid {
-    padding: 6px 8px 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    padding: 10px 12px 6px;
 }
 .t-row {
     display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+.t-group {
+    display: flex;
     align-items: center;
     gap: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 4px 4px 8px;
+    min-width: 0;
+    flex: 1 1 0;
 }
 .t-lbl {
     font-size: 10px;
     color: var(--text-faint);
     letter-spacing: 0.5px;
-    width: 24px;
     flex-shrink: 0;
-    text-align: right;
+    min-width: 24px;
+    text-align: left;
+    text-transform: uppercase;
 }
-.t-group {
+.t-btns {
     display: flex;
     gap: 2px;
     flex: 1;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 1px;
     min-width: 0;
 }
 .opt-btn {
     flex: 1;
     min-width: 0;
-    padding: 4px 0;
+    padding: 5px 6px;
     background: transparent;
     border: 1px solid transparent;
     border-radius: 3px;
     color: var(--text-soft);
-    font-size: 11px;
-    line-height: 1.4;
+    font-size: 12px;
+    line-height: 1.2;
     cursor: pointer;
     text-align: center;
     transition: background .12s, color .12s;
+    white-space: nowrap;
 }
 .opt-btn:hover { color: var(--text); background: var(--bg-soft); }
 .opt-btn.active {
@@ -2644,7 +2651,7 @@ a:focus-visible {
     .book-cover h1 { font-size: 1.8em; }
     .toolbar { top: 8px; right: 8px; }
     #more-btn { width: 36px; height: 36px; }
-    .toolbar-menu { min-width: 180px; }
+    .toolbar-menu { min-width: 320px; max-width: calc(100vw - 32px); }
     .sidebar-toggle { top: 8px; left: 8px; }
 }
 
@@ -6495,32 +6502,38 @@ def build_html():
         <div class="toolbar-menu" id="toolbar-menu">
             <div class="toolbar-grid">
                 <div class="t-row">
-                    <span class="t-lbl">字号</span>
                     <div class="t-group">
-                        <button class="opt-btn font-btn" data-size="small" title="小字号 (-)">A−</button>
-                        <button class="opt-btn font-btn" data-size="medium" title="中字号">A</button>
-                        <button class="opt-btn font-btn" data-size="large" title="大字号 (+)">A+</button>
+                        <span class="t-lbl">字号</span>
+                        <div class="t-btns">
+                            <button class="opt-btn font-btn" data-size="small" title="小字号 (-)">A−</button>
+                            <button class="opt-btn font-btn" data-size="medium" title="中字号">A</button>
+                            <button class="opt-btn font-btn" data-size="large" title="大字号 (+)">A+</button>
+                        </div>
                     </div>
-                    <span class="t-lbl">宽度</span>
                     <div class="t-group">
-                        <button class="opt-btn width-btn" data-width="narrow" title="窄">窄</button>
-                        <button class="opt-btn width-btn" data-width="medium" title="中">中</button>
-                        <button class="opt-btn width-btn" data-width="wide" title="宽">宽</button>
+                        <span class="t-lbl">宽度</span>
+                        <div class="t-btns">
+                            <button class="opt-btn width-btn" data-width="narrow" title="窄">窄</button>
+                            <button class="opt-btn width-btn" data-width="medium" title="中">中</button>
+                            <button class="opt-btn width-btn" data-width="wide" title="宽">宽</button>
+                        </div>
                     </div>
-                </div>
-                <div class="t-row">
-                    <span class="t-lbl">字体</span>
                     <div class="t-group">
-                        <button class="opt-btn fam-btn" data-fam="serif" title="衬线">衬</button>
-                        <button class="opt-btn fam-btn" data-fam="sans" title="无衬线">黑</button>
-                        <button class="opt-btn fam-btn" data-fam="mono" title="等宽">等</button>
+                        <span class="t-lbl">字体</span>
+                        <div class="t-btns">
+                            <button class="opt-btn fam-btn" data-fam="serif" title="衬线">衬</button>
+                            <button class="opt-btn fam-btn" data-fam="sans" title="无衬线">黑</button>
+                            <button class="opt-btn fam-btn" data-fam="mono" title="等宽">等</button>
+                        </div>
                     </div>
-                    <span class="t-lbl">主题</span>
                     <div class="t-group">
-                        <button class="opt-btn theme-btn" data-theme="light" title="亮">亮</button>
-                        <button class="opt-btn theme-btn" data-theme="dark" title="暗">暗</button>
-                        <button class="opt-btn theme-btn" data-theme="sepia" title="羊皮纸">纸</button>
-                        <button class="opt-btn theme-btn" data-theme="green" title="护眼绿">绿</button>
+                        <span class="t-lbl">主题</span>
+                        <div class="t-btns">
+                            <button class="opt-btn theme-btn" data-theme="light" title="亮">亮</button>
+                            <button class="opt-btn theme-btn" data-theme="dark" title="暗">暗</button>
+                            <button class="opt-btn theme-btn" data-theme="sepia" title="羊皮纸">纸</button>
+                            <button class="opt-btn theme-btn" data-theme="green" title="护眼绿">绿</button>
+                        </div>
                     </div>
                 </div>
             </div>
