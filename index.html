@@ -244,26 +244,55 @@ body.dark .toolbar-menu { background: rgba(28, 28, 30, 0.95); }
     letter-spacing: 0.8px;
     text-transform: uppercase;
 }
-.toolbar-section.font-sizes {
+/* 工具栏内的设置面板：2 行 4 组（字号 / 宽度 / 字体 / 主题） */
+.toolbar-grid {
+    padding: 6px 8px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.t-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.t-lbl {
+    font-size: 10px;
+    color: var(--text-faint);
+    letter-spacing: 0.5px;
+    width: 24px;
+    flex-shrink: 0;
+    text-align: right;
+}
+.t-group {
     display: flex;
     gap: 2px;
-    padding: 4px 6px;
-}
-.toolbar-section.font-sizes button {
     flex: 1;
-    padding: 6px 0;
-    text-align: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px;
+    min-width: 0;
 }
-.toolbar-section.width-sizes {
-    display: flex;
-    gap: 2px;
-    padding: 4px 6px;
-}
-.toolbar-section.width-sizes button {
+.opt-btn {
     flex: 1;
-    padding: 6px 0;
+    min-width: 0;
+    padding: 4px 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    color: var(--text-soft);
+    font-size: 11px;
+    line-height: 1.4;
+    cursor: pointer;
     text-align: center;
-    font-size: 12px;
+    transition: background .12s, color .12s;
+}
+.opt-btn:hover { color: var(--text); background: var(--bg-soft); }
+.opt-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
 }
 .toolbar-section .active,
 button.active {
@@ -3319,27 +3348,36 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <div class="toolbar" role="toolbar" aria-label="工具栏">
         <button id="more-btn" title="工具" aria-label="工具菜单"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
         <div class="toolbar-menu" id="toolbar-menu">
-            <div class="toolbar-section font-sizes">
-                <button class="font-btn" data-size="small" title="小字号 (-)">A−</button>
-                <button class="font-btn" data-size="medium" title="中字号">A</button>
-                <button class="font-btn" data-size="large" title="大字号 (+)">A+</button>
-            </div>
-            <div class="toolbar-section width-sizes">
-                <button class="width-btn" data-width="narrow" title="窄">窄</button>
-                <button class="width-btn" data-width="medium" title="中">中</button>
-                <button class="width-btn" data-width="wide" title="宽">宽</button>
-            </div>
-            <div class="toolbar-divider"></div>
-            <div class="toolbar-section font-families">
-                <button class="fam-btn" data-fam="serif" title="衬线">衬</button>
-                <button class="fam-btn" data-fam="sans" title="无衬线">黑</button>
-                <button class="fam-btn" data-fam="mono" title="等宽">等</button>
-            </div>
-            <div class="toolbar-section themes">
-                <button class="theme-btn" data-theme="light" title="亮">亮</button>
-                <button class="theme-btn" data-theme="dark" title="暗">暗</button>
-                <button class="theme-btn" data-theme="sepia" title="羊皮纸">纸</button>
-                <button class="theme-btn" data-theme="green" title="护眼绿">绿</button>
+            <div class="toolbar-grid">
+                <div class="t-row">
+                    <span class="t-lbl">字号</span>
+                    <div class="t-group">
+                        <button class="opt-btn font-btn" data-size="small" title="小字号 (-)">A−</button>
+                        <button class="opt-btn font-btn" data-size="medium" title="中字号">A</button>
+                        <button class="opt-btn font-btn" data-size="large" title="大字号 (+)">A+</button>
+                    </div>
+                    <span class="t-lbl">宽度</span>
+                    <div class="t-group">
+                        <button class="opt-btn width-btn" data-width="narrow" title="窄">窄</button>
+                        <button class="opt-btn width-btn" data-width="medium" title="中">中</button>
+                        <button class="opt-btn width-btn" data-width="wide" title="宽">宽</button>
+                    </div>
+                </div>
+                <div class="t-row">
+                    <span class="t-lbl">字体</span>
+                    <div class="t-group">
+                        <button class="opt-btn fam-btn" data-fam="serif" title="衬线">衬</button>
+                        <button class="opt-btn fam-btn" data-fam="sans" title="无衬线">黑</button>
+                        <button class="opt-btn fam-btn" data-fam="mono" title="等宽">等</button>
+                    </div>
+                    <span class="t-lbl">主题</span>
+                    <div class="t-group">
+                        <button class="opt-btn theme-btn" data-theme="light" title="亮">亮</button>
+                        <button class="opt-btn theme-btn" data-theme="dark" title="暗">暗</button>
+                        <button class="opt-btn theme-btn" data-theme="sepia" title="羊皮纸">纸</button>
+                        <button class="opt-btn theme-btn" data-theme="green" title="护眼绿">绿</button>
+                    </div>
+                </div>
             </div>
             <div class="toolbar-divider"></div>
             <div class="toolbar-actions">
