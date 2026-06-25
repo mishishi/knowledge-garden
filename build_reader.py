@@ -754,6 +754,19 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
 
 /* 书架 */
 .bookshelf .book-group { margin-bottom: 24px; }
+.bookshelf .book-group.current-book .book-title-text { color: var(--accent); font-weight: 600; }
+.bookshelf .book-group.current-book .book-icon { color: var(--accent); }
+.bookshelf .book-group.current-book > .book-header { position: relative; }
+.bookshelf .book-group.current-book > .book-header::before {
+    content: "";
+    position: absolute;
+    left: -16px;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+}
 
 .book-header {
     display: flex;
@@ -788,6 +801,27 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
 .book-chapters-count {
     font-size: 11px;
     color: var(--text-faint);
+    font-family: Georgia, serif;
+    font-style: italic;
+}
+
+.book-progress-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    margin: 6px 0 4px 28px;
+    overflow: hidden;
+    max-width: 220px;
+}
+.book-progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+}
+.book-progress-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin: 0 0 4px 28px;
     font-family: Georgia, serif;
     font-style: italic;
 }
@@ -1266,6 +1300,134 @@ body.overview-mode .content {
     letter-spacing: 1px;
 }
 
+/* ============================================================
+   章节顶部 progress 条
+   ============================================================ */
+.chap-progress {
+    margin: 16px auto 28px;
+    max-width: 480px;
+}
+.chap-progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.chap-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 70%, white) 100%);
+    transition: width 0.3s ease;
+}
+.chap-progress-info {
+    font-size: 12px;
+    color: var(--text-faint);
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.chap-progress-info b {
+    color: var(--accent);
+    font-weight: 600;
+    font-style: normal;
+}
+.chap-progress-sep { opacity: 0.4; }
+
+/* ============================================================
+   系列导览（ch01 顶部）
+   ============================================================ */
+.series-intro {
+    margin: 0 0 48px;
+    padding: 24px 28px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+}
+.series-intro-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.series-intro-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    font-weight: 600;
+}
+.series-intro-count {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: Georgia, serif;
+    font-style: italic;
+}
+.series-intro-toggle {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.series-intro-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.series-intro-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.series-intro-desc {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 0 0 16px;
+}
+.series-toc {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 24px;
+}
+.series-toc.collapsed { display: none; }
+.series-toc li a {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 0;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.4;
+    transition: color 0.15s ease;
+}
+.series-toc li a:hover { color: var(--accent); }
+.series-toc li a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+.series-toc-num {
+    color: var(--text-faint);
+    font-family: Georgia, serif;
+    font-size: 12px;
+    font-style: italic;
+    min-width: 24px;
+}
+.series-toc-title { flex: 1; }
+@media (max-width: 600px) {
+    .series-toc { grid-template-columns: 1fr; }
+}
+
 .chapter-meta::before, .chapter-meta::after {
     content: "·";
     margin: 0 12px;
@@ -1564,6 +1726,137 @@ a:focus-visible {
         scroll-behavior: auto !important;
     }
     html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   开发者彩蛋热力图（5×? 触发）
+   ============================================================ */
+.dev-panel {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    width: 360px;
+    max-height: calc(100vh - 120px);
+    overflow: auto;
+    background: var(--surface, #fff);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    padding: 20px;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+.dev-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+.dev-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+.dev-panel-eyebrow {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-right: 8px;
+    font-family: Georgia, serif;
+    font-style: italic;
+}
+.dev-panel-title {
+    font-size: 13px;
+    color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+.dev-panel-close {
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 1;
+    padding: 0 4px;
+    transition: color 0.15s ease;
+}
+.dev-panel-close:hover { color: var(--accent); }
+.dev-panel-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.dev-heatmap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.dev-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.dev-row-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    flex: 0 0 90px;
+    text-align: right;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.dev-row-cells {
+    display: flex;
+    gap: 3px;
+    flex: 1;
+}
+.dev-cell {
+    flex: 1;
+    height: 14px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: transform 0.1s ease;
+    display: block;
+}
+.dev-cell:hover { transform: scale(1.4); z-index: 1; }
+.dev-cell.done { background: #10b981; }
+.dev-cell.progress { background: #f59e0b; }
+.dev-cell.unread { background: var(--border); }
+.dev-panel-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-faint);
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+.dev-panel-legend span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.dev-legend-cell {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    display: inline-block;
+}
+.dev-legend-cell.done { background: #10b981; }
+.dev-legend-cell.progress { background: #f59e0b; }
+.dev-legend-cell.unread { background: var(--border); }
+.dev-panel-hint {
+    margin-left: auto;
+    color: var(--text-faint);
+    font-style: italic;
+    font-family: Georgia, serif;
 }
 
 @media (max-width: 900px) {
@@ -2888,10 +3181,84 @@ document.querySelectorAll('.book-group').forEach((group, idx) => {
     }
 });
 
+// 系列导览（ch01 顶部）折叠/展开
+document.querySelectorAll('.series-intro-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        const list = btn.closest('.series-intro').querySelector('.series-toc');
+        btn.setAttribute('aria-expanded', String(!expanded));
+        btn.textContent = expanded ? '\u5c55\u5f00' : '\u6536\u8d77';
+        if (list) list.classList.toggle('collapsed', expanded);
+    });
+});
+
 // 进度条
 let lastChapter = null;
 const chapters = document.querySelectorAll('.chapter');
 const links = document.querySelectorAll('.book-chapters a');
+
+// 彩蛋：连按 5 次 ? 打开开发者热力图
+let devPressBuffer = [];
+const DEV_KEY = '?';
+const DEV_PRESSES = 5;
+const DEV_WINDOW_MS = 2500;
+window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+    if (e.key !== DEV_KEY) { devPressBuffer = []; return; }
+    const now = Date.now();
+    devPressBuffer = devPressBuffer.filter(t => now - t < DEV_WINDOW_MS);
+    devPressBuffer.push(now);
+    if (devPressBuffer.length >= DEV_PRESSES) {
+        devPressBuffer = [];
+        toggleDevPanel();
+    }
+});
+function toggleDevPanel() {
+    const panel = document.getElementById('dev-panel');
+    if (!panel) return;
+    if (panel.classList.contains('visible')) {
+        panel.classList.remove('visible');
+    } else {
+        renderDevHeatmap();
+        panel.classList.add('visible');
+    }
+}
+function renderDevHeatmap() {
+    const body = document.getElementById('dev-heatmap');
+    if (!body) return;
+    const books = document.querySelectorAll('.book-group');
+    let html = '';
+    let done = 0, inProgress = 0, total = 0;
+    books.forEach(g => {
+        const bookTitle = g.querySelector('.book-title-text')?.textContent || g.dataset.book;
+        html += '<div class="dev-row"><div class="dev-row-label">' + bookTitle + '</div><div class="dev-row-cells">';
+        g.querySelectorAll('.book-chapters a').forEach(a => {
+            const id = a.getAttribute('href').slice(1);
+            const isDone = !!progress.completed[id];
+            const pct = progress.readPct[id] || 0;
+            let cls = 'unread';
+            if (isDone) { cls = 'done'; done++; }
+            else if (pct > 0) { cls = 'progress'; inProgress++; }
+            total++;
+            html += '<a class="dev-cell ' + cls + '" href="#' + id + '" title="' + a.textContent.trim() + ' \u00b7 ' + (isDone ? '\u5df2\u8bfb' : pct + '%') + '"></a>';
+        });
+        html += '</div></div>';
+    });
+    body.innerHTML = html;
+    const stats = document.getElementById('dev-stats');
+    if (stats) stats.textContent = done + ' / ' + total + ' \u5df2\u8bfb  \u00b7  ' + inProgress + ' \u8fdb\u884c\u4e2d';
+}
+
+// dev panel 关闭：按钮 + ESC
+document.querySelector('.dev-panel-close')?.addEventListener('click', () => {
+    document.getElementById('dev-panel')?.classList.remove('visible');
+});
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('dev-panel')?.classList.contains('visible')) {
+        document.getElementById('dev-panel').classList.remove('visible');
+    }
+});
 
 function playPageFlip() {
     if (!window.audioCtx) return;
@@ -2935,9 +3302,13 @@ const observer = new IntersectionObserver((entries) => {
             if (activeLink) {
                 activeLink.classList.add('active');
                 activeLink.setAttribute('aria-current', 'true');
-                // 自动展开当前章节所在的书的目录
+                // 自动展开当前章节所在的书的目录；折叠其他书
                 const bookGroup = activeLink.closest('.book-group');
-                bookGroup.querySelector('.book-chapters').classList.remove('collapsed');
+                document.querySelectorAll('.book-group').forEach(g => {
+                    g.classList.toggle('current-book', g === bookGroup);
+                    const list = g.querySelector('.book-chapters');
+                    if (list) list.classList.toggle('collapsed', g !== bookGroup);
+                });
             }
         }
     });
@@ -3595,6 +3966,9 @@ function refreshCompletionUI() {
         const chapterId = a.getAttribute('href').slice(1);
         a.classList.toggle('completed', !!progress.completed[chapterId]);
     });
+
+    // 整本书完成度（顶部 progress + 侧栏 book 进度）
+    refreshBookProgressUI();
 }
 
 function refreshReadPctUI() {
@@ -3608,6 +3982,37 @@ function refreshReadPctUI() {
             el.textContent = pct + '%';
         } else {
             el.textContent = '';
+        }
+    });
+}
+
+function refreshBookProgressUI() {
+    // 按 book 分组统计已完成章节数
+    const byBook = {};
+    document.querySelectorAll('.chapter').forEach(article => {
+        const b = article.dataset.book;
+        if (!byBook[b]) byBook[b] = { done: 0, total: 0 };
+        byBook[b].total += 1;
+        if (progress.completed[article.id]) byBook[b].done += 1;
+    });
+    document.querySelectorAll('.chap-progress-pct').forEach(el => {
+        const b = el.dataset.bookProgress;
+        const s = byBook[b];
+        if (s && s.total > 0) {
+            const pct = Math.round(s.done / s.total * 100);
+            el.textContent = '\u6574\u672c ' + pct + '% (\u5df2\u8bfb ' + s.done + '/' + s.total + ')';
+        }
+    });
+    // 同步更新 sidebar 上的 book-level 进度
+    document.querySelectorAll('.book-group').forEach(g => {
+        const b = g.dataset.book;
+        const s = byBook[b];
+        const bar = g.querySelector('.book-progress-bar-fill');
+        const label = g.querySelector('.book-progress-label');
+        if (s && bar && label) {
+            const pct = Math.round(s.done / s.total * 100);
+            bar.style.width = pct + '%';
+            label.textContent = s.done + ' / ' + s.total;
         }
     });
 }
@@ -4692,11 +5097,44 @@ def build_html():
                 f'</nav>'
             ) if prev_link or next_link else ''
 
+            # 章节顶部 progress 条
+            chap_progress_html = (
+                f'<div class="chap-progress">'
+                f'<div class="chap-progress-bar"><div class="chap-progress-fill" style="width:{(chap_idx/len(chapters))*100:.1f}%"></div></div>'
+                f'<div class="chap-progress-info">'
+                f'<span class="chap-progress-pos">第 <b>{chap_idx}</b> / {len(chapters)} 章</span>'
+                f'<span class="chap-progress-sep">\u00b7</span>'
+                f'<span class="chap-progress-pct" data-book-progress="{book_slug}">\u6574\u672c 0%</span>'
+                f'</div>'
+                f'</div>'
+            )
+
+            # ch01 系列导览：列出本系列所有章节（仅 ch01 显示）
+            series_intro_html = ''
+            if chap_idx == 1:
+                toc_items = ''.join(
+                    f'<li><a href="#{book_slug}__{cs}"><span class="series-toc-num">{i:02d}</span><span class="series-toc-title">{chap_titles[i-1]}</span></a></li>'
+                    for i, (cs, _) in enumerate(chapters, 1)
+                )
+                series_intro_html = (
+                    f'<aside class="series-intro">'
+                    f'<div class="series-intro-head">'
+                    f'<span class="series-intro-label">\u7cfb\u5217\u5bfc\u89c8</span>'
+                    f'<span class="series-intro-count">{len(chapters)} \u7ae0</span>'
+                    f'<button class="series-intro-toggle" aria-expanded="true" aria-controls="series-toc-{book_slug}">\u6536\u8d77</button>'
+                    f'</div>'
+                    f'<p class="series-intro-desc">{meta.get("description", "")}</p>'
+                    f'<ol class="series-toc" id="series-toc-{book_slug}">{toc_items}</ol>'
+                    f'</aside>'
+                )
+
             book_chapters_html_parts.append(
                 f'<article id="{anchor}" class="chapter" data-book="{book_slug}" data-chap="{chap_slug}">'
                 f'<div class="chapter-num">CHAPTER {chap_idx:02d}</div>'
                 f'<h1 class="chapter-title">{display_title}</h1>'
+                f'{chap_progress_html}'
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字</div>'
+                f'{series_intro_html}'
                 f'<div class="chapter-content">{content_html}</div>'
                 f'<div class="chapter-end">本章完</div>'
                 f'{chap_nav_html}'
@@ -4720,6 +5158,8 @@ def build_html():
             f'<span class="book-title-text">{meta["title"]}</span>'
             f'<span class="book-chapters-count">{chap_count} 章</span>'
             f'</div>'
+            f'<div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div>'
+            f'<div class="book-progress-label">0 / {chap_count}</div>'
             f'<ul class="book-chapters">'
             f'{"".join(chapter_items)}'
             f'</ul>'
@@ -5012,6 +5452,24 @@ def build_html():
         {overview_html}
         {''.join(content_parts)}
     </main>
+
+    <!-- 开发者彩蛋面板：连按 5 次 ? 开启 -->
+    <aside id="dev-panel" class="dev-panel" role="dialog" aria-label="\u5f00\u53d1\u8005\u70ed\u529b\u56fe" aria-modal="false">
+        <div class="dev-panel-head">
+            <div class="dev-panel-title">
+                <span class="dev-panel-eyebrow">DEV MODE</span>
+                <span id="dev-stats">\u52a0\u8f7d\u4e2d...</span>
+            </div>
+            <button class="dev-panel-close" aria-label="\u5173\u95ed">\u00d7</button>
+        </div>
+        <div id="dev-heatmap" class="dev-heatmap"></div>
+        <div class="dev-panel-legend">
+            <span><span class="dev-legend-cell done"></span>\u5df2\u8bfb</span>
+            <span><span class="dev-legend-cell progress"></span>\u8fdb\u884c\u4e2d</span>
+            <span><span class="dev-legend-cell unread"></span>\u672a\u8bfb</span>
+            <span class="dev-panel-hint">\u6309 ESC \u6216 5\u00d7? \u5173\u95ed</span>
+        </div>
+    </aside>
 
     <script>{JS}</script>
 </body>
