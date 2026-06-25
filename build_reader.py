@@ -360,6 +360,20 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     return "\n".join(parts)
 
 
+def build_about_html() -> str:
+    """生成 <section id="about"> HTML. 从 books/_about/README.md 读 markdown.
+
+    _about 目录以下划线开头, discover_books 跳过, 所以这里单独处理.
+    文件不存在就返回空串 (而不是 raise), 让 build 不挂.
+    """
+    about_path = BOOKS_DIR / "_about" / "README.md"
+    if not about_path.exists():
+        return ""
+    md_text = about_path.read_text(encoding="utf-8")
+    content_html = md_to_html(md_text)
+    return f'<section id="about" class="about">\n{content_html}\n</section>'
+
+
 def svg_icon(name, size=16, stroke_width=1.5, classes=""):
     """生成 SVG icon HTML。颜色跟随 currentColor。"""
     if name not in ICONS:
@@ -1206,6 +1220,89 @@ body.overview-mode .content {
     padding: 0;
 }
 
+/* ============================================================
+   About 链接 (sidebar footer) + About 页面
+   ============================================================ */
+.sidebar-about-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 14px;
+    color: var(--text-soft);
+    text-decoration: none;
+    text-indent: 0;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    transition: color 0.15s;
+}
+.sidebar-about-link:hover {
+    color: var(--accent);
+}
+
+.about {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 100px 32px 80px 32px;
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--text);
+}
+
+.about h1 {
+    font-size: 2.2em;
+    font-weight: 600;
+    margin: 0 0 32px 0;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-align: center;
+}
+
+.about h2 {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin: 48px 0 16px 0;
+    color: var(--text);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.about p {
+    margin: 0 0 16px 0;
+    text-indent: 0;
+}
+
+.about ul {
+    padding-left: 24px;
+    margin: 0 0 16px 0;
+}
+.about li {
+    margin-bottom: 12px;
+}
+.about strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.about code, .about pre {
+    font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 14px;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* about-mode: hide overview + chapters, show only about */
+body.about-mode .book-cover,
+body.about-mode .chapter,
+body.about-mode .overview {
+    display: none;
+}
+body.about-mode .content {
+    padding: 0;
+}
+
 @media (max-width: 640px) {
     .overview-stats { gap: 28px; }
     .overview-card { padding: 20px; }
@@ -1427,6 +1524,61 @@ body.overview-mode .content {
 }
 
 .chapter-end::before { content: "———"; color: var(--accent); letter-spacing: 8px; }
+
+/* ============================================================
+   a11y: skip link, focus ring, reduced motion
+   ============================================================ */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: var(--bg);
+    text-decoration: none;
+    text-indent: 0;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 1000;
+    transition: top 0.15s;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+    top: 16px;
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+}
+
+/* 键盘 focus ring — 鼠标点击不显示 */
+*:focus { outline: none; }
+*:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+button:focus-visible,
+a:focus-visible {
+    outline-color: var(--accent);
+}
+
+/* 高对比度模式加深焦点 */
+@media (prefers-contrast: more) {
+    *:focus-visible {
+        outline-width: 3px;
+    }
+}
+
+/* 减弱动画 — OS 设置 / 系统级偏好 */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    html { scroll-behavior: auto; }
+}
 
 @media (max-width: 900px) {
     .sidebar { transform: translateX(-300px); }
@@ -2723,11 +2875,16 @@ if (qrCopyBtn) {
 
 document.getElementById('sidebar-toggle').addEventListener('click', () => {
     document.body.classList.toggle('sidebar-collapsed');
-    localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
+    const collapsed = document.body.classList.contains('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', collapsed);
+    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', String(!collapsed));
 });
 
 if (localStorage.getItem('sidebarCollapsed') === 'true') {
     document.body.classList.add('sidebar-collapsed');
+    document.getElementById('sidebar-toggle')?.setAttribute('aria-expanded', 'false');
+} else {
+    document.getElementById('sidebar-toggle')?.setAttribute('aria-expanded', 'true');
 }
 
 // 书架折叠
@@ -2787,10 +2944,11 @@ const observer = new IntersectionObserver((entries) => {
                 playPageFlip();
             }
             lastChapter = id;
-            links.forEach(l => l.classList.remove('active'));
+            links.forEach(l => { l.classList.remove('active'); l.removeAttribute('aria-current'); });
             const activeLink = document.querySelector('.book-chapters a[href="#' + id + '"]');
             if (activeLink) {
                 activeLink.classList.add('active');
+                activeLink.setAttribute('aria-current', 'true');
                 // 自动展开当前章节所在的书的目录
                 const bookGroup = activeLink.closest('.book-group');
                 bookGroup.querySelector('.book-chapters').classList.remove('collapsed');
@@ -3537,18 +3695,29 @@ function renderOverview() {
 // overview-mode 切换：只看首页 TOC
 function showOverview() {
     document.body.classList.add('overview-mode');
+    document.body.classList.remove('about-mode');
     window.scrollTo({ top: 0, behavior: 'instant' });
     if (window.location.hash) history.replaceState(null, '', window.location.pathname);
 }
 
 function hideOverview() {
     document.body.classList.remove('overview-mode');
+    document.body.classList.remove('about-mode');
 }
 
-// 初始模式：URL 有 hash 跳到章节，否则显示 overview
+// about-mode: 只看 About 页
+function showAbout() {
+    document.body.classList.add('about-mode');
+    document.body.classList.remove('overview-mode');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+// 初始模式：URL hash 决定显示什么
 function initOverviewMode() {
     const hash = window.location.hash;
-    if (!hash || hash === '#') {
+    if (hash === '#about') {
+        showAbout();
+    } else if (!hash || hash === '#') {
         showOverview();
     } else {
         hideOverview();
@@ -3557,7 +3726,9 @@ function initOverviewMode() {
 
 // 监听 hash 变化
 window.addEventListener('hashchange', () => {
-    if (window.location.hash) {
+    if (window.location.hash === '#about') {
+        showAbout();
+    } else if (window.location.hash) {
         hideOverview();
     } else {
         showOverview();
@@ -4550,6 +4721,9 @@ def build_html():
     # 生成首页 TOC (overview section)
     overview_html = build_overview_html(books, total_chapters, total_chars, total_minutes)
 
+    # 生成关于页 (books/_about/README.md)
+    about_html = build_about_html()
+
     # j/k 跳转的章节列表 (JSON array, 按文档顺序)
     import json as _json
     chapter_anchors_json = _json.dumps(chapter_anchors, ensure_ascii=False)
@@ -4592,21 +4766,23 @@ def build_html():
 </head>
 <body class="sidebar-collapsed">
     <div class="progress"></div>
-    <button class="focus-exit" id="focus-exit" title="退出专注模式 (F)">{svg_icon('close', size=18)}</button>
+    <a class="skip-link" href="#main-content">跳到正文</a>
+    <button class="focus-exit" id="focus-exit" title="退出专注模式 (F)" aria-label="退出专注模式">{svg_icon('close', size=18)}</button>
 
-    <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)">{svg_icon('menu')} 书架</button>
+    <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)" aria-label="切换侧边栏" aria-expanded="false">{svg_icon('menu')} 书架</button>
 
-    <aside class="sidebar">
+    <aside class="sidebar" role="navigation" aria-label="章节导航">
         <h1>个人知识库</h1>
         <div class="subtitle">{len(books)} 个系列 · {total_chapters} 章 · 约 {total_minutes} 分钟</div>
         <div class="bookshelf">
             {''.join(bookshelf_html_parts)}
         </div>
+        <a class="sidebar-about-link" href="#about">{svg_icon('plus', size=14)} 关于这个站</a>
         <div class="sidebar-bookmarks" id="sidebar-bookmarks"></div>
     </aside>
 
-    <div class="toolbar">
-        <button id="more-btn" title="工具">{svg_icon('menu')}</button>
+    <div class="toolbar" role="toolbar" aria-label="工具栏">
+        <button id="more-btn" title="工具" aria-label="工具菜单">{svg_icon('menu')}</button>
         <div class="toolbar-menu" id="toolbar-menu">
             <div class="toolbar-section font-sizes">
                 <button class="font-btn" data-size="small" title="小字号 (-)">A−</button>
@@ -4811,9 +4987,10 @@ def build_html():
         </div>
     </div>
 
-    <main class="content">
+    <main class="content" id="main-content" role="main">
         {overview_html}
         {''.join(content_parts)}
+        {about_html}
     </main>
 
     <script>{JS}</script>

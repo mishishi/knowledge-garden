@@ -832,6 +832,89 @@ body.overview-mode .content {
     padding: 0;
 }
 
+/* ============================================================
+   About 链接 (sidebar footer) + About 页面
+   ============================================================ */
+.sidebar-about-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px 14px;
+    color: var(--text-soft);
+    text-decoration: none;
+    text-indent: 0;
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    transition: color 0.15s;
+}
+.sidebar-about-link:hover {
+    color: var(--accent);
+}
+
+.about {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 100px 32px 80px 32px;
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--text);
+}
+
+.about h1 {
+    font-size: 2.2em;
+    font-weight: 600;
+    margin: 0 0 32px 0;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-align: center;
+}
+
+.about h2 {
+    font-size: 1.25em;
+    font-weight: 600;
+    margin: 48px 0 16px 0;
+    color: var(--text);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.about p {
+    margin: 0 0 16px 0;
+    text-indent: 0;
+}
+
+.about ul {
+    padding-left: 24px;
+    margin: 0 0 16px 0;
+}
+.about li {
+    margin-bottom: 12px;
+}
+.about strong {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.about code, .about pre {
+    font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 14px;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* about-mode: hide overview + chapters, show only about */
+body.about-mode .book-cover,
+body.about-mode .chapter,
+body.about-mode .overview {
+    display: none;
+}
+body.about-mode .content {
+    padding: 0;
+}
+
 @media (max-width: 640px) {
     .overview-stats { gap: 28px; }
     .overview-card { padding: 20px; }
@@ -1053,6 +1136,61 @@ body.overview-mode .content {
 }
 
 .chapter-end::before { content: "———"; color: var(--accent); letter-spacing: 8px; }
+
+/* ============================================================
+   a11y: skip link, focus ring, reduced motion
+   ============================================================ */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: var(--bg);
+    text-decoration: none;
+    text-indent: 0;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 1000;
+    transition: top 0.15s;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+    top: 16px;
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+}
+
+/* 键盘 focus ring — 鼠标点击不显示 */
+*:focus { outline: none; }
+*:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+button:focus-visible,
+a:focus-visible {
+    outline-color: var(--accent);
+}
+
+/* 高对比度模式加深焦点 */
+@media (prefers-contrast: more) {
+    *:focus-visible {
+        outline-width: 3px;
+    }
+}
+
+/* 减弱动画 — OS 设置 / 系统级偏好 */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    html { scroll-behavior: auto; }
+}
 
 @media (max-width: 900px) {
     .sidebar { transform: translateX(-300px); }
@@ -2274,21 +2412,23 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
 </head>
 <body class="sidebar-collapsed">
     <div class="progress"></div>
-    <button class="focus-exit" id="focus-exit" title="退出专注模式 (F)"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <a class="skip-link" href="#main-content">跳到正文</a>
+    <button class="focus-exit" id="focus-exit" title="退出专注模式 (F)" aria-label="退出专注模式"><svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
 
-    <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> 书架</button>
+    <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)" aria-label="切换侧边栏" aria-expanded="false"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg> 书架</button>
 
-    <aside class="sidebar">
+    <aside class="sidebar" role="navigation" aria-label="章节导航">
         <h1>个人知识库</h1>
         <div class="subtitle">5 个系列 · 50 章 · 约 137 分钟</div>
         <div class="bookshelf">
             <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/></svg></span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>你的第一个 Agent</span><span class="ch-read-pct" data-chapter="multi-agent__01-your-first-agent"></span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>为什么需要 Multi-Agent</span><span class="ch-read-pct" data-chapter="multi-agent__02-why-multi-agent"></span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>5 个核心抽象</span><span class="ch-read-pct" data-chapter="multi-agent__03-five-abstractions"></span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>编排模式全景</span><span class="ch-read-pct" data-chapter="multi-agent__04-orchestration-patterns"></span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>通信与状态</span><span class="ch-read-pct" data-chapter="multi-agent__05-state-and-communication"></span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>失败的艺术</span><span class="ch-read-pct" data-chapter="multi-agent__06-failure-handling"></span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>框架横向对比</span><span class="ch-read-pct" data-chapter="multi-agent__07-framework-comparison"></span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>可观测性与成本</span><span class="ch-read-pct" data-chapter="multi-agent__08-observability-and-cost"></span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>第 9 章：实战 CodeReviewer Multi-Agent</span><span class="ch-read-pct" data-chapter="multi-agent__09-code-review-project"></span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>生产化 Checklist</span><span class="ch-read-pct" data-chapter="multi-agent__10-production-checklist"></span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.7 5.2a2 2 0 0 0 1.1 1.1L20 11l-5.2 1.7a2 2 0 0 0-1.1 1.1L12 19l-1.7-5.2a2 2 0 0 0-1.1-1.1L4 11l5.2-1.7a2 2 0 0 0 1.1-1.1z"/><path d="M5 3v3"/><path d="M3 5h3"/><path d="M19 17v3"/><path d="M17 19h3"/></svg></span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础 + Token 经济学</span><span class="ch-read-pct" data-chapter="llm-prompt__01-prompt-basics"></span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 实战</span><span class="ch-read-pct" data-chapter="llm-prompt__02-few-shot"></span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>CoT 思维链</span><span class="ch-read-pct" data-chapter="llm-prompt__03-advanced-patterns"></span></a></li><li><a href="#llm-prompt__04-role-system-prompt"><span class="ch-num">04</span><span>Role / System Prompt：persona effect</span><span class="ch-read-pct" data-chapter="llm-prompt__04-role-system-prompt"></span></a></li><li><a href="#llm-prompt__05-structured-output"><span class="ch-num">05</span><span>Structured Output</span><span class="ch-read-pct" data-chapter="llm-prompt__05-structured-output"></span></a></li><li><a href="#llm-prompt__06-tool-use"><span class="ch-num">06</span><span>Tool Use / Function Calling</span><span class="ch-read-pct" data-chapter="llm-prompt__06-tool-use"></span></a></li><li><a href="#llm-prompt__07-prompt-caching"><span class="ch-num">07</span><span>Prompt Caching：降成本 10x</span><span class="ch-read-pct" data-chapter="llm-prompt__07-prompt-caching"></span></a></li><li><a href="#llm-prompt__08-prompt-injection"><span class="ch-num">08</span><span>Prompt Injection 防御</span><span class="ch-read-pct" data-chapter="llm-prompt__08-prompt-injection"></span></a></li><li><a href="#llm-prompt__09-eval-driven"><span class="ch-num">09</span><span>Eval-driven 迭代</span><span class="ch-read-pct" data-chapter="llm-prompt__09-eval-driven"></span></a></li><li><a href="#llm-prompt__10-real-cases"><span class="ch-num">10</span><span>真实场景 4 案例</span><span class="ch-read-pct" data-chapter="llm-prompt__10-real-cases"></span></a></li></ul></div><div class="book-group" data-book="crewai"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span><span class="book-title-text">CrewAI 入门到实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#crewai__01-getting-started"><span class="ch-num">01</span><span>上手：跑通第一个 Crew</span><span class="ch-read-pct" data-chapter="crewai__01-getting-started"></span></a></li><li><a href="#crewai__02-crew-orchestration"><span class="ch-num">02</span><span>Crew 编排：Process 选型与协作</span><span class="ch-read-pct" data-chapter="crewai__02-crew-orchestration"></span></a></li><li><a href="#crewai__03-agent-tuning"><span class="ch-num">03</span><span>Agent 调优：让 agent 听指挥</span><span class="ch-read-pct" data-chapter="crewai__03-agent-tuning"></span></a></li><li><a href="#crewai__04-tools-and-mcp"><span class="ch-num">04</span><span>Tools 与 MCP：给 agent 接手和脚</span><span class="ch-read-pct" data-chapter="crewai__04-tools-and-mcp"></span></a></li><li><a href="#crewai__05-memory-and-knowledge"><span class="ch-num">05</span><span>Memory + Knowledge：让 agent 有记忆</span><span class="ch-read-pct" data-chapter="crewai__05-memory-and-knowledge"></span></a></li><li><a href="#crewai__06-structured-output"><span class="ch-num">06</span><span>结构化输出与 Guardrail</span><span class="ch-read-pct" data-chapter="crewai__06-structured-output"></span></a></li><li><a href="#crewai__07-flows"><span class="ch-num">07</span><span>Flows：状态化的事件驱动编排</span><span class="ch-read-pct" data-chapter="crewai__07-flows"></span></a></li><li><a href="#crewai__08-skills-and-prod"><span class="ch-num">08</span><span>Skills 与生产化基础</span><span class="ch-read-pct" data-chapter="crewai__08-skills-and-prod"></span></a></li><li><a href="#crewai__09-side-projects"><span class="ch-num">09</span><span>实战：2 个 Side-Project 串起来</span><span class="ch-read-pct" data-chapter="crewai__09-side-projects"></span></a></li><li><a href="#crewai__10-prod-cases"><span class="ch-num">10</span><span>公司生产案例 + 社区实战拆解</span><span class="ch-read-pct" data-chapter="crewai__10-prod-cases"></span></a></li></ul></div><div class="book-group" data-book="rag"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></span><span class="book-title-text">RAG 实战</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#rag__01-why-rag"><span class="ch-num">01</span><span>为什么需要 RAG</span><span class="ch-read-pct" data-chapter="rag__01-why-rag"></span></a></li><li><a href="#rag__02-embedding-models"><span class="ch-num">02</span><span>Embedding 模型选型</span><span class="ch-read-pct" data-chapter="rag__02-embedding-models"></span></a></li><li><a href="#rag__03-vector-databases"><span class="ch-num">03</span><span>向量数据库选型</span><span class="ch-read-pct" data-chapter="rag__03-vector-databases"></span></a></li><li><a href="#rag__04-chunking-strategies"><span class="ch-num">04</span><span>Chunking 策略</span><span class="ch-read-pct" data-chapter="rag__04-chunking-strategies"></span></a></li><li><a href="#rag__05-retrieval-and-reranking"><span class="ch-num">05</span><span>检索与 Reranking</span><span class="ch-read-pct" data-chapter="rag__05-retrieval-and-reranking"></span></a></li><li><a href="#rag__06-prompt-design"><span class="ch-num">06</span><span>Prompt 设计：把检索结果喂给 LLM</span><span class="ch-read-pct" data-chapter="rag__06-prompt-design"></span></a></li><li><a href="#rag__07-hybrid-search"><span class="ch-num">07</span><span>混合检索：向量 + 关键词</span><span class="ch-read-pct" data-chapter="rag__07-hybrid-search"></span></a></li><li><a href="#rag__08-evaluation"><span class="ch-num">08</span><span>RAG 评测：怎么知道你的系统真的有用？</span><span class="ch-read-pct" data-chapter="rag__08-evaluation"></span></a></li><li><a href="#rag__09-advanced-patterns"><span class="ch-num">09</span><span>高级 RAG 模式</span><span class="ch-read-pct" data-chapter="rag__09-advanced-patterns"></span></a></li><li><a href="#rag__10-prod-checklist"><span class="ch-num">10</span><span>RAG 生产化 Checklist</span><span class="ch-read-pct" data-chapter="rag__10-prod-checklist"></span></a></li></ul></div><div class="book-group" data-book="harness-engineering"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span class="book-title-text">Harness Engineering</span><span class="book-chapters-count">10 章</span></div><ul class="book-chapters"><li><a href="#harness-engineering__01-what-is-harness"><span class="ch-num">01</span><span>什么是 Harness：从裸 API 到能干活 Agent 的距离</span><span class="ch-read-pct" data-chapter="harness-engineering__01-what-is-harness"></span></a></li><li><a href="#harness-engineering__02-agent-loop"><span class="ch-num">02</span><span>Agent Loop：把 `while not done` 展开成 8 种变体</span><span class="ch-read-pct" data-chapter="harness-engineering__02-agent-loop"></span></a></li><li><a href="#harness-engineering__03-tool-design"><span class="ch-num">03</span><span>Tool 设计：Tool 是 LLM 的手，怎么造好这只手</span><span class="ch-read-pct" data-chapter="harness-engineering__03-tool-design"></span></a></li><li><a href="#harness-engineering__04-context-management"><span class="ch-num">04</span><span>Context 管理：Context Window 爆了怎么办</span><span class="ch-read-pct" data-chapter="harness-engineering__04-context-management"></span></a></li><li><a href="#harness-engineering__05-permissions-sandbox"><span class="ch-num">05</span><span>Permissions / Sandbox：怎么拦 LLM 不删你文件</span><span class="ch-read-pct" data-chapter="harness-engineering__05-permissions-sandbox"></span></a></li><li><a href="#harness-engineering__06-observability"><span class="ch-num">06</span><span>Observability：Agent 在生产里跑，trajectory、cost、latency 怎么观测</span><span class="ch-read-pct" data-chapter="harness-engineering__06-observability"></span></a></li><li><a href="#harness-engineering__07-memory-layers"><span class="ch-num">07</span><span>Memory 分层：LLM 没记忆，Agent 需要</span><span class="ch-read-pct" data-chapter="harness-engineering__07-memory-layers"></span></a></li><li><a href="#harness-engineering__08-failure-recovery"><span class="ch-num">08</span><span>Failure Recovery：Agent 出错了怎么恢复</span><span class="ch-read-pct" data-chapter="harness-engineering__08-failure-recovery"></span></a></li><li><a href="#harness-engineering__09-eval-driven"><span class="ch-num">09</span><span>Eval-Driven Development：Harness 怎么测自己</span><span class="ch-read-pct" data-chapter="harness-engineering__09-eval-driven"></span></a></li><li><a href="#harness-engineering__10-build-from-scratch"><span class="ch-num">10</span><span>从零造一个 Harness：把前 9 章串起来</span><span class="ch-read-pct" data-chapter="harness-engineering__10-build-from-scratch"></span></a></li></ul></div>
         </div>
+        <a class="sidebar-about-link" href="#about"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 关于这个站</a>
         <div class="sidebar-bookmarks" id="sidebar-bookmarks"></div>
     </aside>
 
-    <div class="toolbar">
-        <button id="more-btn" title="工具"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="toolbar" role="toolbar" aria-label="工具栏">
+        <button id="more-btn" title="工具" aria-label="工具菜单"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
         <div class="toolbar-menu" id="toolbar-menu">
             <div class="toolbar-section font-sizes">
                 <button class="font-btn" data-size="small" title="小字号 (-)">A−</button>
@@ -2493,7 +2633,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
         </div>
     </div>
 
-    <main class="content">
+    <main class="content" id="main-content" role="main">
         <section id="overview" class="overview">
 <div class="overview-hero">
   <h1 class="overview-title">个人知识库</h1>
@@ -14587,6 +14727,35 @@ print(agent.execute_tool('read_file', {'path': 'demos/harness-minimal/README.md'
 </code></pre>
 <p>期望看到 <code>dir</code> 命令的输出和 README 前 100 字符——证明 tool 层工作正常。</p>
 <p>这套 demo 是把 ch 10 从「读得懂」变成「跑得起来」的最小桥。读 chapter 学概念，跑 demo 验证概念，两件事都做了这系列才闭环。</p></div><div class="chapter-end">本章完</div><button class="completion-toggle" data-chapter="harness-engineering__10-build-from-scratch"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>标记为已读</button></article>
+        <section id="about" class="about">
+<h1>关于这个站</h1>
+<p>我是 mishishi，2026 年开始做这个站。</p>
+<p>起因很私人：2024 到 2025 两年里我读了太多 LLM / Agent / Harness 相关的 paper、博客、推特、播客、源码。Notion 里堆了 200 多篇 markdown，但说实话——之后再也没回看过。检索成本太高，主题也散。</p>
+<p>知识不种下去不会自己长。所以我开了这个站，把笔记按主题整理成 5 个系列，每章 800 到 1500 字，写得能让自己一年后还读得懂。如果顺便对你也有用，那是 bonus。</p>
+<h2>这 5 个系列怎么选出来的</h2>
+<p>不是从市场调研来的，是我过去两年真的踩过 / 关心过的方向：</p>
+<ul>
+<li><strong>Multi-Agent in Practice</strong> — 工作里写过两个 production agent，踩过 supervisor 单点 / state 共享 / cost 失控这些坑</li>
+<li><strong>LLM Prompt 实战</strong> — 给团队培训过 3 次 prompt engineering，每次都有新发现</li>
+<li><strong>CrewAI 入门到实战</strong> — 评估过这个框架，最后没用，但流程值得讲</li>
+<li><strong>RAG 实战</strong> — 第一份正经工作就是搭 RAG pipeline，踩过 embedding 模型选错、chunking 拍脑袋这些坑</li>
+<li><strong>Harness Engineering</strong> — 2026 年最关心的，写给需要自己造 / 选 harness 的人</li>
+</ul>
+<p>跨 series 完全独立。Multi-Agent 04 跟 RAG 07 没有依赖关系。</p>
+<h2>怎么读</h2>
+<p>没有"必须按顺序"的规定。每个 series 内部是从基础到进阶，跨 series 不挑。</p>
+<p>最快的入口是首页：那里能看 5 个系列的全貌、你的进度、有没有上次没读完的章节继续读。Cmd+K 搜关键词也行。</p>
+<p>进度存在你浏览器 localStorage，<strong>永远不上服务器</strong>——我看不到你读了多少，这是设计，不是 bug。刷新页面、换电脑会重置是已知 trade-off。</p>
+<h2>接下来</h2>
+<p>短期在加：full-text 搜索、章节 reactions、a11y 修。中长期想做：跨 series 引用、读者笔记聚合、可能开一个 newsletter。但都不急，先把内容写好。</p>
+<h2>找我</h2>
+<ul>
+<li>邮件：TODO（填你自己的）</li>
+<li>GitHub：github.com/mishishi</li>
+<li>想 typo / 哪章不对 — 直接开 issue，或在 GitHub 上提 PR</li>
+</ul>
+<p>写于 2026 春。还在写。</p>
+</section>
     </main>
 
     <script>
@@ -14665,11 +14834,16 @@ if (qrCopyBtn) {
 
 document.getElementById('sidebar-toggle').addEventListener('click', () => {
     document.body.classList.toggle('sidebar-collapsed');
-    localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
+    const collapsed = document.body.classList.contains('sidebar-collapsed');
+    localStorage.setItem('sidebarCollapsed', collapsed);
+    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', String(!collapsed));
 });
 
 if (localStorage.getItem('sidebarCollapsed') === 'true') {
     document.body.classList.add('sidebar-collapsed');
+    document.getElementById('sidebar-toggle')?.setAttribute('aria-expanded', 'false');
+} else {
+    document.getElementById('sidebar-toggle')?.setAttribute('aria-expanded', 'true');
 }
 
 // 书架折叠
@@ -14729,10 +14903,11 @@ const observer = new IntersectionObserver((entries) => {
                 playPageFlip();
             }
             lastChapter = id;
-            links.forEach(l => l.classList.remove('active'));
+            links.forEach(l => { l.classList.remove('active'); l.removeAttribute('aria-current'); });
             const activeLink = document.querySelector('.book-chapters a[href="#' + id + '"]');
             if (activeLink) {
                 activeLink.classList.add('active');
+                activeLink.setAttribute('aria-current', 'true');
                 // 自动展开当前章节所在的书的目录
                 const bookGroup = activeLink.closest('.book-group');
                 bookGroup.querySelector('.book-chapters').classList.remove('collapsed');
@@ -15479,18 +15654,29 @@ function renderOverview() {
 // overview-mode 切换：只看首页 TOC
 function showOverview() {
     document.body.classList.add('overview-mode');
+    document.body.classList.remove('about-mode');
     window.scrollTo({ top: 0, behavior: 'instant' });
     if (window.location.hash) history.replaceState(null, '', window.location.pathname);
 }
 
 function hideOverview() {
     document.body.classList.remove('overview-mode');
+    document.body.classList.remove('about-mode');
 }
 
-// 初始模式：URL 有 hash 跳到章节，否则显示 overview
+// about-mode: 只看 About 页
+function showAbout() {
+    document.body.classList.add('about-mode');
+    document.body.classList.remove('overview-mode');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+// 初始模式：URL hash 决定显示什么
 function initOverviewMode() {
     const hash = window.location.hash;
-    if (!hash || hash === '#') {
+    if (hash === '#about') {
+        showAbout();
+    } else if (!hash || hash === '#') {
         showOverview();
     } else {
         hideOverview();
@@ -15499,7 +15685,9 @@ function initOverviewMode() {
 
 // 监听 hash 变化
 window.addEventListener('hashchange', () => {
-    if (window.location.hash) {
+    if (window.location.hash === '#about') {
+        showAbout();
+    } else if (window.location.hash) {
         hideOverview();
     } else {
         showOverview();
