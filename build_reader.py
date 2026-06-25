@@ -1297,6 +1297,11 @@ body.overview-mode .content {
     border-bottom: 1px solid var(--border);
     text-align: justify;
 }
+.chapter-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+}
 
 .chapter:last-of-type { border-bottom: none; }
 
@@ -1625,13 +1630,14 @@ body.overview-mode .content {
     display: none;
     position: sticky;
     top: 80px;
-    float: right;
-    margin: 60px -260px 0 40px;
     width: 220px;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
     font-size: 12px;
     line-height: 1.6;
+    flex-shrink: 0;
+    margin-top: 60px;
+    margin-left: 40px;
 }
 @media (min-width: 1400px) {
     .chapter-toc { display: block; }
@@ -5317,8 +5323,10 @@ def build_html():
                 f'{chap_progress_html}'
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字</div>'
                 f'{series_intro_html}'
+                f'<div class="chapter-body">'
                 f'<div class="chapter-content">{content_html}</div>'
                 f'{toc_html}'
+                f'</div>'
                 f'<div class="chapter-end">本章完</div>'
                 f'{chap_nav_html}'
                 f'<button class="completion-toggle" data-chapter="{anchor}">'
