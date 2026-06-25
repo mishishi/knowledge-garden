@@ -4525,15 +4525,22 @@ function startMusic(scene) {
     if (scene === 'woju') {
         // 真实录音：用 <audio> 元素 + WebAudio GainNode 控制音量
         const audioEl = document.getElementById('woju-audio');
-        if (!audioEl || !audioEl.querySelector('source, [src]') && !audioEl.src) {
-            console.log('woju scene: audio file not found, fallback to white');
+        if (!audioEl || !audioEl.src) {
+            console.log('woju scene: audio element missing, fallback to white');
             musicNodes = startWhiteNoise(ctx, mainGain, 'white');
             currentScene = 'white';
             localStorage.setItem('musicScene', 'white');
-            // 同步 UI 高亮
             document.querySelectorAll('.scene-btn').forEach(b => b.classList.toggle('active', b.dataset.scene === 'white'));
             return;
         }
+        // 监听加载错误 (mp3 404 时触发, 比如部署到 GitHub Pages 没有版权 mp3)
+        audioEl.addEventListener('error', () => {
+            if (currentScene === 'woju') {
+                console.log('woju scene: audio file 404, fallback to white');
+                stopMusic();
+                startMusic('white');
+            }
+        }, { once: true });
         const source = ctx.createMediaElementSource(audioEl);
         source.connect(mainGain);
         audioEl.volume = volume;
@@ -4634,21 +4641,7 @@ if (savedScene !== 'off') {
     document.querySelector('.scene-btn[data-scene="off"]').classList.add('active');
 }
 
-// 检查 woju 录音文件是否存在，不存在则隐藏按钮（部署到 GitHub Pages 时不会带 mp3）
-fetch('assets/audio/woju_low.mp3', { method: 'HEAD' }).then(r => {
-    if (!r.ok) {
-        const btn = document.querySelector('.scene-btn[data-scene="woju"]');
-        if (btn) btn.style.display = 'none';
-        // 如果之前选的是 woju，重置为 off
-        if (localStorage.getItem('musicScene') === 'woju') {
-            localStorage.setItem('musicScene', 'off');
-        }
-    }
-}).catch(() => {
-    // 网络错误也隐藏
-    const btn = document.querySelector('.scene-btn[data-scene="woju"]');
-    if (btn) btn.style.display = 'none';
-});
+// (旧) 检查 woju 录音文件是否存在的运行时 fetch — 已废弃, build-time 通过 HAS_WOJU_MP3 控制 UI 输出
 
 document.getElementById('music-btn').addEventListener('click', () => {
     document.querySelector('.music-panel').classList.toggle('visible');
@@ -6424,6 +6417,10 @@ def build_html():
         print("警告：没找到任何书。请在 books/ 目录下创建子目录。")
         return
 
+    # 检测本地是否有 woju mp3 — 没有就不渲染 <audio> 元素和 且听风吟 按钮
+    # (mp3 在 .gitignore 里, 部署到 GitHub Pages 时 404, UI 元素直接不输出)
+    HAS_WOJU_MP3 = (ROOT / "assets" / "audio" / "woju_low.mp3").exists()
+
     # 构建内容
     bookshelf_html_parts = []
     content_parts = []
@@ -6853,7 +6850,7 @@ def build_html():
             <button class="scene-btn" data-scene="off">{svg_icon('mute')} 静音</button>
             <button class="scene-btn" data-scene="white">{svg_icon('disc')} 白噪音</button>
             <button class="scene-btn" data-scene="rain">{svg_icon('disc')} 雨声</button>
-            <button class="scene-btn" data-scene="woju">{svg_icon('disc')} 且听风吟</button>
+            {('<button class="scene-btn" data-scene="woju">' + svg_icon('disc') + ' 且听风吟</button>') if HAS_WOJU_MP3 else ''}
         </div>
         <div class="volume">{svg_icon('volume')} <input type="range" min="0" max="100" value="30"> {svg_icon('volume', size=18)}</div>
     </div>
@@ -6880,8 +6877,8 @@ def build_html():
     </div>
 
     <!-- 背景音乐 - 真实录音（且听风吟，电视剧《蜗居》钢琴插曲，3:08） -->
-    <!-- 文件不入 git，本地 build 才有；部署到 GitHub Pages 时不存在，scene 按钮自动隐藏 -->
-    <audio id="woju-audio" src="assets/audio/woju_low.mp3" loop preload="auto"></audio>
+    <!-- 文件不入 git，本地 build 才有；部署到 GitHub Pages 时不存在，整个 <audio> 元素也不渲染 -->
+    {'<audio id="woju-audio" src="assets/audio/woju_low.mp3" loop preload="auto"></audio>' if HAS_WOJU_MP3 else ''}
 
     <!-- 进度面板 -->
     <div class="progress-panel">
