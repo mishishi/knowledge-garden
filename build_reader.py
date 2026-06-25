@@ -3260,6 +3260,32 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
+// console 自测函数：标记 6 已读 + 2 进行中，刷新，打开 panel
+window.__devTest = function() {
+    const p = JSON.parse(localStorage.getItem('progress') || '{"completed":{},"readPct":{}}');
+    p.completed = {};
+    p.readPct = {};
+    const links = document.querySelectorAll('.book-chapters a');
+    const ids = Array.from(links).map(a => a.getAttribute('href').slice(1));
+    for (let i = 0; i < 6 && i < ids.length; i++) p.completed[ids[i]] = Date.now();
+    for (let i = 6; i < 8 && i < ids.length; i++) p.readPct[ids[i]] = 45;
+    localStorage.setItem('progress', JSON.stringify(p));
+    setTimeout(() => {
+        location.reload();
+        setTimeout(() => {
+            for (let i = 0; i < 5; i++) window.dispatchEvent(new KeyboardEvent('keydown', { key: '?', bubbles: true }));
+            console.log('__devTest: marked 6 done + 2 progress, panel opened. Stats: ' +
+                (document.getElementById('dev-stats')?.textContent || 'unknown'));
+        }, 800);
+    }, 200);
+    return 'queued: writing 6 completed + 2 progress, then reload + open dev panel';
+};
+console.log('%c Knowledge Garden dev tools ', 'background:#d97706;color:#fff;padding:2px 8px;border-radius:2px;',
+    '\n\u8c03\u8bd5\u5de5\u5177\uff1a\n' +
+    '  toggleDevPanel()  - \u6253\u5f00/\u5173\u95ed dev panel\n' +
+    '  renderDevHeatmap() - \u5f3a\u5236\u91cd\u7ed8\u70ed\u529b\u56fe\n' +
+    '  __devTest()       - \u4e00\u6b21\u6027\u6ce8\u5165 6 \u5df2\u8bfb + 2 \u8fdb\u884c\u4e2d\uff0c\u6253\u5f00 panel');
+
 function playPageFlip() {
     if (!window.audioCtx) return;
     const ctx = window.audioCtx;
