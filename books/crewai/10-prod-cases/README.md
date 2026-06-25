@@ -20,7 +20,7 @@
 
 CrewAI 官方在 [crews examples](https://github.com/crewAIInc/crewAI-examples) 仓库里有一批 case study，我从中提取了 5 个**最常被复用**的模式。
 
-### 模式 1：内容生产 Pipeline
+**模式 1：内容生产 Pipeline**
 
 **典型场景**：marketing、SEO 内容、newsletter。
 
@@ -57,7 +57,7 @@ TopicSelector → Research → Writer → Editor
 - 必须 Pydantic 锁 + Guardrail
 - Editor Agent 评分跟人类评分相关性 ~0.7（不算高），最后还得人工过
 
-### 模式 2：客服 / 支持自动化
+**模式 2：客服 / 支持自动化**
 
 **典型场景**：售前咨询、技术支持、内部 IT helpdesk。
 
@@ -102,7 +102,7 @@ ReplyAgent（汇总 + 改写）
 - 必须有「转人工」机制（LLM 答不上的转人工）
 - memory 数据库要合规处理（PII 脱敏 + 用户控制）
 
-### 模式 3：代码 / DevOps 助手
+**模式 3：代码 / DevOps 助手**
 
 **典型场景**：PR review、CI 失败排查、运维告警分流。
 
@@ -136,7 +136,7 @@ LeadReviewer
 - 必须设「最低严重程度」过滤
 - 关键 review（涉及金钱 / 安全的改动）必须 HITL
 
-### 模式 4：金融 / 法律 / 合规
+**模式 4：金融 / 法律 / 合规**
 
 **典型场景**：合同审查、合规检查、风险评估。
 
@@ -168,7 +168,7 @@ FinalReportAgent（汇总 + 报告生成）
 - 必须有可审计的 trace（监管要求）
 - Pydantic 锁字段不够，要 PII 脱敏 + 数字水印
 
-### 模式 5：数据 / 商业分析
+**模式 5：数据 / 商业分析**
 
 **典型场景**：市场调研、竞品分析、销售线索研究。
 
@@ -203,7 +203,7 @@ InsightSynthesizer（汇总 + 生成报告）
 
 [crewAIInc/awesome-crewai](https://github.com/crewAIInc/awesome-crewai) 是官方维护的社区项目列表（500+ stars, 10 个入库项目）。我挑了 5 个**最有教学价值**的拆。
 
-### 1. Mailcrew（@dexhorthy）
+**1. Mailcrew（@dexhorthy）**
 
 **项目地址**：[github.com/dexhorthy/mailcrew](https://github.com/dexhorthy/mailcrew)
 
@@ -236,7 +236,7 @@ ReplyAgent（自动回复邮件）
 
 **适合学的点**：触发器模式（外部事件 → Crew 执行）。
 
-### 2. Devyan（@theyashwanthsai）
+**2. Devyan（@theyashwanthsai）**
 
 **项目地址**：[github.com/theyashwanthsai/devyan](https://github.com/theyashwanthsai/devyan)
 
@@ -268,7 +268,7 @@ Reviewer（评审）
 
 **适合学的点**：SDLC 风格的多 Agent 编排 + 真实可执行项目输出。
 
-### 3. BlogPostEditor（@Shuyib）
+**3. BlogPostEditor（@Shuyib）**
 
 **项目地址**：[github.com/Shuyib/data-science-projects/tree/main/blogpost-editor](https://huggingface.co/spaces/Shuyib/BlogPostEditor)
 
@@ -296,7 +296,7 @@ SeniorArticleEditor（润色 + 风格统一）
 
 **适合学的点**：把 CrewAI 包到 Web UI 里的最小成本方案。
 
-### 4. LawGlance（@g-sree-jith）
+**4. LawGlance（@g-sree-jith）**
 
 **项目地址**：[github.com/g-sree-jith/LawGlance](https://github.com/g-sree-jith/LawGlance)
 
@@ -324,7 +324,7 @@ LegalAdvisor（生成回答 + 引用条款）
 
 **适合学的点**：垂直领域 Knowledge Source 用法 + 合规免责。
 
-### 5. Blood Report Analysis Crew（@yatharth230703）
+**5. Blood Report Analysis Crew（@yatharth230703）**
 
 **项目地址**：[github.com/yatharth230703/Blood-Report-Analysis-Crew](https://github.com/yatharth230703/Blood-Report-Analysis-Crew)
 
@@ -362,7 +362,7 @@ MedicalAdvisor（汇总 + 输出注意事项）
 
 如果你想找「某公司用 CrewAI 怎么用」的 case study，**别只搜博客**。下面这些路径更有效：
 
-### 路径 1：招聘 JD 反推
+**路径 1：招聘 JD 反推**
 
 LinkedIn / 拉勾搜「CrewAI 工程师」JD，能看到：
 
@@ -373,7 +373,7 @@ LinkedIn / 拉勾搜「CrewAI 工程师」JD，能看到：
 
 例：搜「CrewAI + 客服」+「招聘」+「上海」，能挖到 3-5 个公司在做这事。
 
-### 路径 2：技术会议 talk
+**路径 2：技术会议 talk**
 
 CrewAI 团队经常在 [AI Engineer Summit](https://www.ai.engineer/)、[PyData](https://www.pydata.org/) 等会议 talk：
 
@@ -382,7 +382,7 @@ CrewAI 团队经常在 [AI Engineer Summit](https://www.ai.engineer/)、[PyData]
 
 talk 里的案例比 blog 详细。
 
-### 路径 3：用户社区
+**路径 3：用户社区**
 
 - [CrewAI Community Forum](https://community.crewai.com/)
 - [CrewAI Discord](https://discord.gg/crewai)
@@ -390,11 +390,11 @@ talk 里的案例比 blog 详细。
 
 社区里用户问「X 场景怎么实现」，回答者常常是同公司同事。
 
-### 路径 4：CTO/技术负责人 Twitter / X
+**路径 4：CTO/技术负责人 Twitter / X**
 
 关注 @joaomdmoura（CrewAI 创始人）+ 主动搜索「CrewAI + production」+「CTO」，能看到一些实战分享。
 
-### 路径 5：行业报告
+**路径 5：行业报告**
 
 - [LangChain State of AI Agents 报告](https://www.langchain.com/stateofaiagents)（年度）
 - 各咨询公司（McKinsey / Gartner）的 agent 落地报告
@@ -404,19 +404,19 @@ talk 里的案例比 blog 详细。
 
 调研 10 个真实项目 + 行业报告后，能提炼出 4 个**跨场景共识**：
 
-### 共识 1：HITL 不可避免
+**共识 1：HITL 不可避免**
 
 **所有生产级 Crew 都有「关键决策人工确认」环节**。完全无人监督的 Crew 在生产里没看到能长期跑下去的。
 
-### 共识 2：LLM 质量是天花板
+**共识 2：LLM 质量是天花板**
 
 CrewAI 框架本身不解决「LLM 答得不对」的问题。**你用的 LLM 能力 = 你的 Crew 能力上限**。gpt-4o-mini 跑出来的 Crew 跟 gpt-4o 跑出来的差很多。
 
-### 共识 3：Observability 必备
+**共识 3：Observability 必备**
 
 所有跑超过 1 个月的 Crew 都有 observability（Langfuse / Phoenix / CrewAI Tracing）。**没有 trace 你没法 debug**。
 
-### 共识 4：成本可控 = 业务可持续
+**共识 4：成本可控 = 业务可持续**
 
 跑 1 次 demo $0.5 没感觉，跑 100 万次/月就是 $500,000/月。**生产前必须算 ROI**：
 

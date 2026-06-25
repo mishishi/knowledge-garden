@@ -4,7 +4,7 @@
 
 ## 项目 1：AI 内容工厂
 
-### 场景
+**场景**
 
 你运营一个 newsletter，每周要发 3 篇深度文章。以前的工作流：
 
@@ -16,7 +16,7 @@
 
 改成 Multi-Agent 后，预计节省 70% 时间。**关键是「Writer 不允许编事实」**——这是 CrewAI 落地最常踩的坑。
 
-### 工作流
+**工作流**
 
 ```
 ┌─────────────────┐
@@ -44,7 +44,7 @@
 └─────────────────┘
 ```
 
-### 项目结构
+**项目结构**
 
 ```
 content_factory/
@@ -69,7 +69,7 @@ content_factory/
 └── models.py                    # Pydantic 输出模型
 ```
 
-### 核心代码
+**核心代码**
 
 **models.py** —— 结构化输出：
 
@@ -231,7 +231,7 @@ if __name__ == "__main__":
     kickoff()
 ```
 
-### 跑起来
+**跑起来**
 
 ```bash
 crewai install
@@ -240,7 +240,7 @@ crewai run
 
 预计耗时：单篇 2-3 分钟（3 步 LLM 调用），3 篇并行约 5-7 分钟。
 
-### 省钱技巧
+**省钱技巧**
 
 - 3 个研究 Agent 用 `gpt-4o-mini`
 - Writer 用 `gpt-4o`（质量关键）
@@ -249,7 +249,7 @@ crewai run
 
 预计：3 篇 × 5k input + 2k output = $0.5 / 次跑。
 
-### 真实效果（实测）
+**真实效果（实测）**
 
 **第 1 周跑（baseline）**：
 
@@ -267,7 +267,7 @@ crewai run
 
 ## 项目 2：PR 代码评审 Multi-Agent
 
-### 场景
+**场景**
 
 公司每天 50+ PR，review 跟不上。改成 Multi-Agent 自动 review：
 
@@ -277,7 +277,7 @@ crewai run
 
 人类 reviewer 只看 LeadReviewer 给「需要人工确认」的 case。预计 review 时间砍 50%。
 
-### 工作流
+**工作流**
 
 ```
 DiffReader (读 diff)
@@ -292,7 +292,7 @@ LeadReviewer (汇总 + 严重程度分级)
    报告
 ```
 
-### 项目结构
+**项目结构**
 
 ```
 code_reviewer/
@@ -311,7 +311,7 @@ code_reviewer/
 └── models.py
 ```
 
-### 核心代码
+**核心代码**
 
 **models.py**：
 
@@ -540,14 +540,14 @@ class ReviewFlow(Flow[ReviewState]):
 
 **关键技巧**：`@listen(and_(arch_review, perf_review, sec_review, test_review))` —— LeadReviewer 等 4 个 reviewer **都完成**才跑。这比 sequential 串行快 4 倍。
 
-### 跑起来
+**跑起来**
 
 ```bash
 crewai install
 crewai run --pr https://github.com/your-org/your-repo/pull/123
 ```
 
-### 真实效果
+**真实效果**
 
 **问题 1：4 个 Reviewer 给的 issue 经常重复**
 
@@ -587,6 +587,3 @@ LLM 容易「鸡蛋里挑骨头」，给一堆 minor / nit。
 - 怎么用 LeadReviewer 汇总去重
 - 真实项目的成本估算方法
 
-## 下篇
-
-[10. 公司生产案例 + 社区实战拆解](../10-prod-cases/) — 公开声明过用 CrewAI 的公司 + awesome-crewai 上的真实社区项目，看他们怎么用、解决了什么、踩过什么坑。
