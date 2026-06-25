@@ -2333,6 +2333,7 @@ body.dark .mermaid { background: #18181b; }
     margin-left: 40px;
 }
 @media (min-width: 1400px) {
+    .content { max-width: 1080px; }
     .chapter-toc { display: block; }
 }
 .chapter-toc .toc-title {
