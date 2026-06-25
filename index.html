@@ -24316,12 +24316,10 @@ const observer = new IntersectionObserver((entries) => {
             if (activeLink) {
                 activeLink.classList.add('active');
                 activeLink.setAttribute('aria-current', 'true');
-                // 自动展开当前章节所在的书的目录；折叠其他书
+                // 标记当前章节所在的书为 current-book（高亮），不再自动折叠其他书
                 const bookGroup = activeLink.closest('.book-group');
                 document.querySelectorAll('.book-group').forEach(g => {
                     g.classList.toggle('current-book', g === bookGroup);
-                    const list = g.querySelector('.book-chapters');
-                    if (list) list.classList.toggle('collapsed', g !== bookGroup);
                 });
             }
         }
