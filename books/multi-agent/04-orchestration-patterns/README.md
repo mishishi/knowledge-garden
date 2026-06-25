@@ -39,10 +39,10 @@ A → B → C → D
 
 **Trade-off**：
 
-- ✅ 简单、清晰、易调试
-- ✅ token 可预测
-- ❌ 不灵活，一处失败全挂
-- ❌ 不支持并行
+- 简单、清晰、易调试
+- token 可预测
+- 不灵活，一处失败全挂
+- 不支持并行
 
 完整代码：[`code/01_pipeline.py`](./code/01_pipeline.py)
 
@@ -75,10 +75,10 @@ Supervisor ──┼─→ Worker B
 
 **Trade-off**：
 
-- ✅ 灵活，能应对复杂流程
-- ✅ 调度逻辑集中在一个地方
-- ❌ Supervisor 是单点故障
-- ❌ Supervisor 自己消耗 token
+- 灵活，能应对复杂流程
+- 调度逻辑集中在一个地方
+- Supervisor 是单点故障
+- Supervisor 自己消耗 token
 
 完整代码：[`code/02_supervisor.py`](./code/02_supervisor.py)
 
@@ -109,11 +109,11 @@ C ←→ D
 
 **Trade-off**：
 
-- ✅ 多视角碰撞，常有惊喜输出
-- ✅ 适合开放式问题
-- ❌ 不可预测，可能陷入"无限讨论"
-- ❌ token 烧得快
-- ❌ 不适合"必须有正确答案"的任务
+- 多视角碰撞，常有惊喜输出
+- 适合开放式问题
+- 不可预测，可能陷入"无限讨论"
+- token 烧得快
+- 不适合"必须有正确答案"的任务
 
 完整代码：[`code/03_group_chat.py`](./code/03_group_chat.py)
 
@@ -142,10 +142,10 @@ Agent 之间动态交接，没有中央调度。每个 Agent 可以决定"下一
 
 **Trade-off**：
 
-- ✅ 真正的去中心化
-- ✅ 灵活，Agent 自己决定下一步
-- ❌ 难调试（控制流分散）
-- ❌ 不适合复杂决策（每个 Agent 视野有限）
+- 真正的去中心化
+- 灵活，Agent 自己决定下一步
+- 难调试（控制流分散）
+- 不适合复杂决策（每个 Agent 视野有限）
 
 完整代码：[`code/04_swarm.py`](./code/04_swarm.py)
 
@@ -175,10 +175,10 @@ A ──┤      ├─→ D
 
 **Trade-off**：
 
-- ✅ 最通用，能表达任意流程
-- ✅ 自带状态管理、可视化、人机协同
-- ❌ 学习曲线陡
-- ❌ 过度工程的反模式（用 Graph 实现简单 Pipeline）
+- 最通用，能表达任意流程
+- 自带状态管理、可视化、人机协同
+- 学习曲线陡
+- 过度工程的反模式（用 Graph 实现简单 Pipeline）
 
 完整代码：[`code/05_graph.py`](./code/05_graph.py)
 
@@ -218,17 +218,6 @@ A ──┤      ├─→ D
 ```
 
 ---
-
-## 本章小结
-
-- 5 种编排模式：**Pipeline / Supervisor / GroupChat / Swarm / Graph**
-- 选型原则：从简单模式开始，复杂流程才上 Graph
-- 实现框架：CrewAI 适合简单场景，LangGraph 适合生产
-- 决策树：顺序选 Pipeline，动态选 Supervisor，讨论选 GroupChat，生产选 Graph
-
-## 下篇
-
-[05. 通信与状态](../05-state-and-communication/) — 深入 Agent 之间怎么传数据、共享状态。
 
 ## 生产化提示
 

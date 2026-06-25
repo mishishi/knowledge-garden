@@ -111,10 +111,10 @@ print(cosine_sim(q_emb, d_emb))  # 0.87（高相关）
 ### 3. 文本预处理影响大
 
 ```python
-# ❌ 直接 embed HTML/JSON
+# 直接 embed HTML/JSON
 embed("<div class='foo'>你好</div>")  # 噪声大
 
-# ✅ 先清洗
+# 先清洗
 from bs4 import BeautifulSoup
 text = BeautifulSoup(html_doc, "html.parser").get_text()
 embed(text)
@@ -135,6 +135,3 @@ def embed_long(text: str, max_tokens=512) -> list[float]:
 
 但**平均向量会丢失细节**——下一章的 chunking 才是正确解法。
 
-## 下篇
-
-[03. 向量数据库选型](../03-vector-databases/) — Chroma / pgvector / Qdrant / Pinecone / Milvus，到底用哪个？

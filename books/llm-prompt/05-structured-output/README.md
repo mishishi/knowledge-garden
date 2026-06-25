@@ -306,10 +306,10 @@ for inp in test_inputs:
         result = rewrite_query(inp)
         # 处理「不像 query」的 case：fallback
         if not result.keywords:
-            print(f"⚠️ '{inp}' 改写后无 keywords")
+            print(f"'{inp}' 改写后无 keywords")
     except ValidationError as e:
         # Pydantic 校验失败
-        print(f"⚠️ '{inp}' 改写失败: {e}")
+        print(f"'{inp}' 改写失败: {e}")
         # fallback：直接用原始输入当 keywords
 ```
 
@@ -543,6 +543,3 @@ class Product(BaseModel):
 - 5 大反模式
 - 3 大性能优化
 
-## 下篇
-
-[06. Tool Use / Function Calling](../06-tool-use/) — 单 tool / 多 tool / parallel / 错误重试 + 客服 agent 案例。

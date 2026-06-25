@@ -223,10 +223,7 @@ for s in samples:
 ```
 
 检查：
-- ✅ 不在句子中间切
-- ✅ metadata 字段完整
-- ✅ 长度分布合理（没有 5 token 的「废 chunk」）
+- 不在句子中间切
+- metadata 字段完整
+- 长度分布合理（没有 5 token 的「废 chunk」）
 
-## 下篇
-
-[05. 检索与 Reranking](../05-retrieval-and-reranking/) — 拿到 Top-K 候选后，如何精排出最相关的 3-5 条？

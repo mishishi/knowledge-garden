@@ -68,6 +68,3 @@ RAG 不是银弹：
 
 实战里 **90% 的「让 LLM 懂私域知识」需求，RAG 都比 Fine-tuning 更合适**。Fine-tuning 留到学特定输出格式（比如固定 JSON 结构）再用。
 
-## 下篇
-
-[02. Embedding 模型选型](../02-embedding-models/) — 把文字变成向量的第一步：用什么模型、维度怎么选、中文效果排名。

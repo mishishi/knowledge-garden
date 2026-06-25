@@ -296,6 +296,3 @@ python evaluate.py --config candidate.json
 
 **没有评测 = 盲改**。一个评测集 + 一个评测脚本 = RAG 项目的最重要投资。
 
-## 下篇
-
-[09. 高级模式](../09-advanced-patterns/) — Agentic RAG / Multi-hop / GraphRAG / HyDE 等进阶玩法。

@@ -59,9 +59,9 @@ top5 = ranked[:5]
 
 | 模型 | 速度 | 质量 | 显存 | 中文 |
 |---|---|---|---|---|
-| bge-reranker-large | 中 | 高 | 4 GB | ✅ 强 |
-| bge-reranker-base | 快 | 中 | 2 GB | ✅ |
-| cohere-rerank-v3 | 云 API | 最高 | 0 | ✅ |
+| bge-reranker-large | 中 | 高 | 4 GB | 强 |
+| bge-reranker-base | 快 | 中 | 2 GB | |
+| cohere-rerank-v3 | 云 API | 最高 | 0 | |
 | jina-rerank | 云 API | 高 | 0 | 中等 |
 
 **中文首选 bge-reranker-large**（开源、自托管、中文好）。
@@ -120,20 +120,20 @@ for r in results:
 
 ### 1. Rerank 顺序很重要
 
-❌ 错误：直接用向量相似度排
+错误：直接用向量相似度排
 ```python
 results = qdrant.search(..., limit=5)  # 跳过 rerank
 ```
 
-✅ 正确：Top-50 → Rerank → Top-5
+正确：Top-50 → Rerank → Top-5
 
 ### 2. 候选要带 metadata
 
 ```python
-# ❌ 只返回 text，丢了出处
+# 只返回 text，丢了出处
 return [hit.payload["text"] for hit in candidates]
 
-# ✅ 保留 metadata（用于引用、回溯）
+# 保留 metadata（用于引用、回溯）
 return [{"text": ..., "metadata": ..., "score": ...}]
 ```
 
@@ -206,6 +206,3 @@ def mmr_select(query_emb, candidates, top_k=5, lambda_param=0.5):
 
 否则**默认加 rerank**。
 
-## 下篇
-
-[06. Prompt 设计](../06-prompt-design/) — 把 Top-5 喂给 LLM 的 prompt 怎么写，决定最终答案质量。

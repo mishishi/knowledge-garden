@@ -220,17 +220,6 @@ python multi_agent.py
 
 **核心原则**：能用单 Agent 解决就别上 Multi-Agent。Multi-Agent 增加复杂度（角色设计、状态共享、错误处理），复杂度只在能换来清晰度的时候才值得。
 
-## 本章小结
-
-- **Agent = LLM + Tools + Loop**：核心是一个循环，直到 LLM 决定不再调工具
-- **Function Calling**：告诉 LLM 它能用什么工具，LLM 只"决定"，执行由你来做
-- **Multi-Agent**：把"既要又要"的单 Agent 拆成多个角色单一的 Agent
-- **决策原则**：复杂度过载才上 Multi-Agent，单 Agent 能搞定就别拆
-
-## 下篇
-
-[02. 为什么需要 Multi-Agent](../02-why-multi-agent/) — 用 3 个真实场景展示单 Agent 什么时候撑不住，Multi-Agent 怎么解。
-
 ## 生产化提示
 
 本章的代码是教学版，离生产还差：

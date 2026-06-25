@@ -289,6 +289,3 @@ def cached_rag(question: str, ttl_seconds: int = 3600):
 
 **先优化基础 RAG，再上高级模式**。否则技术债越堆越深。
 
-## 下篇
-
-[10. 生产化 Checklist](../10-prod-checklist/) — 上线前必看的 30 条。

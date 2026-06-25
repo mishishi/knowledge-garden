@@ -432,6 +432,3 @@ Pydantic Model 跟 Crew 在同一个文件，但 Model 引用了 Tool 类型 →
 - 知道 4 大实战模式
 - 避免 5 个常见坑
 
-## 下篇
-
-[07. Flows：状态化的事件驱动编排](../07-flows/) — Crew 适合「一组人干一件事」，Flow 适合「流水线有状态」。v1.14 官方推荐生产用 Flow 包 Crew。

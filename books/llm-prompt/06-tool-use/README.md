@@ -655,6 +655,3 @@ def get_summary_placeholder(text: str) -> str:
 - 4 大反模式 + 4 大实战技巧
 - 4 大常见坑
 
-## 下篇
-
-[07. Prompt Caching](../07-prompt-caching/) — 降成本 10x 的方法 + 怎么写 prompt 最大化 cache 命中。
