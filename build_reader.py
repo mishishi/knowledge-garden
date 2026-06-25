@@ -2808,7 +2808,7 @@ a:focus-visible {
 @media (max-width: 900px) {
     .sidebar { transform: translateX(-300px); }
     body:not(.sidebar-collapsed) .sidebar { transform: translateX(0); }
-    body:not(.sidebar-collapsed) .sidebar-toggle { left: 320px; }
+    body:not(.sidebar-collapsed) .sidebar-toggle { left: 8px; right: auto; background: var(--accent); color: #fff; border-color: var(--accent); }
     .content { padding: 80px 24px; max-width: 100%; }
     .chapter-title { font-size: 1.8em; }
     .chapter-num { font-size: 12px; letter-spacing: 5px; }
@@ -2816,7 +2816,7 @@ a:focus-visible {
     .toolbar { top: 8px; right: 8px; }
     #more-btn { width: 36px; height: 36px; }
     .toolbar-menu { min-width: 320px; max-width: calc(100vw - 32px); }
-    .sidebar-toggle { top: 8px; left: 8px; }
+    .sidebar-toggle { top: 8px; left: 8px; right: auto; }
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
