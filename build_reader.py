@@ -1691,6 +1691,10 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     gap: 4px 24px;
 }
 
+.overview-chapters li {
+    min-width: 0;
+}
+
 .overview-chapters li a {
     display: flex;
     align-items: center;
@@ -1705,6 +1709,7 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     transition: background 0.1s;
     min-width: 0;
     overflow: hidden;
+    max-width: 100%;
 }
 
 .overview-chapters li a:hover {
