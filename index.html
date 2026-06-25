@@ -1164,6 +1164,7 @@ body.overview-mode .content {
     font-size: 0.85em;
     margin: 1.5em 0;
     text-indent: 0;
+    position: relative;
 }
 
 .chapter-content pre code {
@@ -1172,6 +1173,54 @@ body.overview-mode .content {
     padding: 0;
     font-size: 100%;
 }
+
+/* 代码块：语言标签 + 复制按钮 */
+.chapter-content pre .code-lang {
+    position: absolute;
+    top: 6px;
+    left: 14px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-family: Georgia, serif;
+    font-style: italic;
+    opacity: 0.7;
+    pointer-events: none;
+    user-select: none;
+}
+.chapter-content pre .code-copy {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--text-soft);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
+}
+.chapter-content pre:hover .code-copy { opacity: 1; }
+.chapter-content pre .code-copy:hover {
+    background: var(--bg-soft);
+    border-color: var(--border);
+    color: var(--text);
+}
+.chapter-content pre .code-copy:focus { opacity: 1; outline: none; }
+.chapter-content pre .code-copy.copied {
+    opacity: 1;
+    color: var(--done);
+    border-color: var(--done);
+    background: transparent;
+}
+body.dark .chapter-content pre .code-copy:hover { background: #1f1f22; }
 
 .chapter-content table {
     border-collapse: collapse;
@@ -24434,6 +24483,55 @@ chapters.forEach(ch => observer.observe(ch));
         }
     }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
     headings.forEach(h => tocObserver.observe(h));
+})();
+
+// === 代码块：复制按钮 + 语言标签 ===
+(function() {
+    const LANG_MAP = { py: 'python', js: 'javascript', ts: 'typescript', sh: 'bash', md: 'markdown', yml: 'yaml', json: 'json' };
+    document.querySelectorAll('.chapter-content pre').forEach(pre => {
+        const code = pre.querySelector('code');
+        if (!code) return;
+        // 提取语言：<code class="language-python"> → python
+        let lang = '';
+        const cls = code.className || '';
+        const m = cls.match(/language-(\S+)/);
+        if (m) lang = LANG_MAP[m[1]] || m[1];
+        if (lang) {
+            const langEl = document.createElement('span');
+            langEl.className = 'code-lang';
+            langEl.textContent = lang;
+            pre.appendChild(langEl);
+        }
+        // 复制按钮
+        const btn = document.createElement('button');
+        btn.className = 'code-copy';
+        btn.type = 'button';
+        btn.setAttribute('aria-label', '复制代码');
+        btn.innerHTML = '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
+        pre.appendChild(btn);
+        btn.addEventListener('click', async () => {
+            const text = code.innerText;
+            try {
+                await navigator.clipboard.writeText(text);
+            } catch (e) {
+                // fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); } catch (e2) {}
+                document.body.removeChild(ta);
+            }
+            btn.classList.add('copied');
+            btn.innerHTML = '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>已复制</span>';
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = '<svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copy</span>';
+            }, 1800);
+        });
+    });
 })();
 
 // 背景音乐（与 v3 相同）
