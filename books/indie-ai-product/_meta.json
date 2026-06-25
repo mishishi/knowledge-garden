@@ -1,0 +1,19 @@
+{
+  "title": "Indie + AI：一个人做产品的产品方法论",
+  "description": "写给非技术背景或不想写代码的个人开发者：用 AI 工具从 0 到 1 做出可实施 MVP 的产品方法论（idea 验证 / 设计 / 文案 / PMF / 渠道 / 定价 / 留存）",
+  "icon": "rocket",
+  "color": "#d97706",
+  "priority": 7,
+  "order": [
+    "01-indie-math",
+    "02-idea-to-scope",
+    "03-validate-without-code",
+    "04-design-with-ai",
+    "05-write-with-ai",
+    "06-pmf-signals",
+    "07-distribution",
+    "08-pricing",
+    "09-first-paying-users",
+    "10-retention-vs-growth"
+  ]
+}
