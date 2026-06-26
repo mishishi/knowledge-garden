@@ -3466,6 +3466,98 @@ body.dark .help-modal .help-row kbd { background: rgba(255, 255, 255, 0.06); }
 }
 .help-modal .help-close:hover { color: var(--text); }
 
+/* Anki 导出帮助弹窗 */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.modal-overlay.visible { opacity: 1; pointer-events: auto; }
+.modal-content {
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 28px 32px;
+    max-width: 540px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+.modal-content h3 { margin: 0 0 12px; font-size: 18px; font-weight: 600; }
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-faint);
+    padding: 4px 8px;
+}
+.modal-close:hover { color: var(--text); }
+.anki-msg {
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.anki-msg-success { background: rgba(34, 197, 94, 0.1); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); }
+.anki-msg-warn { background: rgba(234, 179, 8, 0.1); color: #ca8a04; border: 1px solid rgba(234, 179, 8, 0.3); }
+body.dark .anki-msg-success { color: #4ade80; }
+body.dark .anki-msg-warn { color: #fbbf24; }
+.anki-steps {
+    margin: 0 0 16px;
+    padding-left: 20px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+}
+.anki-steps li { margin-bottom: 6px; }
+.anki-steps code, .anki-steps strong {
+    background: var(--bg-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    font-size: 12.5px;
+}
+.anki-steps a { color: var(--accent); }
+.anki-steps ul { margin: 4px 0 0; padding-left: 18px; }
+.anki-tip {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-soft);
+    margin-bottom: 16px;
+}
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+
 .progress-modal-header {
     display: flex;
     justify-content: space-between;
@@ -5989,6 +6081,106 @@ document.getElementById('export-notes-md').addEventListener('click', () => {
     URL.revokeObjectURL(url);
 });
 
+// Anki 闪卡导出（CSV / tab-separated）
+document.getElementById('export-anki').addEventListener('click', () => {
+    if (!Array.isArray(notes) || notes.length === 0) {
+        showAnkiHelp('还没有高亮或笔记，先在正文里选中文字添加吧。');
+        return;
+    }
+    const csv = buildAnkiCsv(notes);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `knowledge-garden-anki-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showAnkiHelp(`导出了 ${notes.length} 张卡片。Anki 里 File → Import 选这个 .txt 文件即可。`, true);
+});
+
+// buildAnkiCsv — Front: book/chapter, Back: highlight + 用户笔记 + URL，Tags: kg + 章节 slug
+function buildAnkiCsv(notesArr) {
+    const lines = ['Front\tBack\tTags'];
+    const seen = new Set();
+    for (const note of notesArr) {
+        if (!note.chapterId) continue;
+        const meta = getChapterMeta(note.chapterId);
+        const bookSlug = note.bookSlug || meta.book || '';
+        const bookTitle = (BOOK_META[bookSlug] && BOOK_META[bookSlug].title) || bookSlug;
+        const chapterTitle = meta.title || note.chapterId;
+        // 高亮 text 优先取 note.text（保存的原文），note 类型用 quote
+        const content = (note.text || note.quote || '').trim();
+        if (!content) continue;
+        // 去重：同章节同内容
+        const dedupKey = `${note.chapterId}::${content}`;
+        if (seen.has(dedupKey)) continue;
+        seen.add(dedupKey);
+        // Front: book / chapter - 让用户主动回忆
+        const front = `${bookTitle}\n${chapterTitle}`;
+        // Back: 高亮内容 + 用户笔记 + URL
+        const url = `${SITE_URL}#${note.chapterId}`;
+        const userText = (note.type === 'note' && note.text && note.quote && note.text.trim() !== note.quote.trim())
+            ? note.text : '';
+        const back = userText
+            ? `${content}\n\n—— 我的笔记 ——\n${userText}\n\n来源：${url}`
+            : `${content}\n\n来源：${url}`;
+        const tags = ['kg', bookSlug, note.chapterId.split('__')[1] || ''].filter(Boolean).join(' ');
+        lines.push([front, back, tags].map(csvEscape).join('\t'));
+    }
+    return lines.join('\n');
+}
+
+// 转义 Anki CSV 字段：去掉换行（替换为空格）、tab 转空格
+function csvEscape(s) {
+    return String(s)
+        .replace(/\r?\n/g, ' ')   // 多行折叠成单行（Anki 闪卡一般单行更易复习）
+        .replace(/\t/g, ' ')
+        .replace(/  +/g, ' ')    // 合并多余空格
+        .trim();
+}
+
+// Anki 导入帮助弹窗
+function showAnkiHelp(msg, success = false) {
+    let modal = document.getElementById('anki-help-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'anki-help-modal';
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content anki-help">
+                <button class="modal-close">×</button>
+                <h3 id="anki-help-title">Anki 导入指南</h3>
+                <p id="anki-help-msg" class="anki-msg"></p>
+                <ol class="anki-steps">
+                    <li>打开 <strong>Anki</strong>（没有的话去 <a href="https://apps.ankiweb.net/" target="_blank">apps.ankiweb.net</a> 免费下载）</li>
+                    <li>顶部菜单 <strong>File → Import</strong></li>
+                    <li>选刚才下载的 <code>knowledge-garden-anki-YYYY-MM-DD.txt</code></li>
+                    <li>Import Options 里：
+                        <ul>
+                            <li>Notetype: <strong>Basic</strong>（或 Basic+Reverse）</li>
+                            <li>Field separator: <strong>Tab</strong>（默认）</li>
+                            <li>"Allow HTML in fields": ✓ 勾上</li>
+                        </ul>
+                    </li>
+                    <li>选个 Deck（建议新建 "Knowledge Garden"）</li>
+                    <li>点 <strong>Import</strong> 即可</li>
+                </ol>
+                <p class="anki-tip">
+                    卡片设计：<strong>Front</strong> 显示「书名 / 章节」，想不起来时点翻面看 <strong>Back</strong>（高亮内容 + 你的笔记 + 来源链接）。<br>
+                    这是一种"主动回忆"练习，比光读一遍记得牢 5 倍。
+                </p>
+                <button class="btn-primary" id="anki-help-ok">知道了</button>
+            </div>`;
+        document.body.appendChild(modal);
+        modal.querySelector('.modal-close').onclick = () => modal.classList.remove('visible');
+        modal.querySelector('#anki-help-ok').onclick = () => modal.classList.remove('visible');
+        modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
+    }
+    document.getElementById('anki-help-msg').textContent = msg;
+    document.getElementById('anki-help-msg').className = `anki-msg ${success ? 'anki-msg-success' : 'anki-msg-warn'}`;
+    modal.classList.add('visible');
+}
+
 function getChapterMeta(chapterId) {
     const article = document.getElementById(chapterId);
     if (!article) return { title: chapterId, book: '' };
@@ -6915,6 +7107,7 @@ def build_html():
             <div class="progress-actions">
                 <button id="export-progress">{svg_icon('download')} 导出数据</button>
                 <button id="export-notes-md">{svg_icon('bookmark')} 导出笔记 (Markdown)</button>
+                <button id="export-anki" title="把高亮 + 笔记导出为 Anki 闪卡 (CSV)">{svg_icon('layers')} 导出 Anki 闪卡</button>
                 <button id="import-progress">{svg_icon('upload')} 导入数据</button>
                 <button id="reset-progress">{svg_icon('trash')} 重置进度</button>
             </div>
