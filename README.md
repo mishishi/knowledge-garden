@@ -4,7 +4,7 @@
 
 A personal knowledge garden. Multiple Markdown book series compiled into a single-file immersive HTML reader with notes, highlights, ambient music, and PWA offline support.
 
-我自己的个人知识库。写了 10 个 AI/Agent 工程系列的笔记（Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / 成本工程 / Indie 产品 / Context Engineering / Agent Skills / Claude Code），每一本都能做笔记、画高亮、配背景音乐。手机可加到主屏幕离线阅读。整套部署在 GitHub Pages，访问 [mishishi.github.io/knowledge-garden](https://mishishi.github.io/knowledge-garden/)。
+我自己的个人知识库。写了 15 个 AI/Agent 工程系列的笔记（Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / 成本工程 / Indie 产品 / Context Engineering / Agent Skills / Claude Code / Vibe Coding / A2A 多 Agent 互操作 / 长期记忆 / 具身智能 / AI 内容创作经济），每一本都能做笔记、画高亮、配背景音乐。手机可加到主屏幕离线阅读。整套部署在 GitHub Pages，访问 [mishishi.github.io/knowledge-garden](https://mishishi.github.io/knowledge-garden/)。
 
 ## 为什么做这个
 
@@ -12,11 +12,11 @@ A personal knowledge garden. Multiple Markdown book series compiled into a singl
 
 最大的问题是：**这些知识散落在博客、推特、文档、代码注释里**，找一个具体细节要翻十几个 tab。Notion / Obsidian 也试过，但太重——打开 3 秒，弹窗一堆，专注力 0。
 
-所以做了这个：一个**纯单文件 HTML 阅读器**（一个 index.html，657KB，包含全部 CSS / JS / 内容），打开就是阅读，没有 chrome 干扰，能做笔记画高亮，背景白噪音帮我专注。
+所以做了这个：一个**纯单文件 HTML 阅读器**（一个 index.html，2.3MB，包含全部 CSS / JS / 内容），打开就是阅读，没有 chrome 干扰，能做笔记画高亮，背景白噪音帮我专注。
 
 ## 当前书目
 
-10 个系列 / 100 章节 / 12.1 万字。
+15 个系列 / 150 章节 / 17.4 万字。
 
 **Multi-Agent in Practice（10 章）**——从零到 production 的 multi-agent 系统。第一章讲为什么需要 multi-agent（单 agent 的 3 个真实局限），最后一章讲 prod checklist（性能 / 质量 / 安全三维度）。中间 8 章拆解 5 个抽象、orchestration 模式、state / communication、failure handling、框架对比、observability。
 
@@ -28,11 +28,23 @@ A personal knowledge garden. Multiple Markdown book series compiled into a singl
 
 **Harness Engineering（10 章）**——包裹 LLM 的整套工程基座。第 1 章讲"什么是 harness"（用我自己写 agent 翻车的 3 个真实事故开场），第 2-10 章拆 9 个核心组件：agent loop 8 种变体、tool 设计原则、context 管理、permissions / sandbox、observability、memory 分层、failure recovery、eval-driven development、从零造一个 harness。每一章都有我自己的生产数据（failure rate 22% → 8%、cost 翻 3 倍但稳定性翻 3 倍这种）。
 
+**Claude Code 实战（10 章）**——终端原生 AI 编程 agent 深度。安装配置、CLAUDE.md 项目记忆、Skills/Hooks、SubAgent、Worktree、MCP 集成、Slash Commands、10 个真实场景、成本调优、和 Cursor / Codex / TRAE 的对比。
+
+**Vibe Coding 实战（10 章）**——2026 最热的编程范式。Karpathy 的原始定义、工具全景（Claude Code / TRAE / Cursor / Windsurf / Cline / Roo Code 横评）、三段式口述方法（初始需求 / AI 生成 / 精准修正），3 个真坑复盘（EC-MINI-2026 N+1 性能雪崩 / LOGISTICS_V2 字段割裂 / Gin JWT 安全硬编码），TRAE Work 模式 vs Claude Code 迁移，中文需求理解的本地化优势，vibe coding 的边界（一句话：所有代码 70 分 AI 写、100 分人改），个人一整套工作流模板。
+
+**A2A + 多 Agent 互操作（10 章）**——2026 agent 互操作协议。A2A 协议 vs MCP 的分工（一个管工具、一个管 agent 团队）、Agent Card 设计（"agent 世界的 OpenAPI"）、4 种协作范式（管道 / 辩论 / 分层 / 市场）的实战代码骨架、Pipeline / Debate / Hierarchical / Market 各自的适用场景与成本、5 类安全威胁（恶意 agent / 数据泄露 / 权限提升 / DoS / 合规审计）的防御机制，最后一章讲一个端到端的真实生产架构——某金融客户的风控分析师团队。
+
+**长期记忆系统（10 章）**——超越 context window 的 agent 持续学习。三层记忆架构（工作记忆 / 情景记忆 / 语义记忆）、Working memory 的 3 个关键技术（compaction / pruning / recitation）、Episodic memory 的事件流存储（pgvector / Pinecone 实战）、Semantic memory 的知识提炼（从事件到偏好 / 规则 / 关系的 LLM 提炼流程 + 版本化 + 冲突处理）、向量数据库选型（pgvector vs Pinecone vs Milvus）、知识图谱的关系推理（Neo4j / Memgraph / Nebula Graph）、混合检索（向量 + 关键词 + 图谱的 RRF 融合）、写入策略（什么写、什么不写、怎么避免存储爆炸）、GDPR 合规的可删除设计。
+
+**具身智能实战（10 章）**——AI 大脑装到机器人身体。什么是 embodied agent（大脑 + 身体 + 真实世界交互）、三大支柱（VLM 大脑 / 人形机器人硬件 / 仿真训练平台）、世界模型（agent 在脑子里模拟未来的能力）、仿真训练全流程（Isaac Lab / Genesis / MuJoCo / Habitat / CARLA 五大平台对比）、sim-to-real 的 4 类 gap 和 5 种方法、机械臂操作（抓取 / 装配 / 灵巧手）、导航（SLAM / 路径规划 / 视觉语言导航）、家庭服务机器人（1X Neo / Figure 02 / Tesla Optimus 的 2026 现状与 3-5 年展望）。
+
+**AI 内容创作经济（10 章）**——AI 重塑内容产业。2026 创作者用 AI 比例 78%、AI 内容占互联网 35%（vs 2023 年 5%）、AIGC 工具全景（Claude / GPT / Midjourney / Sora / ElevenLabs / Suno）、内容工作流改造（Newsletter / YouTube / 小红书 / 播客各自的 AI 工作流）、Newsletter 经济（Substack / Beehiiv 平台对比 + 5 个赛道 + 5 个阶段）、6 大变现路径（付费订阅 / 广告 / 产品 / 社群 / 电商 / 投资）、AI 协作创作（人和 AI 怎么配合 + 5 个核心原则）、版权与权利问题（训练数据 / 生成内容 / 平台合规）、未来 3-5 年创作者经济展望。
+
 每个系列的 meta 写在 `books/<series>/_meta.json`，章节顺序按 `order` 数组排，priority 数字越小越靠前。
 
 ## 读者体验
 
-打开 `index.html` 看到左侧书架列出 10 个系列，点进任一系列展开章节列表。
+打开 `index.html` 看到左侧书架列出 15 个系列，点进任一系列展开章节列表。
 
 主阅读区支持：选中文字弹笔记 / 高亮按钮（localStorage 存）、drop cap + 米白护眼底色、暗色模式（D 键切换）、字号调节（+/-）、背景白噪音（M 键打开面板）、章节进度自动追踪（每章阅读时间 + 完成度）、Cmd+K 全局搜索 + 系列 filter、聚焦模式（F 键隐藏侧栏 + 工具栏）、段落书签（点击书侧栏 bookmark 跳回 + 高亮 4 秒）、笔记 + 书签一键导出为 Markdown。
 
@@ -129,7 +141,7 @@ D 切换暗色模式，S 收起展开书架，M 背景音面板，N 笔记列表
 
 ## 技术实现
 
-单 HTML 文件，656 KB。CSS / JS / SVG icon / PWA manifest / Service Worker 全部内嵌，没有外部依赖（除了 Google Fonts 的思源宋体）。
+单 HTML 文件，2.3 MB（包含 15 系列 17.4 万字 + mermaid.js 3.3MB 懒加载 + SVG icon + PWA manifest + Service Worker）。CSS / JS / SVG icon 全部内嵌，没有外部依赖（除了 Google Fonts 的思源宋体）。
 
 Markdown 解析用 Python `markdown` 库 + `pygments` 做代码高亮。音频用 Web Audio API 实时合成（白噪音 / 雨声 / 暖调 / 火焰），零音频文件。笔记 / 高亮 / 进度 / 偏好 / 背景音设置全部 `localStorage`。
 
