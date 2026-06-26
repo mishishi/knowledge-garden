@@ -1,6 +1,6 @@
 {
   "title": "Codex 实战案例",
-  "description": "10 章深挖 2026 最值得学的 Codex 实战案例：Codex 整合 ChatGPT 大爆发 + AGENTS.md 工程化 + CodexLoop 不偷懒 + spawn_agent 多 Agent 并行 + Windows Computer Use + CI/CD 自动化 + 飞书 CLI 接入办公 + AIGrader 半天全栈 + 未来 6 个月趋势",
+  "description": "15 章深挖 2026 最值得学的 Codex 实战案例：Codex 整合 ChatGPT 大爆发 + AGENTS.md 工程化 + CodexLoop 不偷懒 + spawn_agent 多 Agent 并行 + Windows Computer Use + CI/CD 自动化 + 飞书 CLI 接入办公 + AIGrader 半天全栈 + 未来 6 个月趋势 + 4 条官方线 3 个平替 + 个人 ECC 系统 + MCP 完整实战 + Codex vs Claude Code vs Cursor 横评 + 5 套可复制工作流",
   "icon": "terminal",
   "color": "#0891b2",
   "priority": 16,
@@ -14,7 +14,12 @@
     "07-cicd-git",
     "08-office-flow",
     "09-aigrader",
-    "10-future-pick"
+    "10-future-pick",
+    "11-tools-ecosystem",
+    "12-skills-best-practices",
+    "13-mcp-playbook",
+    "14-vs-cc-cursor",
+    "15-indie-workflow"
   ],
   "level": 3,
   "level_name": "进阶"

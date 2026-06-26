@@ -16,7 +16,7 @@ A personal knowledge garden. Multiple Markdown book series compiled into a singl
 
 ## 当前书目
 
-16 个系列 / 160 章节 / 19.0 万字。包含 RAG、多 Agent、Harness、Indie + AI、Agent Skills、Claude Code、Vibe Coding、A2A、长期记忆、具身智能、AI 内容创作经济、Codex 实战案例 等系列。
+16 个系列 / 165 章节 / 21.0 万字。包含 RAG、多 Agent、Harness、Indie + AI、Agent Skills、Claude Code、Vibe Coding、A2A、长期记忆、具身智能、AI 内容创作经济、Codex 实战案例 (15 章) 等系列。
 
 **Multi-Agent in Practice（10 章）**——从零到 production 的 multi-agent 系统。第一章讲为什么需要 multi-agent（单 agent 的 3 个真实局限），最后一章讲 prod checklist（性能 / 质量 / 安全三维度）。中间 8 章拆解 5 个抽象、orchestration 模式、state / communication、failure handling、框架对比、observability。
 
