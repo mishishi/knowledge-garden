@@ -16,7 +16,7 @@ A personal knowledge garden. Multiple Markdown book series compiled into a singl
 
 ## 当前书目
 
-16 个系列 / 165 章节 / 21.0 万字。包含 RAG、多 Agent、Harness、Indie + AI、Agent Skills、Claude Code、Vibe Coding、A2A、长期记忆、具身智能、AI 内容创作经济、Codex 实战案例 (15 章) 等系列。
+17 个系列 / 175 章节 / 22.4 万字。包含 RAG、多 Agent、Harness、Indie + AI、Agent Skills、Claude Code、Vibe Coding、A2A、长期记忆、具身智能、AI 内容创作经济、Codex 实战案例 (15 章)、中国版 Codex 大乱斗 (10 章) 等系列。
 
 **Multi-Agent in Practice（10 章）**——从零到 production 的 multi-agent 系统。第一章讲为什么需要 multi-agent（单 agent 的 3 个真实局限），最后一章讲 prod checklist（性能 / 质量 / 安全三维度）。中间 8 章拆解 5 个抽象、orchestration 模式、state / communication、failure handling、框架对比、observability。
 
@@ -141,7 +141,7 @@ D 切换暗色模式，S 收起展开书架，M 背景音面板，N 笔记列表
 
 ## 技术实现
 
-单 HTML 文件，2.6 MB（包含 16 系列 19.0 万字 + mermaid.js 3.3MB 懒加载 + SVG icon + PWA manifest + Service Worker）。CSS / JS / SVG icon 全部内嵌，没有外部依赖（除了 Google Fonts 的思源宋体）。
+单 HTML 文件，3.0 MB（包含 17 系列 22.4 万字 + mermaid.js 3.3MB 懒加载 + SVG icon + PWA manifest + Service Worker）。CSS / JS / SVG icon 全部内嵌，没有外部依赖（除了 Google Fonts 的思源宋体）。
 
 Markdown 解析用 Python `markdown` 库 + `pygments` 做代码高亮。音频用 Web Audio API 实时合成（白噪音 / 雨声 / 暖调 / 火焰），零音频文件。笔记 / 高亮 / 进度 / 偏好 / 背景音设置全部 `localStorage`。
 

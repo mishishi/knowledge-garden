@@ -4696,6 +4696,15 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
 
 
 JS = """
+// Icon library: mirrors Python svg_icon() for use inside JS template literals.
+// Injected from build time via __ICONS_JSON__ placeholder below.
+const ICONS_LIB = __ICONS_JSON__;
+function svg_icon(name, size) {
+    if (!ICONS_LIB[name]) return '';
+    size = size || 16;
+    return '<svg class="icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS_LIB[name] + '</svg>';
+}
+
 const FONT_SIZES = { small: 16, medium: 18, large: 20 };
 let currentFontSize = localStorage.getItem('fontSize') || 'medium';
 
@@ -6061,28 +6070,8 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// TTS 朗读：检测本地是否有 MP3，有则显示按钮 + 播放，无则隐藏
-(function detectTtsAudio() {
-    const btns = document.querySelectorAll('.chapter-tts-btn');
-    btns.forEach(btn => {
-        const anchor = btn.dataset.ttsAnchor;
-        // audio path: assets/audio/{book}/{chapter}.mp3
-        const article = document.getElementById(anchor);
-        if (!article) return;
-        const book = article.dataset.book;
-        const chap = article.dataset.chap;
-        const audioUrl = `assets/audio/${book}/${chap}.mp3`;
-        // 用 fetch HEAD 检测（带 cache 友好）
-        fetch(audioUrl, { method: 'HEAD' }).then(r => {
-            if (r.ok) {
-                btn.style.display = 'inline-flex';
-                btn.dataset.audioUrl = audioUrl;
-            } else {
-                btn.remove(); // 没音频就直接删按钮
-            }
-        }).catch(() => btn.remove());
-    });
-})();
+// TTS 朗读按钮的可见性 / audioUrl 在 build 时已确定（扫 assets/audio/），
+// 这里不需要再跑 HEAD 探测。点击时直接从 data-audio-url 取地址即可。
 
 let ttsCurrentAudio = null;
 let ttsCurrentBtn = null;
@@ -6428,7 +6417,10 @@ function renderPersonalRecs() {
         'ai-content-economy': ['vibe-coding', 'claude-code', 'indie-ai-product'],
         'agent-cost': ['harness-engineering', 'claude-code', 'multi-agent'],
         'indie-ai-product': ['vibe-coding', 'ai-content-economy', 'claude-code'],
-        'codex-cases': ['vibe-coding', 'claude-code', 'harness-engineering', 'a2a-multi-agent'],
+        'codex-cases': ['vibe-coding', 'claude-code', 'harness-engineering', 'a2a-multi-agent', 'cn-codex'],
+        'cn-codex': ['codex-cases', 'vibe-coding', 'claude-code', 'a2a-multi-agent'],
+        'vibe-coding': ['claude-code', 'llm-prompt', 'a2a-multi-agent', 'cn-codex'],
+        'claude-code': ['vibe-coding', 'harness-engineering', 'agent-skills', 'cn-codex'],
     };
     const readBooks = new Set(Object.values(allChapters).filter(c => completed.includes(c.id)).map(c => c.bookSlug));
     readBooks.forEach(book => {
@@ -8297,6 +8289,20 @@ def build_html():
         print("警告：没找到任何书。请在 books/ 目录下创建子目录。")
         return
 
+    # 扫描 assets/audio/{book}/*.mp3 — 哪些章节已有 TTS 音频
+    # 避免运行时 HEAD 检测 → 不再发 175 个探测请求 → 没有 404 噪声
+    audio_dir = ROOT / "assets" / "audio"
+    available_audio = {}  # anchor -> url
+    if audio_dir.exists():
+        for book_dir in audio_dir.iterdir():
+            if not book_dir.is_dir():
+                continue
+            book = book_dir.name
+            for mp3 in book_dir.glob("*.mp3"):
+                chap = mp3.stem
+                anchor = f"{book}__{chap}"
+                available_audio[anchor] = f"assets/audio/{book}/{chap}.mp3"
+
     # 构建内容
     bookshelf_html_parts = []
     content_parts = []
@@ -8490,6 +8496,16 @@ def build_html():
                 f'<span class="level-name">{book_level_name}</span>'
                 f'</span>'
             )
+            # build-time 决定是否渲染 TTS 按钮 + 播放器（避免运行时 175 个 HEAD 探测 → 165 个 404）
+            has_audio = anchor in available_audio
+            tts_btn_html = (
+                f'<button class="chapter-tts-btn" data-tts-anchor="{anchor}" data-audio-url="{available_audio[anchor]}" title="朗读本章（Edge TTS）">{svg_icon("volume", size=14)} <span class="tts-label">朗读</span></button>'
+                if has_audio else ''
+            )
+            tts_player_html = (
+                f'<div class="chapter-tts-player" data-tts-player="{anchor}"></div>'
+                if has_audio else ''
+            )
             book_chapters_html_parts.append(
                 f'<article id="{anchor}" class="chapter" data-book="{book_slug}" data-chap="{chap_slug}">'
                 f'<div class="chapter-num">CHAPTER {chap_idx:02d}</div>'
@@ -8498,11 +8514,11 @@ def build_html():
                 f'<div class="chapter-meta-row">'
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字 · {level_badge}</div>'
                 f'<div class="chapter-actions">'
-                f'<button class="chapter-tts-btn" data-tts-anchor="{anchor}" title="朗读本章（Edge TTS）" style="display:none">{svg_icon("volume", size=14)} <span class="tts-label">朗读</span></button>'
+                f'{tts_btn_html}'
                 f'<button class="chapter-share-btn" data-share-anchor="{anchor}" title="分享本章链接">{svg_icon("share", size=14)} 分享</button>'
                 f'</div>'
                 f'</div>'
-                f'<div class="chapter-tts-player" data-tts-player="{anchor}"></div>'
+                f'{tts_player_html}'
                 f'{series_intro_html}'
                 f'<div class="chapter-body">'
                 f'<div class="chapter-content">'
@@ -8592,6 +8608,7 @@ def build_html():
     JS = JS.replace("__CHAPTER_BOOK_MAP__", chapter_book_map_json)
     JS = JS.replace("__CHAPTER_TITLES_MAP__", chapter_titles_map_json)
     JS = JS.replace("__SITE_URL__", SITE_URL)
+    JS = JS.replace("__ICONS_JSON__", _json.dumps(ICONS, ensure_ascii=False))
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
