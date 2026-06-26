@@ -397,6 +397,167 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     padding-top: 16px;
     border-top: 1px solid var(--border);
 }
+
+/* 知识问答 — sidebar 按钮 + modal */
+.kb-launcher {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: calc(100% - 32px);
+    margin: 16px 16px 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+}
+.kb-launcher:hover {
+    border-color: var(--accent);
+    background: var(--bg);
+}
+.kb-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 9999;
+    padding-top: 10vh;
+}
+.kb-modal.visible { display: flex; }
+.kb-modal-inner {
+    width: 640px;
+    max-width: 92vw;
+    max-height: 78vh;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.kb-modal-header {
+    padding: 18px 22px 12px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+}
+.kb-modal-header h3 { margin: 0; font-size: 16px; font-weight: 600; }
+.kb-modal-desc { margin: 6px 0 0; font-size: 12px; color: var(--text-soft); }
+.kb-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-soft);
+    line-height: 1;
+    padding: 4px 8px;
+}
+.kb-close:hover { color: var(--text); }
+.kb-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+}
+.kb-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+}
+.kb-input:focus { outline: none; border-color: var(--accent); }
+.kb-search-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 16px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+}
+.kb-search-btn:hover { opacity: 0.9; }
+.kb-results {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+.kb-empty {
+    text-align: center;
+    color: var(--text-soft);
+    padding: 32px 22px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.kb-loading {
+    text-align: center;
+    color: var(--text-soft);
+    padding: 32px 22px;
+    font-size: 13px;
+}
+.kb-result {
+    display: block;
+    padding: 14px 22px;
+    text-decoration: none;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+}
+.kb-result:last-child { border-bottom: none; }
+.kb-result:hover { background: var(--bg-soft); }
+.kb-result-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+.kb-result-book {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+}
+.kb-result-chapter { font-size: 13px; font-weight: 500; }
+.kb-result-score {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+}
+.kb-result-text {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-soft);
+}
+.kb-result-text mark {
+    background: rgba(180, 130, 50, 0.18);
+    color: var(--text);
+    padding: 1px 2px;
+    border-radius: 2px;
+}
 .sidebar-bookmarks .sb-title {
     font-size: 11px;
     color: var(--text-soft);
@@ -4094,7 +4255,28 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
             <div class="book-group" data-book="multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><line x1="7.7" y1="7.7" x2="11" y2="16.3"/><line x1="16.3" y1="7.7" x2="13" y2="16.3"/><line x1="8.5" y1="6" x2="15.5" y2="6"/></svg></span><span class="book-title-text">Multi-Agent in Practice</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#multi-agent__01-your-first-agent"><span class="ch-num">01</span><span>你的第一个 Agent</span><span class="ch-read-pct" data-chapter="multi-agent__01-your-first-agent"></span></a></li><li><a href="#multi-agent__02-why-multi-agent"><span class="ch-num">02</span><span>为什么需要 Multi-Agent</span><span class="ch-read-pct" data-chapter="multi-agent__02-why-multi-agent"></span></a></li><li><a href="#multi-agent__03-five-abstractions"><span class="ch-num">03</span><span>5 个核心抽象</span><span class="ch-read-pct" data-chapter="multi-agent__03-five-abstractions"></span></a></li><li><a href="#multi-agent__04-orchestration-patterns"><span class="ch-num">04</span><span>编排模式全景</span><span class="ch-read-pct" data-chapter="multi-agent__04-orchestration-patterns"></span></a></li><li><a href="#multi-agent__05-state-and-communication"><span class="ch-num">05</span><span>通信与状态</span><span class="ch-read-pct" data-chapter="multi-agent__05-state-and-communication"></span></a></li><li><a href="#multi-agent__06-failure-handling"><span class="ch-num">06</span><span>失败的艺术</span><span class="ch-read-pct" data-chapter="multi-agent__06-failure-handling"></span></a></li><li><a href="#multi-agent__07-framework-comparison"><span class="ch-num">07</span><span>框架横向对比</span><span class="ch-read-pct" data-chapter="multi-agent__07-framework-comparison"></span></a></li><li><a href="#multi-agent__08-observability-and-cost"><span class="ch-num">08</span><span>可观测性与成本</span><span class="ch-read-pct" data-chapter="multi-agent__08-observability-and-cost"></span></a></li><li><a href="#multi-agent__09-code-review-project"><span class="ch-num">09</span><span>实战 CodeReviewer Multi-Agent</span><span class="ch-read-pct" data-chapter="multi-agent__09-code-review-project"></span></a></li><li><a href="#multi-agent__10-production-checklist"><span class="ch-num">10</span><span>生产化 Checklist</span><span class="ch-read-pct" data-chapter="multi-agent__10-production-checklist"></span></a></li></ul></div><div class="book-group" data-book="llm-prompt"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.7 5.7 1.9-5.7 1.9L12 18l-1.9-5.7L4.4 10.6l5.7-1.9L12 3z"/><path d="M19 16l.9 2.6 2.6.9-2.6.9L19 23l-.9-2.6L15.5 19.5l2.6-.9L19 16z"/><path d="M5 14l.6 1.8 1.8.6-1.8.6L5 19l-.6-1.8L2.6 16.6l1.8-.6L5 14z"/></svg></span><span class="book-title-text">LLM Prompt 实战</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#llm-prompt__01-prompt-basics"><span class="ch-num">01</span><span>Prompt 基础 + Token 经济学</span><span class="ch-read-pct" data-chapter="llm-prompt__01-prompt-basics"></span></a></li><li><a href="#llm-prompt__02-few-shot"><span class="ch-num">02</span><span>Few-shot 实战</span><span class="ch-read-pct" data-chapter="llm-prompt__02-few-shot"></span></a></li><li><a href="#llm-prompt__03-advanced-patterns"><span class="ch-num">03</span><span>CoT 思维链</span><span class="ch-read-pct" data-chapter="llm-prompt__03-advanced-patterns"></span></a></li><li><a href="#llm-prompt__04-role-system-prompt"><span class="ch-num">04</span><span>Role / System Prompt：persona effect</span><span class="ch-read-pct" data-chapter="llm-prompt__04-role-system-prompt"></span></a></li><li><a href="#llm-prompt__05-structured-output"><span class="ch-num">05</span><span>Structured Output</span><span class="ch-read-pct" data-chapter="llm-prompt__05-structured-output"></span></a></li><li><a href="#llm-prompt__06-tool-use"><span class="ch-num">06</span><span>Tool Use / Function Calling</span><span class="ch-read-pct" data-chapter="llm-prompt__06-tool-use"></span></a></li><li><a href="#llm-prompt__07-prompt-caching"><span class="ch-num">07</span><span>Prompt Caching：降成本 10x</span><span class="ch-read-pct" data-chapter="llm-prompt__07-prompt-caching"></span></a></li><li><a href="#llm-prompt__08-prompt-injection"><span class="ch-num">08</span><span>Prompt Injection 防御</span><span class="ch-read-pct" data-chapter="llm-prompt__08-prompt-injection"></span></a></li><li><a href="#llm-prompt__09-eval-driven"><span class="ch-num">09</span><span>Eval-driven 迭代</span><span class="ch-read-pct" data-chapter="llm-prompt__09-eval-driven"></span></a></li><li><a href="#llm-prompt__10-real-cases"><span class="ch-num">10</span><span>真实场景 4 案例</span><span class="ch-read-pct" data-chapter="llm-prompt__10-real-cases"></span></a></li></ul></div><div class="book-group" data-book="crewai"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span><span class="book-title-text">CrewAI 入门到实战</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#crewai__01-getting-started"><span class="ch-num">01</span><span>上手：跑通第一个 Crew</span><span class="ch-read-pct" data-chapter="crewai__01-getting-started"></span></a></li><li><a href="#crewai__02-crew-orchestration"><span class="ch-num">02</span><span>Crew 编排：Process 选型与协作</span><span class="ch-read-pct" data-chapter="crewai__02-crew-orchestration"></span></a></li><li><a href="#crewai__03-agent-tuning"><span class="ch-num">03</span><span>Agent 调优：让 agent 听指挥</span><span class="ch-read-pct" data-chapter="crewai__03-agent-tuning"></span></a></li><li><a href="#crewai__04-tools-and-mcp"><span class="ch-num">04</span><span>Tools 与 MCP：给 agent 接手和脚</span><span class="ch-read-pct" data-chapter="crewai__04-tools-and-mcp"></span></a></li><li><a href="#crewai__05-memory-and-knowledge"><span class="ch-num">05</span><span>Memory + Knowledge：让 agent 有记忆</span><span class="ch-read-pct" data-chapter="crewai__05-memory-and-knowledge"></span></a></li><li><a href="#crewai__06-structured-output"><span class="ch-num">06</span><span>结构化输出与 Guardrail</span><span class="ch-read-pct" data-chapter="crewai__06-structured-output"></span></a></li><li><a href="#crewai__07-flows"><span class="ch-num">07</span><span>Flows：状态化的事件驱动编排</span><span class="ch-read-pct" data-chapter="crewai__07-flows"></span></a></li><li><a href="#crewai__08-skills-and-prod"><span class="ch-num">08</span><span>Skills 与生产化基础</span><span class="ch-read-pct" data-chapter="crewai__08-skills-and-prod"></span></a></li><li><a href="#crewai__09-side-projects"><span class="ch-num">09</span><span>实战：2 个 Side-Project 串起来</span><span class="ch-read-pct" data-chapter="crewai__09-side-projects"></span></a></li><li><a href="#crewai__10-prod-cases"><span class="ch-num">10</span><span>公司生产案例 + 社区实战拆解</span><span class="ch-read-pct" data-chapter="crewai__10-prod-cases"></span></a></li></ul></div><div class="book-group" data-book="rag"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></span><span class="book-title-text">RAG 实战</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#rag__01-why-rag"><span class="ch-num">01</span><span>为什么需要 RAG</span><span class="ch-read-pct" data-chapter="rag__01-why-rag"></span></a></li><li><a href="#rag__02-embedding-models"><span class="ch-num">02</span><span>Embedding 模型选型</span><span class="ch-read-pct" data-chapter="rag__02-embedding-models"></span></a></li><li><a href="#rag__03-vector-databases"><span class="ch-num">03</span><span>向量数据库选型</span><span class="ch-read-pct" data-chapter="rag__03-vector-databases"></span></a></li><li><a href="#rag__04-chunking-strategies"><span class="ch-num">04</span><span>Chunking 策略</span><span class="ch-read-pct" data-chapter="rag__04-chunking-strategies"></span></a></li><li><a href="#rag__05-retrieval-and-reranking"><span class="ch-num">05</span><span>检索与 Reranking</span><span class="ch-read-pct" data-chapter="rag__05-retrieval-and-reranking"></span></a></li><li><a href="#rag__06-prompt-design"><span class="ch-num">06</span><span>Prompt 设计：把检索结果喂给 LLM</span><span class="ch-read-pct" data-chapter="rag__06-prompt-design"></span></a></li><li><a href="#rag__07-hybrid-search"><span class="ch-num">07</span><span>混合检索：向量 + 关键词</span><span class="ch-read-pct" data-chapter="rag__07-hybrid-search"></span></a></li><li><a href="#rag__08-evaluation"><span class="ch-num">08</span><span>RAG 评测：怎么知道你的系统真的有用？</span><span class="ch-read-pct" data-chapter="rag__08-evaluation"></span></a></li><li><a href="#rag__09-advanced-patterns"><span class="ch-num">09</span><span>高级 RAG 模式</span><span class="ch-read-pct" data-chapter="rag__09-advanced-patterns"></span></a></li><li><a href="#rag__10-prod-checklist"><span class="ch-num">10</span><span>RAG 生产化 Checklist</span><span class="ch-read-pct" data-chapter="rag__10-prod-checklist"></span></a></li></ul></div><div class="book-group" data-book="harness-engineering"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span><span class="book-title-text">Harness Engineering</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#harness-engineering__01-what-is-harness"><span class="ch-num">01</span><span>什么是 Harness：从裸 API 到能干活 Agent 的距离</span><span class="ch-read-pct" data-chapter="harness-engineering__01-what-is-harness"></span></a></li><li><a href="#harness-engineering__02-agent-loop"><span class="ch-num">02</span><span>Agent Loop：把 `while not done` 展开成 8 种变体</span><span class="ch-read-pct" data-chapter="harness-engineering__02-agent-loop"></span></a></li><li><a href="#harness-engineering__03-tool-design"><span class="ch-num">03</span><span>Tool 设计：Tool 是 LLM 的手，怎么造好这只手</span><span class="ch-read-pct" data-chapter="harness-engineering__03-tool-design"></span></a></li><li><a href="#harness-engineering__04-context-management"><span class="ch-num">04</span><span>Context 管理：Context Window 爆了怎么办</span><span class="ch-read-pct" data-chapter="harness-engineering__04-context-management"></span></a></li><li><a href="#harness-engineering__05-permissions-sandbox"><span class="ch-num">05</span><span>Permissions / Sandbox：怎么拦 LLM 不删你文件</span><span class="ch-read-pct" data-chapter="harness-engineering__05-permissions-sandbox"></span></a></li><li><a href="#harness-engineering__06-observability"><span class="ch-num">06</span><span>Observability：Agent 在生产里跑，trajectory、cost、latency 怎么观测</span><span class="ch-read-pct" data-chapter="harness-engineering__06-observability"></span></a></li><li><a href="#harness-engineering__07-memory-layers"><span class="ch-num">07</span><span>Memory 分层：LLM 没记忆，Agent 需要</span><span class="ch-read-pct" data-chapter="harness-engineering__07-memory-layers"></span></a></li><li><a href="#harness-engineering__08-failure-recovery"><span class="ch-num">08</span><span>Failure Recovery：Agent 出错了怎么恢复</span><span class="ch-read-pct" data-chapter="harness-engineering__08-failure-recovery"></span></a></li><li><a href="#harness-engineering__09-eval-driven"><span class="ch-num">09</span><span>Eval-Driven Development：Harness 怎么测自己</span><span class="ch-read-pct" data-chapter="harness-engineering__09-eval-driven"></span></a></li><li><a href="#harness-engineering__10-build-from-scratch"><span class="ch-num">10</span><span>从零造一个 Harness：把前 9 章串起来</span><span class="ch-read-pct" data-chapter="harness-engineering__10-build-from-scratch"></span></a></li></ul></div><div class="book-group" data-book="agent-cost"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v12"/><path d="M15.5 9.5C15.5 8.5 14 8 12 8s-3.5.5-3.5 1.8c0 1.3 1.5 1.7 3.5 1.9 2 .2 3.5.6 3.5 1.9 0 1.3-1.5 2-3.5 2s-3.5-.7-3.5-2"/></svg></span><span class="book-title-text">Agent Cost Engineering</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#agent-cost__01-cost-economics"><span class="ch-num">01</span><span>为什么 Agent 经济学跟 SaaS 不一样</span><span class="ch-read-pct" data-chapter="agent-cost__01-cost-economics"></span></a></li><li><a href="#agent-cost__02-where-tokens-go"><span class="ch-num">02</span><span>Token 是怎么烧的</span><span class="ch-read-pct" data-chapter="agent-cost__02-where-tokens-go"></span></a></li><li><a href="#agent-cost__03-model-routing"><span class="ch-num">03</span><span>Model routing 101</span><span class="ch-read-pct" data-chapter="agent-cost__03-model-routing"></span></a></li><li><a href="#agent-cost__04-caching-layers"><span class="ch-num">04</span><span>Caching 三层</span><span class="ch-read-pct" data-chapter="agent-cost__04-caching-layers"></span></a></li><li><a href="#agent-cost__05-prompt-compression"><span class="ch-num">05</span><span>Prompt 压缩</span><span class="ch-read-pct" data-chapter="agent-cost__05-prompt-compression"></span></a></li><li><a href="#agent-cost__06-batch-vs-stream"><span class="ch-num">06</span><span>Batch vs Stream</span><span class="ch-read-pct" data-chapter="agent-cost__06-batch-vs-stream"></span></a></li><li><a href="#agent-cost__07-user-quota"><span class="ch-num">07</span><span>用户粒度 quota</span><span class="ch-read-pct" data-chapter="agent-cost__07-user-quota"></span></a></li><li><a href="#agent-cost__08-budget-circuit-breaker"><span class="ch-num">08</span><span>预算告警 + 熔断</span><span class="ch-read-pct" data-chapter="agent-cost__08-budget-circuit-breaker"></span></a></li><li><a href="#agent-cost__09-tool-cost"><span class="ch-num">09</span><span>工具调用省钱模式</span><span class="ch-read-pct" data-chapter="agent-cost__09-tool-cost"></span></a></li><li><a href="#agent-cost__10-cost-dashboard"><span class="ch-num">10</span><span>Cost dashboard 自建</span><span class="ch-read-pct" data-chapter="agent-cost__10-cost-dashboard"></span></a></li></ul></div><div class="book-group" data-book="indie-ai-product"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></span><span class="book-title-text">Indie + AI：一个人做产品的产品方法论</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#indie-ai-product__01-indie-math"><span class="ch-num">01</span><span>2026 一个人做产品的数学</span><span class="ch-read-pct" data-chapter="indie-ai-product__01-indie-math"></span></a></li><li><a href="#indie-ai-product__02-idea-to-scope"><span class="ch-num">02</span><span>从模糊 idea 到"明早能开工"的方案</span><span class="ch-read-pct" data-chapter="indie-ai-product__02-idea-to-scope"></span></a></li><li><a href="#indie-ai-product__03-validate-without-code"><span class="ch-num">03</span><span>不写代码先做调研</span><span class="ch-read-pct" data-chapter="indie-ai-product__03-validate-without-code"></span></a></li><li><a href="#indie-ai-product__04-design-with-ai"><span class="ch-num">04</span><span>用 AI 设计产品</span><span class="ch-read-pct" data-chapter="indie-ai-product__04-design-with-ai"></span></a></li><li><a href="#indie-ai-product__05-write-with-ai"><span class="ch-num">05</span><span>用 AI 写文案</span><span class="ch-read-pct" data-chapter="indie-ai-product__05-write-with-ai"></span></a></li><li><a href="#indie-ai-product__06-pmf-signals"><span class="ch-num">06</span><span>PMF 信号怎么看</span><span class="ch-read-pct" data-chapter="indie-ai-product__06-pmf-signals"></span></a></li><li><a href="#indie-ai-product__07-distribution"><span class="ch-num">07</span><span>100 个人怎么找到你</span><span class="ch-read-pct" data-chapter="indie-ai-product__07-distribution"></span></a></li><li><a href="#indie-ai-product__08-pricing"><span class="ch-num">08</span><span>AI 产品的定价</span><span class="ch-read-pct" data-chapter="indie-ai-product__08-pricing"></span></a></li><li><a href="#indie-ai-product__09-first-paying-users"><span class="ch-num">09</span><span>第一个 10 个付费用户</span><span class="ch-read-pct" data-chapter="indie-ai-product__09-first-paying-users"></span></a></li><li><a href="#indie-ai-product__10-retention-vs-growth"><span class="ch-num">10</span><span>留存 vs 增长</span><span class="ch-read-pct" data-chapter="indie-ai-product__10-retention-vs-growth"></span></a></li></ul></div><div class="book-group" data-book="context-engineering"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="6" rx="1"/><rect x="3" y="9" width="18" height="6" rx="1"/><rect x="3" y="15" width="18" height="6" rx="1"/></svg></span><span class="book-title-text">Context Engineering 实战</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#context-engineering__01-why-context-engineering"><span class="ch-num">01</span><span>为什么需要 Context Engineering</span><span class="ch-read-pct" data-chapter="context-engineering__01-why-context-engineering"></span></a></li><li><a href="#context-engineering__02-context-window-tokens"><span class="ch-num">02</span><span>上下文窗口与 token 基础</span><span class="ch-read-pct" data-chapter="context-engineering__02-context-window-tokens"></span></a></li><li><a href="#context-engineering__03-write-storage-memory"><span class="ch-num">03</span><span>Write 策略：外部存储与记忆架构</span><span class="ch-read-pct" data-chapter="context-engineering__03-write-storage-memory"></span></a></li><li><a href="#context-engineering__04-select-rag-retrieval"><span class="ch-num">04</span><span>Select 策略：RAG 与检索</span><span class="ch-read-pct" data-chapter="context-engineering__04-select-rag-retrieval"></span></a></li><li><a href="#context-engineering__05-compress-strategies"><span class="ch-num">05</span><span>Compress 策略：摘要与上下文压缩</span><span class="ch-read-pct" data-chapter="context-engineering__05-compress-strategies"></span></a></li><li><a href="#context-engineering__06-isolate-structure"><span class="ch-num">06</span><span>Isolate 策略：结构化与隔离</span><span class="ch-read-pct" data-chapter="context-engineering__06-isolate-structure"></span></a></li><li><a href="#context-engineering__07-tools-and-mcp"><span class="ch-num">07</span><span>工具调用与 MCP</span><span class="ch-read-pct" data-chapter="context-engineering__07-tools-and-mcp"></span></a></li><li><a href="#context-engineering__08-multi-agent-context"><span class="ch-num">08</span><span>多 Agent 上下文管理</span><span class="ch-read-pct" data-chapter="context-engineering__08-multi-agent-context"></span></a></li><li><a href="#context-engineering__09-agentic-rag"><span class="ch-num">09</span><span>自主 Agentic RAG</span><span class="ch-read-pct" data-chapter="context-engineering__09-agentic-rag"></span></a></li><li><a href="#context-engineering__10-production-antipatterns"><span class="ch-num">10</span><span>生产反模式与未来</span><span class="ch-read-pct" data-chapter="context-engineering__10-production-antipatterns"></span></a></li></ul></div><div class="book-group" data-book="agent-skills"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.7 5.7 1.9-5.7 1.9L12 18l-1.9-5.7L4.4 10.6l5.7-1.9L12 3z"/><path d="M19 16l.9 2.6 2.6.9-2.6.9L19 23l-.9-2.6L15.5 19.5l2.6-.9L19 16z"/><path d="M5 14l.6 1.8 1.8.6-1.8.6L5 19l-.6-1.8L2.6 16.6l1.8-.6L5 14z"/></svg></span><span class="book-title-text">Agent Skills 实战</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#agent-skills__01-what-is-skill"><span class="ch-num">01</span><span>Skills 是什么</span><span class="ch-read-pct" data-chapter="agent-skills__01-what-is-skill"></span></a></li><li><a href="#agent-skills__02-skill-md-structure"><span class="ch-num">02</span><span>SKILL.md 文件结构</span><span class="ch-read-pct" data-chapter="agent-skills__02-skill-md-structure"></span></a></li><li><a href="#agent-skills__03-trigger-mechanism"><span class="ch-num">03</span><span>Skills 触发机制</span><span class="ch-read-pct" data-chapter="agent-skills__03-trigger-mechanism"></span></a></li><li><a href="#agent-skills__04-claudemd-vs-skills"><span class="ch-num">04</span><span>CLAUDE.md vs Skills：最关键的边界</span><span class="ch-read-pct" data-chapter="agent-skills__04-claudemd-vs-skills"></span></a></li><li><a href="#agent-skills__05-eight-essential-skills"><span class="ch-num">05</span><span>8 大实用 Skills 拆解</span><span class="ch-read-pct" data-chapter="agent-skills__05-eight-essential-skills"></span></a></li><li><a href="#agent-skills__06-write-your-first-skill"><span class="ch-num">06</span><span>写你的第一个 Skill</span><span class="ch-read-pct" data-chapter="agent-skills__06-write-your-first-skill"></span></a></li><li><a href="#agent-skills__07-test-and-evaluate"><span class="ch-num">07</span><span>Skills 测试与评估</span><span class="ch-read-pct" data-chapter="agent-skills__07-test-and-evaluate"></span></a></li><li><a href="#agent-skills__08-token-cost-optimization"><span class="ch-num">08</span><span>Token 成本与性能优化</span><span class="ch-read-pct" data-chapter="agent-skills__08-token-cost-optimization"></span></a></li><li><a href="#agent-skills__09-marketplace-and-sharing"><span class="ch-num">09</span><span>Skills 市场与共享</span><span class="ch-read-pct" data-chapter="agent-skills__09-marketplace-and-sharing"></span></a></li><li><a href="#agent-skills__10-ecosystem-and-future"><span class="ch-num">10</span><span>生态与未来</span><span class="ch-read-pct" data-chapter="agent-skills__10-ecosystem-and-future"></span></a></li></ul></div><div class="book-group" data-book="claude-code"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span><span class="book-title-text">Claude Code 实战</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#claude-code__01-what-is-claude-code"><span class="ch-num">01</span><span>Claude Code 是什么</span><span class="ch-read-pct" data-chapter="claude-code__01-what-is-claude-code"></span></a></li><li><a href="#claude-code__02-install-and-config"><span class="ch-num">02</span><span>安装与 10 个关键设置</span><span class="ch-read-pct" data-chapter="claude-code__02-install-and-config"></span></a></li><li><a href="#claude-code__03-claudemd-deep-dive"><span class="ch-num">03</span><span>CLAUDE.md 深入：项目记忆的写法</span><span class="ch-read-pct" data-chapter="claude-code__03-claudemd-deep-dive"></span></a></li><li><a href="#claude-code__04-skills-and-hooks"><span class="ch-num">04</span><span>Skills 与 Hooks：工作流自动化</span><span class="ch-read-pct" data-chapter="claude-code__04-skills-and-hooks"></span></a></li><li><a href="#claude-code__05-subagent-and-worktree"><span class="ch-num">05</span><span>SubAgent 与 Worktree：并行任务</span><span class="ch-read-pct" data-chapter="claude-code__05-subagent-and-worktree"></span></a></li><li><a href="#claude-code__06-mcp-integration"><span class="ch-num">06</span><span>MCP 集成：连接外部工具</span><span class="ch-read-pct" data-chapter="claude-code__06-mcp-integration"></span></a></li><li><a href="#claude-code__07-slash-commands"><span class="ch-num">07</span><span>Slash Commands：自定义命令</span><span class="ch-read-pct" data-chapter="claude-code__07-slash-commands"></span></a></li><li><a href="#claude-code__08-ten-real-scenarios"><span class="ch-num">08</span><span>10 个真实场景</span><span class="ch-read-pct" data-chapter="claude-code__08-ten-real-scenarios"></span></a></li><li><a href="#claude-code__09-cost-and-performance"><span class="ch-num">09</span><span>Token 成本与性能调优</span><span class="ch-read-pct" data-chapter="claude-code__09-cost-and-performance"></span></a></li><li><a href="#claude-code__10-limits-and-future"><span class="ch-num">10</span><span>局限 + 未来：Claude Code vs Cursor vs Codex vs TRAE</span><span class="ch-read-pct" data-chapter="claude-code__10-limits-and-future"></span></a></li></ul></div><div class="book-group" data-book="vibe-coding"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg></span><span class="book-title-text">Vibe Coding 实战</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#vibe-coding__01-what-is-vibe-coding"><span class="ch-num">01</span><span>什么是 vibe coding</span><span class="ch-read-pct" data-chapter="vibe-coding__01-what-is-vibe-coding"></span></a></li><li><a href="#vibe-coding__02-tools-landscape"><span class="ch-num">02</span><span>工具全景：七款主流 vibe coding 工具横评</span><span class="ch-read-pct" data-chapter="vibe-coding__02-tools-landscape"></span></a></li><li><a href="#vibe-coding__03-three-stage-method"><span class="ch-num">03</span><span>三段式口述：vibe coding 的标准方法</span><span class="ch-read-pct" data-chapter="vibe-coding__03-three-stage-method"></span></a></li><li><a href="#vibe-coding__04-pitfall-n-plus-one"><span class="ch-num">04</span><span>真坑 1：N+1 性能陷阱</span><span class="ch-read-pct" data-chapter="vibe-coding__04-pitfall-n-plus-one"></span></a></li><li><a href="#vibe-coding__05-pitfall-naming"><span class="ch-num">05</span><span>真坑 2：字段命名 / 规范割裂</span><span class="ch-read-pct" data-chapter="vibe-coding__05-pitfall-naming"></span></a></li><li><a href="#vibe-coding__06-pitfall-security"><span class="ch-num">06</span><span>真坑 3：安全 / 鉴权 / 密钥硬编码</span><span class="ch-read-pct" data-chapter="vibe-coding__06-pitfall-security"></span></a></li><li><a href="#vibe-coding__07-multi-file-refactor"><span class="ch-num">07</span><span>多文件联动 / 全局重构</span><span class="ch-read-pct" data-chapter="vibe-coding__07-multi-file-refactor"></span></a></li><li><a href="#vibe-coding__08-chinese-localized"><span class="ch-num">08</span><span>中文需求理解 / 国内工具链</span><span class="ch-read-pct" data-chapter="vibe-coding__08-chinese-localized"></span></a></li><li><a href="#vibe-coding__09-boundaries"><span class="ch-num">09</span><span>vibe coding 的边界：什么时候该停</span><span class="ch-read-pct" data-chapter="vibe-coding__09-boundaries"></span></a></li><li><a href="#vibe-coding__10-my-workflow"><span class="ch-num">10</span><span>我的 vibe coding 工作流模板</span><span class="ch-read-pct" data-chapter="vibe-coding__10-my-workflow"></span></a></li></ul></div><div class="book-group" data-book="a2a-multi-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="4" r="2"/><circle cx="20" cy="4" r="2"/><circle cx="4" cy="20" r="2"/><circle cx="20" cy="20" r="2"/><line x1="6" y1="6" x2="9.5" y2="9.5"/><line x1="18" y1="6" x2="14.5" y2="9.5"/><line x1="6" y1="18" x2="9.5" y2="14.5"/><line x1="18" y1="18" x2="14.5" y2="14.5"/></svg></span><span class="book-title-text">A2A + 多 Agent 互操作</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#a2a-multi-agent__01-what-is-a2a"><span class="ch-num">01</span><span>什么是 A2A 协议</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__01-what-is-a2a"></span></a></li><li><a href="#a2a-multi-agent__02-a2a-vs-mcp"><span class="ch-num">02</span><span>A2A vs MCP：分工与配合</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__02-a2a-vs-mcp"></span></a></li><li><a href="#a2a-multi-agent__03-agent-card"><span class="ch-num">03</span><span>Agent Card：A2A 的自我介绍</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__03-agent-card"></span></a></li><li><a href="#a2a-multi-agent__04-four-collaboration-patterns"><span class="ch-num">04</span><span>A2A 4 种协作范式</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__04-four-collaboration-patterns"></span></a></li><li><a href="#a2a-multi-agent__05-pipeline-mode"><span class="ch-num">05</span><span>管道模式（Pipeline）实战</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__05-pipeline-mode"></span></a></li><li><a href="#a2a-multi-agent__06-debate-mode"><span class="ch-num">06</span><span>辩论模式（Debate）实战</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__06-debate-mode"></span></a></li><li><a href="#a2a-multi-agent__07-hierarchical-mode"><span class="ch-num">07</span><span>分层模式（Hierarchical）实战</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__07-hierarchical-mode"></span></a></li><li><a href="#a2a-multi-agent__08-market-mode"><span class="ch-num">08</span><span>市场模式（Market）实战</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__08-market-mode"></span></a></li><li><a href="#a2a-multi-agent__09-security-boundary"><span class="ch-num">09</span><span>A2A 安全边界</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__09-security-boundary"></span></a></li><li><a href="#a2a-multi-agent__10-real-architecture"><span class="ch-num">10</span><span>真实生产架构：端到端 A2A 系统怎么搭</span><span class="ch-read-pct" data-chapter="a2a-multi-agent__10-real-architecture"></span></a></li></ul></div><div class="book-group" data-book="memory-architecture"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2"/></svg></span><span class="book-title-text">长期记忆系统</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#memory-architecture__01-why-memory-matters"><span class="ch-num">01</span><span>为什么 agent 需要长期记忆</span><span class="ch-read-pct" data-chapter="memory-architecture__01-why-memory-matters"></span></a></li><li><a href="#memory-architecture__02-three-layer-memory"><span class="ch-num">02</span><span>三层记忆架构</span><span class="ch-read-pct" data-chapter="memory-architecture__02-three-layer-memory"></span></a></li><li><a href="#memory-architecture__03-working-memory"><span class="ch-num">03</span><span>Working Memory：会话级上下文工程</span><span class="ch-read-pct" data-chapter="memory-architecture__03-working-memory"></span></a></li><li><a href="#memory-architecture__04-episodic-memory"><span class="ch-num">04</span><span>Episodic Memory：事件流存储</span><span class="ch-read-pct" data-chapter="memory-architecture__04-episodic-memory"></span></a></li><li><a href="#memory-architecture__05-semantic-memory"><span class="ch-num">05</span><span>Semantic Memory：从事件提炼知识</span><span class="ch-read-pct" data-chapter="memory-architecture__05-semantic-memory"></span></a></li><li><a href="#memory-architecture__06-vector-db"><span class="ch-num">06</span><span>向量数据库：选型与实战</span><span class="ch-read-pct" data-chapter="memory-architecture__06-vector-db"></span></a></li><li><a href="#memory-architecture__07-knowledge-graph"><span class="ch-num">07</span><span>知识图谱：关系推理</span><span class="ch-read-pct" data-chapter="memory-architecture__07-knowledge-graph"></span></a></li><li><a href="#memory-architecture__08-hybrid-retrieval"><span class="ch-num">08</span><span>混合检索：向量 + 图谱 + 关键词</span><span class="ch-read-pct" data-chapter="memory-architecture__08-hybrid-retrieval"></span></a></li><li><a href="#memory-architecture__09-memory-write-strategy"><span class="ch-num">09</span><span>Memory 写入策略：什么时候写、写什么</span><span class="ch-read-pct" data-chapter="memory-architecture__09-memory-write-strategy"></span></a></li><li><a href="#memory-architecture__10-real-system"><span class="ch-num">10</span><span>真实生产系统：端到端长期记忆架构</span><span class="ch-read-pct" data-chapter="memory-architecture__10-real-system"></span></a></li></ul></div><div class="book-group" data-book="embodied-agent"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span><span class="book-title-text">具身智能实战</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#embodied-agent__01-what-is-embodied"><span class="ch-num">01</span><span>什么是具身智能</span><span class="ch-read-pct" data-chapter="embodied-agent__01-what-is-embodied"></span></a></li><li><a href="#embodied-agent__02-three-pillars"><span class="ch-num">02</span><span>具身智能的三大支柱</span><span class="ch-read-pct" data-chapter="embodied-agent__02-three-pillars"></span></a></li><li><a href="#embodied-agent__03-world-models"><span class="ch-num">03</span><span>世界模型：embodied agent 的大脑核心</span><span class="ch-read-pct" data-chapter="embodied-agent__03-world-models"></span></a></li><li><a href="#embodied-agent__04-simulation-train"><span class="ch-num">04</span><span>仿真训练：embodied agent 的核心工程</span><span class="ch-read-pct" data-chapter="embodied-agent__04-simulation-train"></span></a></li><li><a href="#embodied-agent__05-simulation-platforms"><span class="ch-num">05</span><span>仿真平台深度对比：Isaac Lab / Genesis / MuJoCo / Habitat</span><span class="ch-read-pct" data-chapter="embodied-agent__05-simulation-platforms"></span></a></li><li><a href="#embodied-agent__06-real-robot"><span class="ch-num">06</span><span>真机部署：sim-to-real 最后一公里</span><span class="ch-read-pct" data-chapter="embodied-agent__06-real-robot"></span></a></li><li><a href="#embodied-agent__07-manipulation"><span class="ch-num">07</span><span>机械臂：操作任务的 embodied agent</span><span class="ch-read-pct" data-chapter="embodied-agent__07-manipulation"></span></a></li><li><a href="#embodied-agent__08-navigation"><span class="ch-num">08</span><span>导航：移动机器人的 embodied agent</span><span class="ch-read-pct" data-chapter="embodied-agent__08-navigation"></span></a></li><li><a href="#embodied-agent__09-home-service"><span class="ch-num">09</span><span>家庭服务机器人：消费级具身智能</span><span class="ch-read-pct" data-chapter="embodied-agent__09-home-service"></span></a></li><li><a href="#embodied-agent__10-future-outlook"><span class="ch-num">10</span><span>具身智能未来 3-5 年展望</span><span class="ch-read-pct" data-chapter="embodied-agent__10-future-outlook"></span></a></li></ul></div><div class="book-group" data-book="ai-content-economy"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.707 21.293a1 1 0 0 1-1.414 0l-1.586-1.586a1 1 0 0 1 0-1.414l8.586-8.586a1 1 0 0 1 1.414 0l1.586 1.586a1 1 0 0 1 0 1.414z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg></span><span class="book-title-text">AI 内容创作经济</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#ai-content-economy__01-industry-reshuffle"><span class="ch-num">01</span><span>内容产业正在被 AI 重塑</span><span class="ch-read-pct" data-chapter="ai-content-economy__01-industry-reshuffle"></span></a></li><li><a href="#ai-content-economy__02-aigc-tools"><span class="ch-num">02</span><span>AIGC 工具全景：2026 年用什么做内容</span><span class="ch-read-pct" data-chapter="ai-content-economy__02-aigc-tools"></span></a></li><li><a href="#ai-content-economy__03-workflow-rebuild"><span class="ch-num">03</span><span>内容生产工作流改造</span><span class="ch-read-pct" data-chapter="ai-content-economy__03-workflow-rebuild"></span></a></li><li><a href="#ai-content-economy__04-newsletter-economy"><span class="ch-num">04</span><span>Newsletter 经济：2026 年最值得做的内容生意</span><span class="ch-read-pct" data-chapter="ai-content-economy__04-newsletter-economy"></span></a></li><li><a href="#ai-content-economy__05-substack-beehiiv"><span class="ch-num">05</span><span>Substack vs Beehiiv：平台深度对比</span><span class="ch-read-pct" data-chapter="ai-content-economy__05-substack-beehiiv"></span></a></li><li><a href="#ai-content-economy__06-content-platform-comparison"><span class="ch-num">06</span><span>内容平台对比：Newsletter 之外的 6 大选择</span><span class="ch-read-pct" data-chapter="ai-content-economy__06-content-platform-comparison"></span></a></li><li><a href="#ai-content-economy__07-monetization-paths"><span class="ch-num">07</span><span>内容变现的 6 条路径</span><span class="ch-read-pct" data-chapter="ai-content-economy__07-monetization-paths"></span></a></li><li><a href="#ai-content-economy__08-ai-co-creation"><span class="ch-num">08</span><span>AI 协作创作：人和 AI 怎么配合</span><span class="ch-read-pct" data-chapter="ai-content-economy__08-ai-co-creation"></span></a></li><li><a href="#ai-content-economy__09-copyright-and-rights"><span class="ch-num">09</span><span>AI 时代的版权与权利</span><span class="ch-read-pct" data-chapter="ai-content-economy__09-copyright-and-rights"></span></a></li><li><a href="#ai-content-economy__10-future-creator"><span class="ch-num">10</span><span>AI 时代创作者的未来 3-5 年</span><span class="ch-read-pct" data-chapter="ai-content-economy__10-future-creator"></span></a></li></ul></div><div class="book-group" data-book="codex-cases"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span><span class="book-title-text">Codex 实战案例</span><span class="book-chapters-count">15 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 15</div><ul class="book-chapters"><li><a href="#codex-cases__01-paradigm-shift"><span class="ch-num">01</span><span>AI Agent 实战案例库 — 2026 范式转移</span><span class="ch-read-pct" data-chapter="codex-cases__01-paradigm-shift"></span></a></li><li><a href="#codex-cases__02-codex-explosion"><span class="ch-num">02</span><span>Codex 2026 大爆发：6/3 发布会深度拆解</span><span class="ch-read-pct" data-chapter="codex-cases__02-codex-explosion"></span></a></li><li><a href="#codex-cases__03-agents-md"><span class="ch-num">03</span><span>AGENTS.md 实战：让 Codex 自动遵守项目规则</span><span class="ch-read-pct" data-chapter="codex-cases__03-agents-md"></span></a></li><li><a href="#codex-cases__04-codex-loop"><span class="ch-num">04</span><span>CodexLoop：让 AI 长任务不偷懒的 4 个机制</span><span class="ch-read-pct" data-chapter="codex-cases__04-codex-loop"></span></a></li><li><a href="#codex-cases__05-multi-agent"><span class="ch-num">05</span><span>多 Agent 并行协作：spawn_agent + AIGrader 半天全栈复盘</span><span class="ch-read-pct" data-chapter="codex-cases__05-multi-agent"></span></a></li><li><a href="#codex-cases__06-computer-use"><span class="ch-num">06</span><span>Computer Use 实战：Codex 接管你电脑的能力图谱</span><span class="ch-read-pct" data-chapter="codex-cases__06-computer-use"></span></a></li><li><a href="#codex-cases__07-cicd-git"><span class="ch-num">07</span><span>CI/CD + Git 自动化：Codex 的工程化闭环</span><span class="ch-read-pct" data-chapter="codex-cases__07-cicd-git"></span></a></li><li><a href="#codex-cases__08-office-flow"><span class="ch-num">08</span><span>飞书 CLI 实测：让 Codex 真正进入你的办公流</span><span class="ch-read-pct" data-chapter="codex-cases__08-office-flow"></span></a></li><li><a href="#codex-cases__09-aigrader"><span class="ch-num">09</span><span>AIGrader 复盘：1 个人半天做出全栈 AI 批改平台</span><span class="ch-read-pct" data-chapter="codex-cases__09-aigrader"></span></a></li><li><a href="#codex-cases__10-future-pick"><span class="ch-num">10</span><span>AI Agent 未来 6 个月 + 个人 Pick</span><span class="ch-read-pct" data-chapter="codex-cases__10-future-pick"></span></a></li><li><a href="#codex-cases__11-tools-ecosystem"><span class="ch-num">11</span><span>Codex 工具生态全景：4 条官方线 + 3 个第三方平替</span><span class="ch-read-pct" data-chapter="codex-cases__11-tools-ecosystem"></span></a></li><li><a href="#codex-cases__12-skills-best-practices"><span class="ch-num">12</span><span>AGENTS.md + Skills 最佳实践：个人 ECC 系统</span><span class="ch-read-pct" data-chapter="codex-cases__12-skills-best-practices"></span></a></li><li><a href="#codex-cases__13-mcp-playbook"><span class="ch-num">13</span><span>Codex + MCP 完整实战：把外部世界接进你的 agent</span><span class="ch-read-pct" data-chapter="codex-cases__13-mcp-playbook"></span></a></li><li><a href="#codex-cases__14-vs-cc-cursor"><span class="ch-num">14</span><span>Codex vs Claude Code vs Cursor：三种哲学 + 组合策略</span><span class="ch-read-pct" data-chapter="codex-cases__14-vs-cc-cursor"></span></a></li><li><a href="#codex-cases__15-indie-workflow"><span class="ch-num">15</span><span>独立开发者 Codex 工作流模板：5 套真实可复制</span><span class="ch-read-pct" data-chapter="codex-cases__15-indie-workflow"></span></a></li></ul></div><div class="book-group" data-book="cn-codex"><div class="book-header"><span class="book-icon"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><span class="book-title-text">中国版 Codex 大乱斗</span><span class="book-chapters-count">10 章</span><span class="book-chevron" aria-hidden="true"></span></div><div class="book-progress-bar"><div class="book-progress-bar-fill" style="width:0%"></div></div><div class="book-progress-label">0 / 10</div><ul class="book-chapters"><li><a href="#cn-codex__01-battlefield"><span class="ch-num">01</span><span>中国版 Codex 大乱斗：6 个月 15 款产品集体入场</span><span class="ch-read-pct" data-chapter="cn-codex__01-battlefield"></span></a></li><li><a href="#cn-codex__02-bytedance"><span class="ch-num">02</span><span>字节三连：TRAE Work + 豆包 + 豆包专业版</span><span class="ch-read-pct" data-chapter="cn-codex__02-bytedance"></span></a></li><li><a href="#cn-codex__03-alibaba"><span class="ch-num">03</span><span>阿里四面：QoderWork + Qoder CN + 通义灵码 + 钉钉 AI</span><span class="ch-read-pct" data-chapter="cn-codex__03-alibaba"></span></a></li><li><a href="#cn-codex__04-tencent"><span class="ch-num">04</span><span>腾讯三连：WorkBuddy + Marvis + CodeBuddy</span><span class="ch-read-pct" data-chapter="cn-codex__04-tencent"></span></a></li><li><a href="#cn-codex__05-kimi"><span class="ch-num">05</span><span>Kimi Work 深度：300 子 Agent 集群 + 13 小时长任务 + 开源 K2.6</span><span class="ch-read-pct" data-chapter="cn-codex__05-kimi"></span></a></li><li><a href="#cn-codex__06-baidu-zhipu-huawei"><span class="ch-num">06</span><span>专业派：百度文心快码 + 智谱 CodeGeeX + 华为 CodeArts</span><span class="ch-read-pct" data-chapter="cn-codex__06-baidu-zhipu-huawei"></span></a></li><li><a href="#cn-codex__07-common-patterns"><span class="ch-num">07</span><span>共同模式：15 款桌面 Agent 收敛的 5 个核心范式</span><span class="ch-read-pct" data-chapter="cn-codex__07-common-patterns"></span></a></li><li><a href="#cn-codex__08-cn-api"><span class="ch-num">08</span><span>国内 API 接入方案：DeepSeek / Qwen / GLM / Kimi / 豆包</span><span class="ch-read-pct" data-chapter="cn-codex__08-cn-api"></span></a></li><li><a href="#cn-codex__09-account-billing"><span class="ch-num">09</span><span>账号 / 订阅 / 配额：15 款产品的选型决策树</span><span class="ch-read-pct" data-chapter="cn-codex__09-account-billing"></span></a></li><li><a href="#cn-codex__10-pick-geo"><span class="ch-num">10</span><span>独立开发者选型 + GEO 视角：6 个月赢家预测 + 引流打法</span><span class="ch-read-pct" data-chapter="cn-codex__10-pick-geo"></span></a></li></ul></div>
         </div>
         <div class="sidebar-bookmarks" id="sidebar-bookmarks"></div>
+        <button class="kb-launcher" id="kb-launcher" title="知识问答 (Ctrl+/)" aria-label="知识问答">
+            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 知识问答
+        </button>
     </aside>
+
+    <!-- 知识问答 modal -->
+    <div class="kb-modal" id="kb-modal" role="dialog" aria-label="知识问答" aria-modal="true">
+        <div class="kb-modal-inner">
+            <div class="kb-modal-header">
+                <h3>知识问答</h3>
+                <p class="kb-modal-desc">在 17 系列 / 175 章里问任何问题，从最相关的段落找答案。</p>
+                <button class="modal-close kb-close" aria-label="关闭">×</button>
+            </div>
+            <div class="kb-input-row">
+                <input type="text" class="kb-input" id="kb-input" placeholder="例如：什么是 RAG？怎么估算 token 成本？" autocomplete="off">
+                <button class="kb-search-btn" id="kb-search-btn"><svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 搜</button>
+            </div>
+            <div class="kb-results" id="kb-results">
+                <div class="kb-empty kb-hint">键入问题后回车，浏览器会基于 1298 个段落的 TF-IDF 向量做 cosine 相似度匹配。首次加载约 1.7 MB（之后缓存）。</div>
+            </div>
+        </div>
+    </div>
 
     <div class="toolbar" role="toolbar" aria-label="工具栏">
         <button id="more-btn" title="工具" aria-label="工具菜单"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
@@ -44795,6 +44977,187 @@ function renderLearningPath() {
         }).join('') +
         '</ol>';
 }
+
+// ============================================================
+// 知识问答：TF-IDF 向量 + cosine 相似度
+// - 索引 assets/knowledge_index.json 由 build_reader.py 预生成
+// - 首次使用按需加载（~1.7 MB），之后浏览器缓存
+// - 搜索 = tokenize(query) → query vector → dot(q, d)/(||q||*||d||) → top 5
+// ============================================================
+let _kbIndex = null;
+let _kbIndexLoading = null;
+
+async function loadKnowledgeIndex() {
+    if (_kbIndex) return _kbIndex;
+    if (_kbIndexLoading) return _kbIndexLoading;
+    _kbIndexLoading = fetch('assets/knowledge_index.json').then(r => r.json());
+    _kbIndex = await _kbIndexLoading;
+    return _kbIndex;
+}
+
+function kbTokenize(text) {
+    const terms = [];
+    // ASCII words (lowercased)
+    const asciiMatches = text.match(/[A-Za-z0-9]+/g);
+    if (asciiMatches) for (const w of asciiMatches) terms.push(w.toLowerCase());
+    // CJK 1-gram + 2-gram
+    const cjk = text.replace(/[A-Za-z0-9\s]+/g, ' ');
+    for (let i = 0; i < cjk.length; i++) {
+        const c = cjk[i];
+        if (c >= '一' && c <= '鿿') terms.push(c);
+    }
+    for (let i = 0; i < cjk.length - 1; i++) {
+        const c1 = cjk[i], c2 = cjk[i + 1];
+        if (c1 >= '一' && c1 <= '鿿' && c2 >= '一' && c2 <= '鿿') {
+            terms.push(c1 + c2);
+        }
+    }
+    return terms;
+}
+
+function kbSearch(query, topK) {
+    if (topK == null) topK = 5;
+    const idx = _kbIndex;
+    if (!idx) return [];
+    const terms = kbTokenize(query);
+    if (!terms.length) return [];
+    // query TF
+    const qTF = {};
+    for (const t of terms) qTF[t] = (qTF[t] || 0) + 1;
+    // query vector (TF-IDF weighted)
+    const qVec = {};
+    let qSq = 0;
+    for (const t in qTF) {
+        const idf = idx.idf[t];
+        if (!idf) continue;
+        const w = idf * qTF[t];
+        qVec[t] = w;
+        qSq += w * w;
+    }
+    const qNorm = Math.sqrt(qSq) || 1;
+    // score each chunk
+    const scored = [];
+    for (let i = 0; i < idx.chunks.length; i++) {
+        const c = idx.chunks[i];
+        const cVec = c.vec;
+        let dot = 0;
+        for (const t in qVec) {
+            if (cVec[t]) dot += qVec[t] * cVec[t];
+        }
+        if (dot <= 0) continue;
+        const sim = dot / (qNorm * c.norm);
+        scored.push({ idx: i, score: sim });
+    }
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, topK);
+}
+
+function kbHighlight(text, query) {
+    if (!query) return text;
+    // 高亮 query 里的 CJK 子串 + ASCII word (escape regex meta)
+    const parts = [];
+    const cjk = query.match(/[一-鿿]+/g) || [];
+    const ascii = query.match(/[A-Za-z0-9]+/g) || [];
+    const terms = [...new Set([...cjk, ...ascii.map(w => w.toLowerCase())])].filter(t => t.length >= 1);
+    if (!terms.length) return text;
+    // 按长度倒序，避免短词覆盖长词（如 "R" 覆盖 "RAG"）
+    terms.sort((a, b) => b.length - a.length);
+    const esc = (s) => {
+        let out = '';
+        for (let i = 0; i < s.length; i++) {
+            const c = s[i];
+            if (c === '.' || c === '*' || c === '+' || c === '?' || c === '^' || c === '$' || c === '{' || c === '}' || c === '(' || c === ')' || c === '|' || c === '[' || c === ']' || c === String.fromCharCode(92)) {
+                out += String.fromCharCode(92) + c;
+            } else {
+                out += c;
+            }
+        }
+        return out;
+    };
+    const re = new RegExp('(' + terms.map(esc).join('|') + ')', 'gi');
+    return text.replace(re, '<mark>$1</mark>');
+}
+
+async function kbRunSearch() {
+    const input = document.getElementById('kb-input');
+    const results = document.getElementById('kb-results');
+    const query = (input.value || '').trim();
+    if (!query) {
+        results.innerHTML = '<div class="kb-empty">先在上面输入问题吧。</div>';
+        return;
+    }
+    results.innerHTML = '<div class="kb-loading">加载索引中（首次约 1.7 MB）…</div>';
+    try {
+        await loadKnowledgeIndex();
+    } catch (e) {
+        results.innerHTML = '<div class="kb-empty">索引加载失败：' + e.message + '</div>';
+        return;
+    }
+    const hits = kbSearch(query, 5);
+    if (!hits.length) {
+        results.innerHTML = '<div class="kb-empty">没找到相关段落。试试更短或不同的关键词 — 这版是 TF-IDF 关键词匹配，不理解同义词。</div>';
+        return;
+    }
+    const idx = _kbIndex;
+    const topScore = hits[0].score || 1;
+    results.innerHTML = hits.map((h, i) => {
+        const c = idx.chunks[h.idx];
+        const bm = BOOK_META[c.bookSlug] || BOOKS_META[c.bookSlug] || {};
+        const color = bm.color || '#b08968';
+        // 相对 top 的相关度（#1 = 100%），比绝对 cosine 更直观
+        const rel = (h.score / topScore * 100).toFixed(0);
+        return (
+            '<a class="kb-result" href="#' + c.chapterId + '">' +
+            '<div class="kb-result-meta">' +
+            '<span class="kb-result-book" style="color:' + color + '">' + c.bookTitle + '</span>' +
+            '<span class="kb-result-chapter">' + c.chapterTitle + '</span>' +
+            '<span class="kb-result-score">' + (i === 0 ? '★ 最相关' : '相关度 ' + rel + '%') + '</span>' +
+            '</div>' +
+            '<div class="kb-result-text">' + kbHighlight(c.text, query) + '</div>' +
+            '</a>'
+        );
+    }).join('');
+}
+
+function kbOpen() {
+    const modal = document.getElementById('kb-modal');
+    if (!modal) return;
+    modal.classList.add('visible');
+    // 预加载索引（不阻塞打开）
+    if (!_kbIndex && !_kbIndexLoading) loadKnowledgeIndex();
+    setTimeout(() => document.getElementById('kb-input')?.focus(), 50);
+}
+function kbClose() {
+    const modal = document.getElementById('kb-modal');
+    if (modal) modal.classList.remove('visible');
+}
+
+// 事件绑定
+const kbLauncher = document.getElementById('kb-launcher');
+if (kbLauncher) kbLauncher.addEventListener('click', kbOpen);
+const kbCloseBtn = document.querySelector('.kb-close');
+if (kbCloseBtn) kbCloseBtn.addEventListener('click', kbClose);
+const kbSearchBtn = document.getElementById('kb-search-btn');
+if (kbSearchBtn) kbSearchBtn.addEventListener('click', kbRunSearch);
+const kbInput = document.getElementById('kb-input');
+if (kbInput) kbInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); kbRunSearch(); }
+    if (e.key === 'Escape') { e.preventDefault(); kbClose(); }
+});
+// 点击 backdrop 关闭
+const kbModalEl = document.getElementById('kb-modal');
+if (kbModalEl) kbModalEl.addEventListener('click', (e) => {
+    if (e.target === kbModalEl) kbClose();
+});
+// 全局快捷键 Ctrl+/
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === '/') {
+        e.preventDefault();
+        const modal = document.getElementById('kb-modal');
+        if (modal && modal.classList.contains('visible')) kbClose();
+        else kbOpen();
+    }
+});
 
 // overview-mode 切换：只看首页 TOC
 function showOverview() {

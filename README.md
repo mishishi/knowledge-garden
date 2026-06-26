@@ -48,7 +48,7 @@ A personal knowledge garden. Multiple Markdown book series compiled into a singl
 
 主阅读区支持：选中文字弹笔记 / 高亮按钮（localStorage 存）、drop cap + 米白护眼底色、暗色模式（D 键切换）、字号调节（+/-）、背景白噪音（M 键打开面板）、章节进度自动追踪（每章阅读时间 + 完成度）、Cmd+K 全局搜索 + 系列 filter、聚焦模式（F 键隐藏侧栏 + 工具栏）、段落书签（点击书侧栏 bookmark 跳回 + 高亮 4 秒）、笔记 + 书签一键导出为 Markdown。
 
-首页 Overview 集成：本周阅读目标进度环、3 档回顾（本周/本月/今年，已读章节 + 阅读分钟 + 新增笔记 + 涉及系列）、笔记图谱（Fruchterman-Reingold 力学布局，按章节聚合 + 跨书 2-gram 虚线）、**动态学习路径**（老用户 5 策略打分：in-progress / 同系列下一章 / 主题 RELATED / 7 天书签 / 7 天笔记 → top 5；新用户按 priority 取 5 系列首章）、艾宾浩斯间隔重复（简化的 SM-2，ease 1.3-2.5）、Anki 卡片管理、章节 TTS 朗读（Edge TTS + auto-detect 按需显示按钮）。
+首页 Overview 集成：本周阅读目标进度环、3 档回顾（本周/本月/今年，已读章节 + 阅读分钟 + 新增笔记 + 涉及系列）、笔记图谱（Fruchterman-Reingold 力学布局，按章节聚合 + 跨书 2-gram 虚线）、**动态学习路径**（老用户 5 策略打分：in-progress / 同系列下一章 / 主题 RELATED / 7 天书签 / 7 天笔记 → top 5；新用户按 priority 取 5 系列首章）、**知识问答**（侧栏按钮 + Ctrl+/ 快捷键，预生成 TF-IDF 向量索引 1298 chunks 跨 22.4 万字，浏览器 cosine 相似度 top-5，关键词高亮 + 章节跳转）、艾宾浩斯间隔重复（简化的 SM-2，ease 1.3-2.5）、Anki 卡片管理、章节 TTS 朗读（Edge TTS + auto-detect 按需显示按钮）。
 
 手机端：浏览器菜单"添加到主屏幕"就变成 PWA，可以离线阅读（Service Worker + 内嵌 manifest），跟原生 App 体验接近。
 

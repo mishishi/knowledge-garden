@@ -382,6 +382,186 @@ def chapter_display_title(md_text: str, fallback_slug: str) -> str:
     return display
 
 
+# ============================================================
+# 知识问答：TF-IDF 向量 + chunk 索引
+# - 每个 chapter 切成 ~500 字 (overlap 80 字)
+# - tokenize: CJK char 1-gram + 2-gram, ASCII word
+# - 每个 chunk 存 {id, text, term_freq} (sparse dict)
+# - 全局存 {idf, avgDocLen, N, totalChars}
+# - 浏览器侧：cosine 相似度 top-5
+# ============================================================
+import re as _re_kb
+import math as _math_kb
+import json as _json_kb
+from collections import Counter as _Counter_kb
+
+
+def _kb_strip_markdown(text: str) -> str:
+    """剥 markdown 标记，只留 plain text."""
+    # 去掉 frontmatter
+    text = _re_kb.sub(r"^---.*?---\s*", "", text, flags=_re_kb.DOTALL)
+    # 去掉 code block
+    text = _re_kb.sub(r"```.*?```", " ", text, flags=_re_kb.DOTALL)
+    # 去掉 inline code
+    text = _re_kb.sub(r"`[^`]+`", " ", text)
+    # 去掉图片
+    text = _re_kb.sub(r"!\[[^\]]*\]\([^)]+\)", " ", text)
+    # 链接只留文字
+    text = _re_kb.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    # heading 标记
+    text = _re_kb.sub(r"^#+\s*", "", text, flags=_re_kb.MULTILINE)
+    # bold/italic
+    text = _re_kb.sub(r"[*_]{1,3}(\S+?)[*_]{1,3}", r"\1", text)
+    # blockquote
+    text = _re_kb.sub(r"^>\s*", "", text, flags=_re_kb.MULTILINE)
+    # list marker
+    text = _re_kb.sub(r"^[\s]*[-*+]\s+", "", text, flags=_re_kb.MULTILINE)
+    text = _re_kb.sub(r"^[\s]*\d+\.\s+", "", text, flags=_re_kb.MULTILINE)
+    # 表格分隔行
+    text = _re_kb.sub(r"^\|?[\s:|-]+\|?[\s:|-]*$", "", text, flags=_re_kb.MULTILINE)
+    text = text.replace("|", " ")
+    # 折叠空白
+    text = _re_kb.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def _kb_chunk_text(text: str, size: int = 500, overlap: int = 80) -> list:
+    """切片：在句末标点或换行处优先断开."""
+    if len(text) <= size:
+        return [text] if text else []
+    chunks = []
+    start = 0
+    n = len(text)
+    while start < n:
+        end = min(start + size, n)
+        if end < n:
+            # 尝试在 [start+size-100, end] 范围内找最后一个句末标点
+            window_lo = start + max(100, size - 100)
+            best = -1
+            for sep in ["。", "！", "？", "\n", ". ", "! ", "? "]:
+                idx = text.rfind(sep, window_lo, end)
+                if idx > best:
+                    best = idx + len(sep)
+            if best > start + 100:
+                end = best
+        chunk = text[start:end].strip()
+        if chunk:
+            chunks.append(chunk)
+        if end >= n:
+            break
+        start = max(end - overlap, start + 1)
+    return chunks
+
+
+def _kb_tokenize(text: str) -> list:
+    """CJK char 1-gram + 2-gram, ASCII word 整词."""
+    terms = []
+    # 先抽 ASCII word
+    for m in _re_kb.finditer(r"[A-Za-z0-9]+", text):
+        terms.append(m.group(0).lower())
+    # 抽 CJK 段
+    cjk = _re_kb.sub(r"[A-Za-z0-9\s]+", " ", text)
+    # 1-gram
+    for c in cjk:
+        if "\u4e00" <= c <= "\u9fff":
+            terms.append(c)
+    # 2-gram
+    for i in range(len(cjk) - 1):
+        c1, c2 = cjk[i], cjk[i + 1]
+        if "\u4e00" <= c1 <= "\u9fff" and "\u4e00" <= c2 <= "\u9fff":
+            terms.append(c1 + c2)
+    return terms
+
+
+def build_knowledge_index(books) -> None:
+    """生成 assets/knowledge_index.json — 浏览器 cosine 搜索用."""
+    chunks = []
+    for slug, meta, chapters in books:
+        for chap_slug, chap_path in chapters:
+            raw = chap_path.read_text(encoding="utf-8")
+            text = _kb_strip_markdown(raw)
+            if not text:
+                continue
+            chap_chunks = _kb_chunk_text(text, size=500, overlap=80)
+            chapter_title = chapter_display_title(raw, chap_slug)
+            for i, ct in enumerate(chap_chunks):
+                tokens = _kb_tokenize(ct)
+                if not tokens:
+                    continue
+                tf = _Counter_kb(tokens)
+                chunks.append({
+                    "id": f"{slug}__{chap_slug}__{i}",
+                    "chapterId": f"{slug}__{chap_slug}",
+                    "chapterTitle": chapter_title,
+                    "bookSlug": slug,
+                    "bookTitle": meta.get("title", slug),
+                    "text": ct,
+                    "tf": dict(tf),
+                    "len": sum(tf.values()),
+                })
+
+    if not chunks:
+        print("WARN: no chunks to index")
+        return
+
+    # 计算 IDF
+    df = _Counter_kb()
+    for c in chunks:
+        for t in set(c["tf"].keys()):
+            df[t] += 1
+    N = len(chunks)
+    # BM25 风格 IDF (带 +1 防 log(0)) — round 到 3 位小数，存小
+    idf = {t: round(_math_kb.log((N - df[t] + 0.5) / (df[t] + 0.5) + 1), 3) for t in df}
+    avg_doc_len = sum(c["len"] for c in chunks) / N
+
+    # 每个 chunk 算 TF-IDF 向量 + norm；只保留 top-20 高权重 term
+    # (top-20 对 ~500 字 chunk 已足够；cosine 相似度用稀疏 dot 不受影响)
+    TOP_K = 20
+    PREVIEW_LEN = 200  # index 里只存 200 字预览，full chunk 在 #anchor 章节里
+    final_chunks = []
+    for c in chunks:
+        vec = {}
+        for t, f in c["tf"].items():
+            w = idf.get(t, 0) * f
+            vec[t] = w
+        # top-K 剪枝
+        if len(vec) > TOP_K:
+            top = sorted(vec.items(), key=lambda x: -x[1])[:TOP_K]
+            vec = dict(top)
+        norm = _math_kb.sqrt(sum(w * w for w in vec.values())) or 1.0
+        # preview 截到 PREVIEW_LEN
+        preview = c["text"] if len(c["text"]) <= PREVIEW_LEN else c["text"][:PREVIEW_LEN] + "…"
+        final_chunks.append({
+            "id": c["id"],
+            "chapterId": c["chapterId"],
+            "chapterTitle": c["chapterTitle"],
+            "bookSlug": c["bookSlug"],
+            "bookTitle": c["bookTitle"],
+            "text": preview,
+            "vec": vec,
+            "norm": round(norm, 4),
+        })
+
+    index = {
+        "version": 1,
+        "N": N,
+        "avgDocLen": round(avg_doc_len, 2),
+        "chunkSize": 500,
+        "overlap": 80,
+        "idf": idf,
+        "chunks": final_chunks,
+    }
+
+    out = ROOT / "assets" / "knowledge_index.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w", encoding="utf-8") as f:
+        _json_kb.dump(index, f, ensure_ascii=False, separators=(",", ":"))
+
+    import os as _os_kb
+    size_kb = _os_kb.path.getsize(out) / 1024
+    print(f"生成 {out} ({N} chunks, {size_kb:.1f} KB)")
+
+
 def build_overview_html(books, total_chapters, total_chars, total_minutes) -> str:
     """生成 <section id="overview"> HTML.
 
@@ -1013,6 +1193,167 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     margin-top: 24px;
     padding-top: 16px;
     border-top: 1px solid var(--border);
+}
+
+/* 知识问答 — sidebar 按钮 + modal */
+.kb-launcher {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: calc(100% - 32px);
+    margin: 16px 16px 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+}
+.kb-launcher:hover {
+    border-color: var(--accent);
+    background: var(--bg);
+}
+.kb-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 9999;
+    padding-top: 10vh;
+}
+.kb-modal.visible { display: flex; }
+.kb-modal-inner {
+    width: 640px;
+    max-width: 92vw;
+    max-height: 78vh;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.kb-modal-header {
+    padding: 18px 22px 12px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+}
+.kb-modal-header h3 { margin: 0; font-size: 16px; font-weight: 600; }
+.kb-modal-desc { margin: 6px 0 0; font-size: 12px; color: var(--text-soft); }
+.kb-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-soft);
+    line-height: 1;
+    padding: 4px 8px;
+}
+.kb-close:hover { color: var(--text); }
+.kb-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+}
+.kb-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-soft);
+    color: var(--text);
+    font-size: 14px;
+    font-family: inherit;
+}
+.kb-input:focus { outline: none; border-color: var(--accent); }
+.kb-search-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 16px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+}
+.kb-search-btn:hover { opacity: 0.9; }
+.kb-results {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+}
+.kb-empty {
+    text-align: center;
+    color: var(--text-soft);
+    padding: 32px 22px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.kb-loading {
+    text-align: center;
+    color: var(--text-soft);
+    padding: 32px 22px;
+    font-size: 13px;
+}
+.kb-result {
+    display: block;
+    padding: 14px 22px;
+    text-decoration: none;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+}
+.kb-result:last-child { border-bottom: none; }
+.kb-result:hover { background: var(--bg-soft); }
+.kb-result-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+}
+.kb-result-book {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+}
+.kb-result-chapter { font-size: 13px; font-weight: 500; }
+.kb-result-score {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+}
+.kb-result-text {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-soft);
+}
+.kb-result-text mark {
+    background: rgba(180, 130, 50, 0.18);
+    color: var(--text);
+    padding: 1px 2px;
+    border-radius: 2px;
 }
 .sidebar-bookmarks .sb-title {
     font-size: 11px;
@@ -6592,6 +6933,187 @@ function renderLearningPath() {
         '</ol>';
 }
 
+// ============================================================
+// 知识问答：TF-IDF 向量 + cosine 相似度
+// - 索引 assets/knowledge_index.json 由 build_reader.py 预生成
+// - 首次使用按需加载（~1.7 MB），之后浏览器缓存
+// - 搜索 = tokenize(query) → query vector → dot(q, d)/(||q||*||d||) → top 5
+// ============================================================
+let _kbIndex = null;
+let _kbIndexLoading = null;
+
+async function loadKnowledgeIndex() {
+    if (_kbIndex) return _kbIndex;
+    if (_kbIndexLoading) return _kbIndexLoading;
+    _kbIndexLoading = fetch('assets/knowledge_index.json').then(r => r.json());
+    _kbIndex = await _kbIndexLoading;
+    return _kbIndex;
+}
+
+function kbTokenize(text) {
+    const terms = [];
+    // ASCII words (lowercased)
+    const asciiMatches = text.match(/[A-Za-z0-9]+/g);
+    if (asciiMatches) for (const w of asciiMatches) terms.push(w.toLowerCase());
+    // CJK 1-gram + 2-gram
+    const cjk = text.replace(/[A-Za-z0-9\s]+/g, ' ');
+    for (let i = 0; i < cjk.length; i++) {
+        const c = cjk[i];
+        if (c >= '\u4e00' && c <= '\u9fff') terms.push(c);
+    }
+    for (let i = 0; i < cjk.length - 1; i++) {
+        const c1 = cjk[i], c2 = cjk[i + 1];
+        if (c1 >= '\u4e00' && c1 <= '\u9fff' && c2 >= '\u4e00' && c2 <= '\u9fff') {
+            terms.push(c1 + c2);
+        }
+    }
+    return terms;
+}
+
+function kbSearch(query, topK) {
+    if (topK == null) topK = 5;
+    const idx = _kbIndex;
+    if (!idx) return [];
+    const terms = kbTokenize(query);
+    if (!terms.length) return [];
+    // query TF
+    const qTF = {};
+    for (const t of terms) qTF[t] = (qTF[t] || 0) + 1;
+    // query vector (TF-IDF weighted)
+    const qVec = {};
+    let qSq = 0;
+    for (const t in qTF) {
+        const idf = idx.idf[t];
+        if (!idf) continue;
+        const w = idf * qTF[t];
+        qVec[t] = w;
+        qSq += w * w;
+    }
+    const qNorm = Math.sqrt(qSq) || 1;
+    // score each chunk
+    const scored = [];
+    for (let i = 0; i < idx.chunks.length; i++) {
+        const c = idx.chunks[i];
+        const cVec = c.vec;
+        let dot = 0;
+        for (const t in qVec) {
+            if (cVec[t]) dot += qVec[t] * cVec[t];
+        }
+        if (dot <= 0) continue;
+        const sim = dot / (qNorm * c.norm);
+        scored.push({ idx: i, score: sim });
+    }
+    scored.sort((a, b) => b.score - a.score);
+    return scored.slice(0, topK);
+}
+
+function kbHighlight(text, query) {
+    if (!query) return text;
+    // 高亮 query 里的 CJK 子串 + ASCII word (escape regex meta)
+    const parts = [];
+    const cjk = query.match(/[\u4e00-\u9fff]+/g) || [];
+    const ascii = query.match(/[A-Za-z0-9]+/g) || [];
+    const terms = [...new Set([...cjk, ...ascii.map(w => w.toLowerCase())])].filter(t => t.length >= 1);
+    if (!terms.length) return text;
+    // 按长度倒序，避免短词覆盖长词（如 "R" 覆盖 "RAG"）
+    terms.sort((a, b) => b.length - a.length);
+    const esc = (s) => {
+        let out = '';
+        for (let i = 0; i < s.length; i++) {
+            const c = s[i];
+            if (c === '.' || c === '*' || c === '+' || c === '?' || c === '^' || c === '$' || c === '{' || c === '}' || c === '(' || c === ')' || c === '|' || c === '[' || c === ']' || c === String.fromCharCode(92)) {
+                out += String.fromCharCode(92) + c;
+            } else {
+                out += c;
+            }
+        }
+        return out;
+    };
+    const re = new RegExp('(' + terms.map(esc).join('|') + ')', 'gi');
+    return text.replace(re, '<mark>$1</mark>');
+}
+
+async function kbRunSearch() {
+    const input = document.getElementById('kb-input');
+    const results = document.getElementById('kb-results');
+    const query = (input.value || '').trim();
+    if (!query) {
+        results.innerHTML = '<div class="kb-empty">先在上面输入问题吧。</div>';
+        return;
+    }
+    results.innerHTML = '<div class="kb-loading">加载索引中（首次约 1.7 MB）…</div>';
+    try {
+        await loadKnowledgeIndex();
+    } catch (e) {
+        results.innerHTML = '<div class="kb-empty">索引加载失败：' + e.message + '</div>';
+        return;
+    }
+    const hits = kbSearch(query, 5);
+    if (!hits.length) {
+        results.innerHTML = '<div class="kb-empty">没找到相关段落。试试更短或不同的关键词 — 这版是 TF-IDF 关键词匹配，不理解同义词。</div>';
+        return;
+    }
+    const idx = _kbIndex;
+    const topScore = hits[0].score || 1;
+    results.innerHTML = hits.map((h, i) => {
+        const c = idx.chunks[h.idx];
+        const bm = BOOK_META[c.bookSlug] || BOOKS_META[c.bookSlug] || {};
+        const color = bm.color || '#b08968';
+        // 相对 top 的相关度（#1 = 100%），比绝对 cosine 更直观
+        const rel = (h.score / topScore * 100).toFixed(0);
+        return (
+            '<a class="kb-result" href="#' + c.chapterId + '">' +
+            '<div class="kb-result-meta">' +
+            '<span class="kb-result-book" style="color:' + color + '">' + c.bookTitle + '</span>' +
+            '<span class="kb-result-chapter">' + c.chapterTitle + '</span>' +
+            '<span class="kb-result-score">' + (i === 0 ? '★ 最相关' : '相关度 ' + rel + '%') + '</span>' +
+            '</div>' +
+            '<div class="kb-result-text">' + kbHighlight(c.text, query) + '</div>' +
+            '</a>'
+        );
+    }).join('');
+}
+
+function kbOpen() {
+    const modal = document.getElementById('kb-modal');
+    if (!modal) return;
+    modal.classList.add('visible');
+    // 预加载索引（不阻塞打开）
+    if (!_kbIndex && !_kbIndexLoading) loadKnowledgeIndex();
+    setTimeout(() => document.getElementById('kb-input')?.focus(), 50);
+}
+function kbClose() {
+    const modal = document.getElementById('kb-modal');
+    if (modal) modal.classList.remove('visible');
+}
+
+// 事件绑定
+const kbLauncher = document.getElementById('kb-launcher');
+if (kbLauncher) kbLauncher.addEventListener('click', kbOpen);
+const kbCloseBtn = document.querySelector('.kb-close');
+if (kbCloseBtn) kbCloseBtn.addEventListener('click', kbClose);
+const kbSearchBtn = document.getElementById('kb-search-btn');
+if (kbSearchBtn) kbSearchBtn.addEventListener('click', kbRunSearch);
+const kbInput = document.getElementById('kb-input');
+if (kbInput) kbInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); kbRunSearch(); }
+    if (e.key === 'Escape') { e.preventDefault(); kbClose(); }
+});
+// 点击 backdrop 关闭
+const kbModalEl = document.getElementById('kb-modal');
+if (kbModalEl) kbModalEl.addEventListener('click', (e) => {
+    if (e.target === kbModalEl) kbClose();
+});
+// 全局快捷键 Ctrl+/
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === '/') {
+        e.preventDefault();
+        const modal = document.getElementById('kb-modal');
+        if (modal && modal.classList.contains('visible')) kbClose();
+        else kbOpen();
+    }
+});
+
 // overview-mode 切换：只看首页 TOC
 function showOverview() {
     document.body.classList.add('overview-mode');
@@ -8783,7 +9305,28 @@ def build_html():
             {''.join(bookshelf_html_parts)}
         </div>
         <div class="sidebar-bookmarks" id="sidebar-bookmarks"></div>
+        <button class="kb-launcher" id="kb-launcher" title="知识问答 (Ctrl+/)" aria-label="知识问答">
+            {svg_icon('search', 14)} 知识问答
+        </button>
     </aside>
+
+    <!-- 知识问答 modal -->
+    <div class="kb-modal" id="kb-modal" role="dialog" aria-label="知识问答" aria-modal="true">
+        <div class="kb-modal-inner">
+            <div class="kb-modal-header">
+                <h3>知识问答</h3>
+                <p class="kb-modal-desc">在 {len(books)} 系列 / {total_chapters} 章里问任何问题，从最相关的段落找答案。</p>
+                <button class="modal-close kb-close" aria-label="关闭">×</button>
+            </div>
+            <div class="kb-input-row">
+                <input type="text" class="kb-input" id="kb-input" placeholder="例如：什么是 RAG？怎么估算 token 成本？" autocomplete="off">
+                <button class="kb-search-btn" id="kb-search-btn">{svg_icon('search', 14)} 搜</button>
+            </div>
+            <div class="kb-results" id="kb-results">
+                <div class="kb-empty kb-hint">键入问题后回车，浏览器会基于 1298 个段落的 TF-IDF 向量做 cosine 相似度匹配。首次加载约 1.7 MB（之后缓存）。</div>
+            </div>
+        </div>
+    </div>
 
     <div class="toolbar" role="toolbar" aria-label="工具栏">
         <button id="more-btn" title="工具" aria-label="工具菜单">{svg_icon('menu')}</button>
@@ -9072,6 +9615,8 @@ def build_html():
     build_robots()
     # 生成 per-chapter 静态页 (100 个, 每章专属 OG + 跳转 index.html#anchor)
     build_per_chapter_pages(books)
+    # 生成 knowledge index (RAG 知识问答用 — TF-IDF 向量 + 章节 chunk)
+    build_knowledge_index(books)
 
 
 if __name__ == "__main__":

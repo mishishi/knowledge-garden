@@ -4,1231 +4,1231 @@
   <title>个人知识库</title>
   <link>https://mishishi.github.io/knowledge-garden/</link>
   <description>17 个系列 · 175 章 · Multi-Agent / LLM Prompt / CrewAI / RAG / Harness Engineering / Cost / Indie / Context / Skills / Claude Code</description>
-  <lastBuildDate>Fri, 26 Jun 2026 14:42:52 +0000</lastBuildDate>
+  <lastBuildDate>Fri, 26 Jun 2026 15:01:22 +0000</lastBuildDate>
   <atom:link href="https://mishishi.github.io/knowledge-garden/rss.xml" rel="self" type="application/rss+xml"/>
   <item>
     <title>Multi-Agent in Practice · 你的第一个 Agent</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/01-your-first-agent.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/01-your-first-agent.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>30 分钟写出能调用工具的 Agent。从零开始，不假设你会 LLM 编程。</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 为什么需要 Multi-Agent</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/02-why-multi-agent.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/02-why-multi-agent.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上章是单 Agent 查天气、Multi-Agent 写短文。这章具体拆解：单 Agent 在哪些场景下&quot;撑不住&quot;，Multi-Agent 怎么解。</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 5 个核心抽象</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/03-five-abstractions.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/03-five-abstractions.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上章是「研究员 + 写作员」两个 Agent 的直觉。这章把直觉提炼成 5 个抽象：Role / Goal / Tool / Memory / Handoff。CrewAI、LangGraph、AutoGen 跑不掉这几个词。</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 编排模式全景</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/04-orchestration-patterns.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/04-orchestration-patterns.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上章是 5 个核心抽象。这章把它们组合：5 种编排模式 — Pipeline / Supervisor / GroupChat / Swarm / Graph。掌握这 5 种模式就掌握了 Multi-Agent 系统的&quot;流程图设计语言&quot;。</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 通信与状态</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/05-state-and-communication.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/05-state-and-communication.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上章 5 种编排模式决定 Agent 之间怎么连。这章往下走一层：连起来后数据怎么传、状态怎么管。这是工程问题，跟编排模式那种架构图层面的事不一样。</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 失败的艺术</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/06-failure-handling.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/06-failure-handling.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Multi-Agent 系统的失败是单 Agent 的 N 倍（N = Agent 数量）。这章讲失败怎么分类、4 层防御、人机协同的边界。</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 框架横向对比</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/07-framework-comparison.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/07-framework-comparison.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上章看了 5 种编排模式。这章做点更实际的事——拿同一需求对比 4 个主流框架的代码、调试难度、生产成熟度。我自己 4 个都跑过生产，给你真实数据。</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 可观测性与成本</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/08-observability-and-cost.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/08-observability-and-cost.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上章讲了选框架。这章讲选完后怎么知道系统在干什么、烧了多少钱。这俩是生产环境最容易被忽视的隐形炸弹——我的 4 个 multi-agent 项目都吃过 observability 不到位的亏。</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 实战 CodeReviewer Multi-Agent</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/09-code-review-project.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/09-code-review-project.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>├── README.md                    # 项目说明</description>
   </item>
   <item>
     <title>Multi-Agent in Practice · 生产化 Checklist</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/10-production-checklist.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/10-production-checklist.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>最后一章：从&quot;能跑&quot;到&quot;能上生产&quot;。12 个常见坑，每个配症状—诊断—修复。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · Prompt 基础 + Token 经济学</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/01-prompt-basics.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/01-prompt-basics.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>写好 prompt 跟写好代码一样——知道每一行在干什么，比套用模板重要 10 倍。这章拆 4 元素、怎么算钱、不同模型 prompt 风格的差异。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · Few-shot 实战</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/02-few-shot.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/02-few-shot.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>给 LLM 看几个例子，比讲 100 条规则管用。但 few-shot 写错比不写还糟——这章讲怎么选样、4 大反模式、跑出来的真实数据。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · CoT 思维链</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/03-advanced-patterns.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/03-advanced-patterns.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>&quot;Let&#x27;s think step by step&quot; — 这一句话让 LLM 的推理能力跃升一个台阶。但这章也会讲：reasoning model 出现后，CoT 该怎么调。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · Role / System Prompt：persona effect</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/04-role-system-prompt.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/04-role-system-prompt.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>「你是一个资深工程师」比「你是一个 helpful assistant」有效 10 倍——这是 persona effect。这章讲怎么设角色、system vs user 的边界、真实模型的 system prompt 拆解，以及我自己踩过的几个坑。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · Structured Output</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/05-structured-output.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/05-structured-output.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>LLM 默认吐「散文」——想拿结构化 JSON 怎么办？这章拆 3 种方法 + Pydantic 锁字段 + 真实 query 改写 pipeline。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · Tool Use / Function Calling</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/06-tool-use.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/06-tool-use.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Tool use 是 2024-2026 LLM 最关键的能力——让 LLM 从「聊天机器人」升级成「能调 API 的 Agent」。这章讲单 tool / 多 tool / parallel / 错误重试 + 客服 agent 完整案例。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · Prompt Caching：降成本 10x</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/07-prompt-caching.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/07-prompt-caching.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>长 prompt 重复发，每次都按全量 token 计费——这是 2024-2025 年最常见的「烧钱漏洞」。这章讲 cache 怎么工作、怎么写 prompt 最大化命中、真实成本对比。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · Prompt Injection 防御</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/08-prompt-injection.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/08-prompt-injection.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>LLM 拿到用户输入就「听用户的」——攻击者用这特性绕过 system prompt，骗 LLM 做坏事。生产里这不迟早会出现，而是已经在出现。这章讲攻击向量 + 6 层防御 + 红队测试。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · Eval-driven 迭代</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/09-eval-driven.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/09-eval-driven.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Prompt 写完不评测 = 赌博。没评估的 prompt 调优就是凭感觉——这一章讲怎么用 LLM-as-judge + A/B + 版本管理，把 prompt 调优从「感觉」变成「数据」。</description>
   </item>
   <item>
     <title>LLM Prompt 实战 · 真实场景 4 案例</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/10-real-cases.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/10-real-cases.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前面 9 章拆了 4 元素 / Few-shot / CoT / Role / Structured / Tool / Cache / Injection / Eval。这章把 4 个真实场景的完整 prompt 拆开——每个都能直接 copy 改改用。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · 上手：跑通第一个 Crew</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/01-getting-started.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/01-getting-started.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>30 分钟跑通一个最小可用的 Crew。从安装到 crew.kickoff 拿到结果，不假设你用过 CrewAI 老版本。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · Crew 编排：Process 选型与协作</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/02-crew-orchestration.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/02-crew-orchestration.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上章是单 Agent 单 Task 的最小 Crew。这章加第二个 Agent，把它从「一人干活」升级成「两人流水线」，再讨论 Sequential / Hierarchical / Async 三种 Process 怎么选。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · Agent 调优：让 agent 听指挥</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/03-agent-tuning.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/03-agent-tuning.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Prompt 写得再细，Agent 还是不听指挥？这一章把 v1.14 的所有 Agent-level 调参开关过一遍：reasoning / maxreasoningattempts / multimodal / knowledgesources / injectdate / cache / maxrpm / maxiter / respectcontextwindow。每个开关配「什么时候开</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · Tools 与 MCP：给 agent 接手和脚</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/04-tools-and-mcp.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/04-tools-and-mcp.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>LLM 自己只能生成文字，干不了实事。Tool 是 Agent 的「手和脚」——查数据库、调 API、读文件、发邮件都靠它。这章分三层讲：内置工具怎么选、自定义 Tool 怎么写、MCP server 怎么接。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · Memory + Knowledge：让 agent 有记忆</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/05-memory-and-knowledge.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/05-memory-and-knowledge.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>CrewAI agent 默认跑完一次啥也不记得。这一章拆 v1.14 的两层记忆系统：Memory（短期 / 长期 / 实体）和 Knowledge（文件型知识源）的区别、什么时候用哪个、跟 context window 怎么配合。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · 结构化输出与 Guardrail</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/06-structured-output.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/06-structured-output.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>LLM 输出字符串不靠谱——想拿到结构化 JSON、想保证输出符合业务规则、想在违规时拦截——靠 Pydantic 模型 + Guardrail。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · Flows：状态化的事件驱动编排</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/07-flows.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/07-flows.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Crew 适合「一组人干一件事」。但生产里你常需要「先让 Crew A 跑，结果喂给 Crew B，再让 Crew C 收尾」——这时候 Crew 不够用，需要 Flow。v1.14 引入的状态化事件驱动层就是干这个的。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · Skills 与生产化基础</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/08-skills-and-prod.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/08-skills-and-prod.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>v1.14 引入的 Skills 系统是这版最大亮点之一——把领域知识（写代码规范、特定业务流程、领域术语表）打包成「skill package」，像装 npm 包一样注入到 Agent prompt 里。再加生产化基础：observability、testing、deployment、cost control。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · 实战：2 个 Side-Project 串起来</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/09-side-projects.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/09-side-projects.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前面 8 章都在拆概念。这一章做两个真东西：AI 内容工厂（researcher + writer + editor 全自动）+ PR 代码评审 Multi-Agent（diff 收集 + 4 个 reviewer + lead）。每个项目从需求到结构到核心代码都过一遍，能直接 clone 跑。</description>
   </item>
   <item>
     <title>CrewAI 入门到实战 · 公司生产案例 + 社区实战拆解</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/crewai/10-prod-cases.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/crewai/10-prod-cases.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>写技术文章最怕「教学 demo 跟生产差十万八千里」。这一章调研真实公开的 CrewAI 用法，分两层：公司级 case study + awesome-crewai 上的社区项目。每个 case 按 5 个维度拆解，不编造数字。</description>
   </item>
   <item>
     <title>RAG 实战 · 为什么需要 RAG</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/01-why-rag.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/01-why-rag.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>LLM 不知道你公司的产品手册、昨晚的客户工单、上周的财报。RAG 是给 LLM「外挂大脑」最实用的方式。</description>
   </item>
   <item>
     <title>RAG 实战 · Embedding 模型选型</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/02-embedding-models.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/02-embedding-models.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Embedding 是把文字转成「机器能比较相似度」的向量。选错模型，下游检索全盘皆输。</description>
   </item>
   <item>
     <title>RAG 实战 · 向量数据库选型</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/03-vector-databases.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/03-vector-databases.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>向量数据库是 RAG 的「记忆」。选错数据库，百万级文档塞不下，或者检索慢到用户跑光。这一章讲 2026 年的主流选型 + 决策路径 + 我自己选错的代价。</description>
   </item>
   <item>
     <title>RAG 实战 · Chunking 策略</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/04-chunking-strategies.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/04-chunking-strategies.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Chunking 是 RAG 流水线里最容易被忽视、影响最大的环节。切错了，再好的 embedding + 再贵的向量数据库都救不回来。</description>
   </item>
   <item>
     <title>RAG 实战 · 检索与 Reranking</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/05-retrieval-and-reranking.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/05-retrieval-and-reranking.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>向量检索拿 Top-50 候选不难，但真正能用的 Top-5 才是功夫。Reranking 是这一关的关键。</description>
   </item>
   <item>
     <title>RAG 实战 · Prompt 设计：把检索结果喂给 LLM</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/06-prompt-design.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/06-prompt-design.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>检索拿到 Top-5 不代表 LLM 会用好。Prompt 设计 = 怎么把 5 个 chunk 拼起来，决定最终答案质量。</description>
   </item>
   <item>
     <title>RAG 实战 · 混合检索：向量 + 关键词</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/07-hybrid-search.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/07-hybrid-search.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>纯向量检索在「数字 ID / 专有名词 / 代码错误」场景会失灵。混合检索 是企业 RAG 的标配。</description>
   </item>
   <item>
     <title>RAG 实战 · RAG 评测：怎么知道你的系统真的有用？</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/08-evaluation.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/08-evaluation.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上线 RAG 第一周就开始收到用户吐槽：「回答不对」「找不到资料」。没有评测，你不知道改哪里有用、改哪里反而退步。</description>
   </item>
   <item>
     <title>RAG 实战 · 高级 RAG 模式</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/09-advanced-patterns.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/09-advanced-patterns.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>基础 RAG（embedding + 检索 + LLM）解决 80% 场景。剩下 20% 需要高级模式：让 RAG 更智能、更准、更鲁棒。</description>
   </item>
   <item>
     <title>RAG 实战 · RAG 生产化 Checklist</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/rag/10-prod-checklist.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/rag/10-prod-checklist.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>把 RAG 从「能跑」到「生产能用」要解决的 30 个问题。这一章是上线前的最后一道关。</description>
   </item>
   <item>
     <title>Harness Engineering · 什么是 Harness：从裸 API 到能干活 Agent 的距离</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/01-what-is-harness.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/01-what-is-harness.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 1 月某个周末，我开始写自己的第一个个人 agent。LLM 调通了，能正常回答问题，我以为这就完了。结果第一天试运行，3 个真实用户把 3 种灾难全触发出来。</description>
   </item>
   <item>
     <title>Harness Engineering · Agent Loop：把 `while not done` 展开成 8 种变体</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/02-agent-loop.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/02-agent-loop.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>第 1 章那个 8 行 while not done 是最小骨架。真实生产里它会变成什么样？这一章拆 8 种主流变体——每种适用场景、关键差异、我自己翻过的车。</description>
   </item>
   <item>
     <title>Harness Engineering · Tool 设计：Tool 是 LLM 的手，怎么造好这只手</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/03-tool-design.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/03-tool-design.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>第 2 章讲了 agent loop 怎么跑。这章讲 loop 里那个最常被低估的部分——tool 本身。Tool 设计不好，LLM 再强也发挥不出来。</description>
   </item>
   <item>
     <title>Harness Engineering · Context 管理：Context Window 爆了怎么办</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/04-context-management.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/04-context-management.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>第 1 章我写过&quot;context 爆了&quot;——第 12 轮 agent 失忆。这章专门拆 context 管理：4 种 compact 策略、prompt cache 怎么用、tool result 怎么 trim、长文档怎么处理。</description>
   </item>
   <item>
     <title>Harness Engineering · Permissions / Sandbox：怎么拦 LLM 不删你文件</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/05-permissions-sandbox.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/05-permissions-sandbox.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>第 1 章我写过 agent 误删 /tmp/cache 的事——那只是冰山一角。LLM 拿到 tool 能力后，能删文件、跑命令、花钱、发邮件、调外部 API，每一种都是真实风险。这章拆 harness 第二块基石——permission 和 sandbox。</description>
   </item>
   <item>
     <title>Harness Engineering · Observability：Agent 在生产里跑，trajectory、cost、latency 怎么观测</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/06-observability.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/06-observability.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前 5 章讲了 loop / tool / context / permissions。但 agent 上线后第一周你就会发现：本地跑得好好的任务在生产里 30% 失败，cost 莫名其妙翻 3 倍，某用户卡在第 12 步不动——没有 observability 你只能猜。这章讲 harness 第三块基石。</description>
   </item>
   <item>
     <title>Harness Engineering · Memory 分层：LLM 没记忆，Agent 需要</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/07-memory-layers.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/07-memory-layers.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>LLM 每次对话都是孤立的——它不知道你昨天说过什么、上周做的项目、你的偏好。Agent 要&quot;看起来记得&quot;，必须靠 harness 主动管理 memory。这章拆 3 层 memory 模型 + procedural memory + vector DB 选型 + update / decay 策略。</description>
   </item>
   <item>
     <title>Harness Engineering · Failure Recovery：Agent 出错了怎么恢复</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/08-failure-recovery.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/08-failure-recovery.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前 7 章讲 loop / tool / context / permissions / observability / memory。每块都可能失败——tool 失败、LLM 出错、context 爆、permission 被拒、sub-agent 跑飞。这一章专门拆 failure recovery：retry、rollback、checkpoint、human-in-loop。</description>
   </item>
   <item>
     <title>Harness Engineering · Eval-Driven Development：Harness 怎么测自己</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/09-eval-driven.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/09-eval-driven.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前 8 章讲的 harness 组件——loop / tool / context / permissions / observability / memory / recovery——每个都可能改坏。每次改 prompt、加 tool、调 compact 阈值，你怎么知道 harness 没退化？这章拆 harness 自己的测试体系。</description>
   </item>
   <item>
     <title>Harness Engineering · 从零造一个 Harness：把前 9 章串起来</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/10-build-from-scratch.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/10-build-from-scratch.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前 9 章讲了 harness 的 9 个组件。这一章把它们组合起来——给一个完整的项目结构、reference implementation、以及 prototype 演进到 production 的路径。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · 为什么 Agent 经济学跟 SaaS 不一样</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/01-cost-economics.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/01-cost-economics.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>去年 9 月我的 agent side project 周活刚过 100，OpenAI 账单是 $420。之前的 4 个月一直是 $40-60。一个月翻 7 倍。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · Token 是怎么烧的</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/02-where-tokens-go.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/02-where-tokens-go.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>第一次看 OpenAI 账单我以为是 &quot;我用的模型太贵&quot;。第二次看账单，我以为 &quot;用户用太多了&quot;。第三次我才意识到：token 烧在哪我根本不知道。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · Model routing 101</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/03-model-routing.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/03-model-routing.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>路由这个事，最朴素的想法是&quot;贵的 model 强，便宜的 model 弱&quot;。但实际生产里任务的难度不是均匀分布的。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · Caching 三层</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/04-caching-layers.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/04-caching-layers.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>上 routing 之后我的账单从 $400 降到 $180。但我看 log 发现一个事：同一段 prompt 一周内被发 800 多次。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · Prompt 压缩</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/05-prompt-compression.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/05-prompt-compression.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Cache 把&quot;重复&quot;省了，routing 把&quot;杀鸡用牛刀&quot;省了，但prompt 本身臃肿这件事 cache 救不了你——每次都是新内容，每次都付全价。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · Batch vs Stream</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/06-batch-vs-stream.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/06-batch-vs-stream.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>OpenAI 的 Batch API 给 50% 折扣。我一开始以为&quot;那肯定用 batch 啊，便宜一半&quot;。后来发现事情没那么简单。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · 用户粒度 quota</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/07-user-quota.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/07-user-quota.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前面 6 章都在讲&quot;我&quot;的成本——怎么让 LLM call 更便宜。这一章讲怎么让别人怎么用我的 agent。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · 预算告警 + 熔断</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/08-budget-circuit-breaker.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/08-budget-circuit-breaker.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>quota 解决 per-user 的成本。circuit breaker 解决 per-system 的成本——整个 agent 失控时怎么办。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · 工具调用省钱模式</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/09-tool-cost.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/09-tool-cost.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>prompt 和 model 选对了，账单砍 70%。但工具调用本身是另一个 cost center，我之前没意识。</description>
   </item>
   <item>
     <title>Agent Cost Engineering · Cost dashboard 自建</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/10-cost-dashboard.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/10-cost-dashboard.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前面 9 章都讲了具体的优化技巧，但没有 dashboard 你看不到效果。我最早是每月看一次 OpenAI 账单——这等于&quot;开车不仪表盘，下车看油表&quot;。</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · 2026 一个人做产品的数学</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/01-indie-math.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/01-indie-math.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>5 月 20 号 Google I/O，皮查伊说了一句会被反复引用的话：AI 的下一站不是会聊天的模型，是会行动的智能体。</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · 从模糊 idea 到&quot;明早能开工&quot;的方案</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/02-idea-to-scope.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/02-idea-to-scope.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 6 月，吴恩达在 AI 创业学院的演讲里说了一句话，被无数人引用过：</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · 不写代码先做调研</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/03-validate-without-code.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/03-validate-without-code.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Andrew Ng 在 2025 年那个讲&quot;速度&quot; 的演讲里给了一个非常具体的反馈菜单，我 5 年前就记下来了，今天还在用：</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · 用 AI 设计产品</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/04-design-with-ai.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/04-design-with-ai.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>偏见来源是我自己用过几次 AI 生成 UI，出来的东西都&quot;看着像 AI&quot;。配色像 2020 年的 Material Design，间距像 Bootstrap 模板，按钮像 SaaS 烂大街的紫色。</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · 用 AI 写文案</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/05-write-with-ai.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/05-write-with-ai.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Marc Lou 是 2024-2025 年最被引用的独立开发者之一。他的小工具&quot;Simple Analytics 复制版&quot;上线 11 天就月入 $5k。</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · PMF 信号怎么看</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/06-pmf-signals.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/06-pmf-signals.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我自己的 side project 经历里，最贵的 3 个月发生在 2024 年。</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · 100 个人怎么找到你</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/07-distribution.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/07-distribution.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Marc Lou 在 2024 年分享过他是怎么从 0 到 100 个付费用户的。整段分享他反复说一句话：</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · AI 产品的定价</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/08-pricing.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/08-pricing.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Pieter Levels 在 2024 年公开过他所有产品的定价数据。最赚钱的 Photo AI（AI 头像生成器）定价 $29 一次性购买，不订阅。他试过订阅，改回一次性了。 他说：&quot;用户对 AI 工具的支付意愿是一次性的，不是订阅的。&quot;</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · 第一个 10 个付费用户</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/09-first-paying-users.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/09-first-paying-users.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我自己的 side project 经验里，最关键的数字不是 100、不是 1000，是 10。</description>
   </item>
   <item>
     <title>Indie + AI：一个人做产品的产品方法论 · 留存 vs 增长</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/10-retention-vs-growth.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/10-retention-vs-growth.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Marc Lou 2024 年的 1 个推文被独立开发者社区反复截图：</description>
   </item>
   <item>
     <title>Context Engineering 实战 · 为什么需要 Context Engineering</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/01-why-context-engineering.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/01-why-context-engineering.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2024 年中，我帮一个法律 SaaS 团队看他们的合同审查产品。团队里两个 prompt 工程师花了一周时间调 prompt，调完交付的 prompt 大概 800 字，里面塞满了 few-shot 示例、角色指令、格式要求、风格约束。开发把 prompt 接到产品里，测试时效果很好——5 个测试合同全部识别正确。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · 上下文窗口与 token 基础</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/02-context-window-tokens.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/02-context-window-tokens.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>当时我在做一个客服对话产品，模型是 GPT-3.5-turbo，context window 4K。我把整段对话历史、所有客户资料、所有产品文档全部塞进 prompt 里。最后一个用户发长消息时，模型直接吐回了&quot;as an AI language model...&quot;（截断后的默认回复）。整整 3 个月的对话数据、用户资料、prompt 调优全部浪费。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · Write 策略：外部存储与记忆架构</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/03-write-storage-memory.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/03-write-storage-memory.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年初我帮一个出海产品做架构 review。技术 leader 很自豪地展示他们&quot;完整的 context&quot;——产品文档、客户历史、订单记录、客服对话、用户偏好，全部塞在每次 LLM 调用的 system prompt 里。他们的 system prompt 大约 18K token。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · Select 策略：RAG 与检索</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/04-select-rag-retrieval.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/04-select-rag-retrieval.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2024 年我做产品的时候，跟一个 RAG 团队的工程师吵了 3 个小时。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · Compress 策略：摘要与上下文压缩</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/05-compress-strategies.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/05-compress-strategies.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年我帮一个法律 SaaS 客户做 context 优化。客户在做一个合同审查 agent，每份合同平均 80K token。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · Isolate 策略：结构化与隔离</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/06-isolate-structure.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/06-isolate-structure.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>一个 SaaS 客户做&quot;智能分析师&quot;产品，单个 agent 试图做所有事——查数据、写报告、绘图、发邮件、跟进客户。System prompt 8000 token，包含 47 条指令。Tools 列表 120 个。Knowledge base 30 个。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · 工具调用与 MCP</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/07-tools-and-mcp.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/07-tools-and-mcp.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 11 月我们做一个代码助手 agent。Agent 系统 prompt 里挂了 200 个工具——文件读写、git、docker、数据库、网络、API 调用、测试、部署、监控。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · 多 Agent 上下文管理</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/08-multi-agent-context.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/08-multi-agent-context.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年我帮一个出海产品做多 agent 架构。系统有 4 个 agent：研究 agent（搜信息）、写作 agent（生成内容）、审核 agent（检查质量）、发布 agent（推到平台）。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · 自主 Agentic RAG</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/09-agentic-rag.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/09-agentic-rag.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2024 年大部分 RAG 系统是&quot;一次性检索&quot;——用户问问题，系统检索 5-10 个 chunk，喂给 LLM 生成答案。</description>
   </item>
   <item>
     <title>Context Engineering 实战 · 生产反模式与未来</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/10-production-antipatterns.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/10-production-antipatterns.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>这一章是收尾。我会讲 5 个最常见的 context 灾难（我自己在 2023-2025 年都踩过），然后是 2026 年下半年到 2027 年的几个明确趋势。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · Skills 是什么</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/01-what-is-skill.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/01-what-is-skill.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 10 月 16 日，Anthropic 推出一项新功能叫 Skills。我当时没太在意——以为是 Claude Code 的小升级。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · SKILL.md 文件结构</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/02-skill-md-structure.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/02-skill-md-structure.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 11 月我第一次写 Skill，模仿网上找的 3 个例子拼出来一个 SKILL.md。Claude 在该调用的时候不调用，不该调用的时候瞎调用。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · Skills 触发机制</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/03-trigger-mechanism.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/03-trigger-mechanism.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我写了一个 Skill 想&quot;自动写测试&quot;。description 写的是&quot;写单元测试&quot;。我以为模型会在我每次说&quot;补测试&quot;时自动调用。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · CLAUDE.md vs Skills：最关键的边界</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/04-claudemd-vs-skills.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/04-claudemd-vs-skills.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我把&quot;代码规范&quot;放在了 CLAUDE.md 里（项目级固定加载），把&quot;怎么写代码&quot;放在了 Skills 里。结果：每次对话开头 5K token 都被 CLAUDE.md 吃掉了，不管用户在不在写代码。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · 8 大实用 Skills 拆解</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/05-eight-essential-skills.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/05-eight-essential-skills.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年公开的 Skills 超过 85,000 个。80% 的项目用不到这么多。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · 写你的第一个 Skill</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/06-write-your-first-skill.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/06-write-your-first-skill.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 12 月我开始写第一个 Skill。模仿网上的例子拼出来一个 SKILL.md，触发不对、输出不对、过度触发。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · Skills 测试与评估</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/07-test-and-evaluate.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/07-test-and-evaluate.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 12 月我发布了一个 Skill，团队 3 个人用。2 周后他们说&quot;用不上&quot;。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · Token 成本与性能优化</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/08-token-cost-optimization.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/08-token-cost-optimization.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年初我把项目 Skills 从 5 个加到 12 个。某天发现每次对话开始都&quot;慢半拍&quot;——模型要在 12 个 Skill 的 description 里&quot;找匹配的&quot;。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · Skills 市场与共享</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/09-marketplace-and-sharing.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/09-marketplace-and-sharing.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 11 月我分享了 1 个 Skill 到 GitHub。1 周后 23 个 star，3 个 fork。</description>
   </item>
   <item>
     <title>Agent Skills 实战 · 生态与未来</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/10-ecosystem-and-future.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/10-ecosystem-and-future.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 4 月公开 Skills 数量 85,000+。2025 年同期这个数字是 0。半年增长曲线接近指数。</description>
   </item>
   <item>
     <title>Claude Code 实战 · Claude Code 是什么</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/01-what-is-claude-code.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/01-what-is-claude-code.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年初 Anthropic 推出 Claude Code。我同事说&quot;就是个 CLI 工具&quot;。我用了一周后跟他说：&quot;这不是 CLI 工具，是 AI 工程师的&#x27;工地&#x27;。&quot;</description>
   </item>
   <item>
     <title>Claude Code 实战 · 安装与 10 个关键设置</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/02-install-and-config.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/02-install-and-config.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我第一次安装 Claude Code 时以为装好就能用。结果一上来就卡住 4 个小时。</description>
   </item>
   <item>
     <title>Claude Code 实战 · CLAUDE.md 深入：项目记忆的写法</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/03-claudemd-deep-dive.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/03-claudemd-deep-dive.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我团队 2025 年 12 月启用 Claude Code 的时候，遇到一个问题：3 个工程师用 Claude Code 写的代码风格不一样。</description>
   </item>
   <item>
     <title>Claude Code 实战 · Skills 与 Hooks：工作流自动化</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/04-skills-and-hooks.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/04-skills-and-hooks.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我团队 2025 年 12 月每周开 1 次&quot;code review 会议&quot;——3 个工程师 review 30 个 PR。</description>
   </item>
   <item>
     <title>Claude Code 实战 · SubAgent 与 Worktree：并行任务</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/05-subagent-and-worktree.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/05-subagent-and-worktree.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我 2025 年开始用 Claude Code 时，每次都让 1 个 Claude 处理所有事。重构成 3 个 SubAgent 之后，单个任务的处理时间从 18 分钟降到 6 分钟。</description>
   </item>
   <item>
     <title>Claude Code 实战 · MCP 集成：连接外部工具</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/06-mcp-integration.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/06-mcp-integration.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 11 月我让 Claude Code 读 Postgres 数据库。3 种方案：</description>
   </item>
   <item>
     <title>Claude Code 实战 · Slash Commands：自定义命令</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/07-slash-commands.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/07-slash-commands.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我团队 2025 年 12 月每周开 1 次&quot;代码规范检查会议&quot;——3 个人 1 小时。改成 slash command 后，每周 5 分钟跑一次。</description>
   </item>
   <item>
     <title>Claude Code 实战 · 10 个真实场景</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/08-ten-real-scenarios.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/08-ten-real-scenarios.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前 7 章讲原理。这一章把原理落到 10 个真实场景——Claude Code 怎么帮我做日常开发。</description>
   </item>
   <item>
     <title>Claude Code 实战 · Token 成本与性能调优</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/09-cost-and-performance.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/09-cost-and-performance.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我 2025 年 11 月第一次看 Claude Code 月账单：$340。一个月。</description>
   </item>
   <item>
     <title>Claude Code 实战 · 局限 + 未来：Claude Code vs Cursor vs Codex vs TRAE</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/10-limits-and-future.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/claude-code/10-limits-and-future.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>我团队 2026 年 4 月用了 6 个月 Claude Code。3 个工程师，1 个 backend，1 个 frontend，1 个 fullstack。</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 什么是 vibe coding</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/01-what-is-vibe-coding.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/01-what-is-vibe-coding.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年 2 月，Andrej Karpathy 在 X 上发了一条推：&quot;There&#x27;s a new kind of coding I call &#x27;vibe coding&#x27;, where you fully give in to the vibes, embrace exponentials, and forget that the code even exists.&quot;</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 工具全景：七款主流 vibe coding 工具横评</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/02-tools-landscape.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/02-tools-landscape.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 6 月这个时间点，能正经做 vibe coding 的工具有 7 款。我把它们按&quot;终端 vs IDE&quot;分两组讲，再按&quot;国内 vs 海外&quot;分一遍。</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 三段式口述：vibe coding 的标准方法</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/03-three-stage-method.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/03-three-stage-method.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>vibe coding 听起来很玄，其实有个标准三段式：初始需求 → AI 生成（带瑕疵）→ 精准修正口令。这一章把这个方法论讲透。</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 真坑 1：N+1 性能陷阱</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/04-pitfall-n-plus-one.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/04-pitfall-n-plus-one.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 5 月中旬，我接手一个电商小程序后端项目（代号 EC-MINI-2026），商品列表接口用 vibe coding 全程生成。AI 第一版生成的代码：</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 真坑 2：字段命名 / 规范割裂</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/05-pitfall-naming.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/05-pitfall-naming.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 3 月，我带后端小组用 Claude Code 开发物流追踪系统（代号 LOGISTICSV2），20+ 个 Flask REST 接口全 vibe coding。第 12 天前端同事冲进会议室：&quot;接口字段全部 undefined。&quot;</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 真坑 3：安全 / 鉴权 / 密钥硬编码</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/06-pitfall-security.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/06-pitfall-security.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>vibe coding 出来的代码最大的安全黑洞是密钥硬编码。AI 默认会写 secret = &quot;123456789&quot; 这种东西，因为它的训练数据里大量示例就是硬编码方便教学。</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 多文件联动 / 全局重构</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/07-multi-file-refactor.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/07-multi-file-refactor.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>vibe coding 处理单文件 bug 没问题，但碰到跨文件修改就开始掉链子。AI 默认只看到自己刚写的代码，看不到整个项目的依赖图。</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 中文需求理解 / 国内工具链</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/08-chinese-localized.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/08-chinese-localized.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 vibe coding 在国内有个绕不开的问题：主流 vibe coding 工具（Claude Code / Cursor / Windsurf / Copilot）的中文需求理解都不行。</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · vibe coding 的边界：什么时候该停</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/09-boundaries.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/09-boundaries.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>vibe coding 不是万能的。2025 年 Karpathy 提出这个概念时附了一句免责声明：</description>
   </item>
   <item>
     <title>Vibe Coding 实战 · 我的 vibe coding 工作流模板</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/10-my-workflow.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/10-my-workflow.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>一年下来，踩了 50+ 次坑之后，我沉淀出一套可复用的 vibe coding 工作流。这一章把流程、模板、清单全放出来，你拿去直接用。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · 什么是 A2A 协议</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/01-what-is-a2a.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/01-what-is-a2a.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 4 月，Google 联合 50 多家公司（包括 Salesforce、Atlassian、LangChain、MongoDB、ServiceNow 等）推出了 Agent2Agent A2A 协议。目标是让不同框架、不同厂商的 agent 互相通信、互相协作——不需要事先集成。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · A2A vs MCP：分工与配合</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/02-a2a-vs-mcp.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/02-a2a-vs-mcp.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>MCP（Model Context Protocol）和 A2A 是 2026 年 agent 协议层的双子星。它们解决不同问题，经常被混淆。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · Agent Card：A2A 的自我介绍</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/03-agent-card.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/03-agent-card.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Agent Card 是 A2A 协议的核心原语——一个 JSON 文件，描述 agent 的身份、能力、输入输出、认证方式。所有 agent 间互操作都从 Agent Card 开始。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · A2A 4 种协作范式</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/04-four-collaboration-patterns.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/04-four-collaboration-patterns.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>A2A 协议定义了 agent 间通信的语法和语义，但怎么组织多个 agent 完成复杂任务是个模式问题。2026 年业界主流有 4 种协作范式：管道、辩论、分层、市场。每种适合不同场景。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · 管道模式（Pipeline）实战</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/05-pipeline-mode.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/05-pipeline-mode.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>管道是 4 种 A2A 协作范式里最简单的，但&quot;简单&quot;不等于&quot;容易&quot;。2025 年我们用 LangChain 搭过一个研究综述 pipeline，上线第一个月就出了 3 次生产事故，全是管道特有的坑。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · 辩论模式（Debate）实战</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/06-debate-mode.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/06-debate-mode.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>辩论模式是 4 种协作范式里最烧 token、最慢、但答案质量最高的范式。2026 年它在两个场景爆发：高风险决策（投资 / 医疗 / 法律）、需要可解释的答案（每个 agent 的推理可见）。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · 分层模式（Hierarchical）实战</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/07-hierarchical-mode.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/07-hierarchical-mode.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Hierarchical 是 4 种协作范式里最像真实组织架构的模式：PM agent 拆任务、Worker agent 执行、PM agent 汇总。80% 的生产 agent 系统用这个范式。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · 市场模式（Market）实战</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/08-market-mode.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/08-market-mode.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>市场模式是 4 种协作范式里最前沿、最不成熟、但潜力最大的模式。它把 agent 当成独立的&quot;经济主体&quot;，通过竞标 / 协商 / 结算机制动态协作。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · A2A 安全边界</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/09-security-boundary.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/09-security-boundary.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>A2A 协议让 agent 之间能互相调用，这是把双刃剑——便利性的另一面是安全风险。2026 年 A2A 安全事件比 MCP 多得多，因为 agent 比工具更&quot;聪明&quot;，能做的事更多，攻击面更大。</description>
   </item>
   <item>
     <title>A2A + 多 Agent 互操作 · 真实生产架构：端到端 A2A 系统怎么搭</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/10-real-architecture.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/10-real-architecture.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>最后这一章把所有范式、安全机制、协议组合起来，看一个端到端的 A2A 生产系统怎么搭。案例：2026 年 Q2 我帮一个金融科技客户搭的&quot;AI 风控分析师团队&quot;。</description>
   </item>
   <item>
     <title>长期记忆系统 · 为什么 agent 需要长期记忆</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/01-why-memory-matters.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/01-why-memory-matters.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年我做过一次统计：单 agent 系统（只有 prompt + 工具 + 当前会话上下文）平均会话寿命 8 分钟——超过 8 分钟，用户就开始抱怨&quot;它又忘了&quot;。所谓&quot;金鱼记忆&quot;。</description>
   </item>
   <item>
     <title>长期记忆系统 · 三层记忆架构</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/02-three-layer-memory.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/02-three-layer-memory.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>长期记忆不是&quot;一个超大数据库&quot;，而是3 层不同性质的存储 + 互相协调。这一章讲清 3 层架构的设计原理、各自的存储选型、互相怎么协作。</description>
   </item>
   <item>
     <title>长期记忆系统 · Working Memory：会话级上下文工程</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/03-working-memory.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/03-working-memory.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Working memory（工作记忆）是 3 层记忆里最基础、但坑最多的一层。它就是 LLM 的 context window，但要在 100K-200K token 的限制下塞进尽可能多的有用信息。</description>
   </item>
   <item>
     <title>长期记忆系统 · Episodic Memory：事件流存储</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/04-episodic-memory.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/04-episodic-memory.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Episodic memory（情景记忆）是 3 层记忆里数据量最大、查询频率最高、技术最成熟的一层。本质就是一个事件流数据库 + 向量检索能力。</description>
   </item>
   <item>
     <title>长期记忆系统 · Semantic Memory：从事件提炼知识</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/05-semantic-memory.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/05-semantic-memory.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Semantic memory（语义记忆）是 3 层记忆里抽象度最高、技术挑战最大的一层。它不是直接存事件，而是从事件流中提炼出&quot;知识&quot;——偏好、规则、事实、关系。</description>
   </item>
   <item>
     <title>长期记忆系统 · 向量数据库：选型与实战</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/06-vector-db.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/06-vector-db.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>向量数据库（Vector DB）是长期记忆系统的基础设施——episodic memory 和部分 semantic memory 都靠它。这一章讲清楚主流向量库的对比、选型、实战经验。</description>
   </item>
   <item>
     <title>长期记忆系统 · 知识图谱：关系推理</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/07-knowledge-graph.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/07-knowledge-graph.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>向量数据库擅长相似度检索，但关系推理很弱——它知道&quot;咖啡&quot;和&quot;茶&quot;语义相似，不知道&quot;用户 A 喜欢茶、不喜欢咖啡&quot;这种关系。</description>
   </item>
   <item>
     <title>长期记忆系统 · 混合检索：向量 + 图谱 + 关键词</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/08-hybrid-retrieval.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/08-hybrid-retrieval.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>单一检索方式都不够——向量检索擅长相似度但不懂关系，关键词检索懂精确但不懂语义，图谱检索懂关系但规模受限。</description>
   </item>
   <item>
     <title>长期记忆系统 · Memory 写入策略：什么时候写、写什么</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/09-memory-write-strategy.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/09-memory-write-strategy.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>长期记忆系统的成本主要由写入量决定。乱写 → 存储爆炸 + 检索慢 + 成本飙升。写什么、不写什么，是设计的关键决策。</description>
   </item>
   <item>
     <title>长期记忆系统 · 真实生产系统：端到端长期记忆架构</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/10-real-system.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/10-real-system.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>最后这一章把所有层、组件、策略组合起来，看一个端到端的长期记忆系统怎么搭。案例：2026 年 Q1 我帮一家 SaaS 公司搭的&quot;AI 客服助手&quot;长期记忆系统。</description>
   </item>
   <item>
     <title>具身智能实战 · 什么是具身智能</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/01-what-is-embodied.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/01-what-is-embodied.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2025 年是 LLM agent 的元年，2026 年是 embodied agent（具身智能）的元年。Tesla Optimus Gen 2、Figure 02、国内的宇树 H1、智元 A2 都在 2026 年开始量产。Gartner 预测 2028 年具身智能市场规模达 800 亿美元。</description>
   </item>
   <item>
     <title>具身智能实战 · 具身智能的三大支柱</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/02-three-pillars.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/02-three-pillars.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>具身智能是个综合技术栈，由三大支柱组成：大脑（AI 模型）+ 身体（硬件）+ 训练场（仿真平台）。每一支柱都决定最终能力上限，缺一不可。</description>
   </item>
   <item>
     <title>具身智能实战 · 世界模型：embodied agent 的大脑核心</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/03-world-models.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/03-world-models.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>世界模型（World Model）是 embodied agent 大脑里最关键的部分——它让 agent 能在&quot;脑子里&quot;模拟&quot;如果我做 X 会发生什么&quot;，而不需要真的去做 X。</description>
   </item>
   <item>
     <title>具身智能实战 · 仿真训练：embodied agent 的核心工程</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/04-simulation-train.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/04-simulation-train.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>真实机器人训练成本极高——一台 Optimus 一年折旧 + 电费 + 维护 ≈ 30 万人民币，1 天能跑的实验次数 &lt; 100。</description>
   </item>
   <item>
     <title>具身智能实战 · 仿真平台深度对比：Isaac Lab / Genesis / MuJoCo / Habitat</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/05-simulation-platforms.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/05-simulation-platforms.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>仿真平台是 embodied agent 训练的&quot;基础设施&quot;。选错平台，训练效率差 10x、成本差 5x。</description>
   </item>
   <item>
     <title>具身智能实战 · 真机部署：sim-to-real 最后一公里</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/06-real-robot.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/06-real-robot.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>仿真训练出来的策略，部署到真实机器人上往往性能下降 20-50%。这一章讲 sim-to-real 的实战经验——怎么让仿真训练的效果真正迁移到真实世界。</description>
   </item>
   <item>
     <title>具身智能实战 · 机械臂：操作任务的 embodied agent</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/07-manipulation.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/07-manipulation.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>机械臂是 embodied agent 最成熟的方向——控制理论成熟、硬件便宜、应用场景明确。这一章讲机械臂 embodied agent 的核心能力：抓取、操作、精细技能。</description>
   </item>
   <item>
     <title>具身智能实战 · 导航：移动机器人的 embodied agent</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/08-navigation.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/08-navigation.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>导航是 embodied agent 的另一个成熟方向——让机器人从 A 点移动到 B 点。这一章讲室内外导航、SLAM、路径规划、动态避障。</description>
   </item>
   <item>
     <title>具身智能实战 · 家庭服务机器人：消费级具身智能</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/09-home-service.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/09-home-service.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>家庭服务机器人是 embodied agent 离消费者最近的应用——也是商业化最难的方向。2026 年开始有真实家庭试点（1X Neo、Figure 02、Tesla Optimus）。</description>
   </item>
   <item>
     <title>具身智能实战 · 具身智能未来 3-5 年展望</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/10-future-outlook.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/10-future-outlook.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>具身智能是 AI 领域最有想象力的方向——把 LLM / VLM 的大脑装到机器人的身体里。这一章讲我对未来 3-5 年的判断：技术突破点、商业爆发点、风险点、入场时机。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · 内容产业正在被 AI 重塑</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/01-industry-reshuffle.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/01-industry-reshuffle.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年的内容产业正在经历 1995 年互联网 + 2010 年移动互联网以来最大的一次重构。AI 把&quot;创作&quot;这个过去靠稀缺天赋 + 大量时间的活儿，变成了&quot;有想法就能做&quot;的低门槛行为。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · AIGC 工具全景：2026 年用什么做内容</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/02-aigc-tools.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/02-aigc-tools.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>AIGC（AI Generated Content）工具 2026 年已经完全成熟，从文本 / 图像 / 视频 / 音频全覆盖。这一章讲每个模态的主流工具和实战选择。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · 内容生产工作流改造</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/03-workflow-rebuild.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/03-workflow-rebuild.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>AI 工具堆里挑哪个都好，怎么把它们串成工作流才是关键。这一章讲 4 种典型内容（Newsletter / YouTube / 小红书 / 播客）的完整 AI 工作流改造。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · Newsletter 经济：2026 年最值得做的内容生意</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/04-newsletter-economy.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/04-newsletter-economy.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Newsletter（邮件订阅）在 2020 年还只是小众爱好，2026 年已经是 年增长 30%+ 的内容创业赛道。Substack / Beehiiv / Kit 上 50 万+ 付费创作者，年收入 $40 亿+。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · Substack vs Beehiiv：平台深度对比</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/05-substack-beehiiv.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/05-substack-beehiiv.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Newsletter 平台是 Newsletter 经济的&quot;基础设施&quot;。2026 年主流平台：Substack、Beehiiv、Kit（ConvertKit）、Ghost、Mailchimp。这一章深度对比前 2 个最重要的——Substack 和 Beehiiv。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · 内容平台对比：Newsletter 之外的 6 大选择</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/06-content-platform-comparison.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/06-content-platform-comparison.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Newsletter 不是唯一选择。2026 年的内容创作者分布在多个平台。这一章对比 6 大主流内容平台——Substack / Beehiiv / YouTube / TikTok / 小红书 / Medium / 个人站——帮你找到适合自己的。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · 内容变现的 6 条路径</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/07-monetization-paths.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/07-monetization-paths.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>内容创作不只是写作 / 拍视频——最终目的都是变现。2026 年的内容变现生态比 2020 年丰富 10 倍。这一章讲 6 大主流变现路径，每条都附实战数据和坑。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · AI 协作创作：人和 AI 怎么配合</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/08-ai-co-creation.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/08-ai-co-creation.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>AI 不会替代创作者，但会用 AI 的创作者会替代不会用 AI 的创作者。这一章讲人和 AI 协作创作的具体方法、流程、避坑。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · AI 时代的版权与权利</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/09-copyright-and-rights.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/09-copyright-and-rights.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>AI 重塑了内容产业，也带来了法律灰色地带。这一章讲 AI 内容创作者必须知道的版权问题：训练数据版权、生成内容版权、AI 平台合规、个人创作保护。</description>
   </item>
   <item>
     <title>AI 内容创作经济 · AI 时代创作者的未来 3-5 年</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/10-future-creator.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/10-future-creator.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>这是 AI 内容创作经济系列的最后一章。我对接下来 3-5 年的判断：哪些趋势会持续、哪些会被颠覆、创作者应该怎么准备。</description>
   </item>
   <item>
     <title>Codex 实战案例 · AI Agent 实战案例库 — 2026 范式转移</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/01-paradigm-shift.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/01-paradigm-shift.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 6 月 3 日，OpenAI 办了一场叫&quot;AI 上岗&quot;的发布会。会上宣布的事情，对独立开发者来说，比任何模型升级都重要：</description>
   </item>
   <item>
     <title>Codex 实战案例 · Codex 2026 大爆发：6/3 发布会深度拆解</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/02-codex-explosion.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/02-codex-explosion.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 6 月 3 日北京时间凌晨，OpenAI 办了一场叫&quot;AI 上岗&quot;的发布会。一个半小时，讲了一件把整个独立开发者生态重新洗牌的事。我把这场发布会所有公开信息 + 后续 24 小时业界反应整理了一遍。</description>
   </item>
   <item>
     <title>Codex 实战案例 · AGENTS.md 实战：让 Codex 自动遵守项目规则</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/03-agents-md.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/03-agents-md.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Codex 2026 有一个被我低估的&quot;杀手级功能&quot;：AGENTS.md。在项目根目录放一个 AGENTS.md 文件，Codex 每次启动都会自动读取并遵守里面的规则。无需在 prompt 里重复强调规范。</description>
   </item>
   <item>
     <title>Codex 实战案例 · CodexLoop：让 AI 长任务不偷懒的 4 个机制</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/04-codex-loop.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/04-codex-loop.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>独立开发者用 Codex / Claude Code 写长任务，90% 的项目最终死在同一个地方：AI 偷懒。我自己跑了 50+ 长任务，每个都中过招。这一章讲 CodexLoop 这个开源工具怎么系统化解决&quot;AI 长任务偷懒&quot;，以及你能怎么用。</description>
   </item>
   <item>
     <title>Codex 实战案例 · 多 Agent 并行协作：spawn_agent + AIGrader 半天全栈复盘</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/05-multi-agent.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/05-multi-agent.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>独立开发者做项目，最大的瓶颈不是 AI 不会写代码，而是单 agent 串行太慢。一个全栈项目 = 后端 + 前端 + 数据库 + 测试 + 部署，5 块工作要顺序做完，等于 5 倍时间。</description>
   </item>
   <item>
     <title>Codex 实战案例 · Computer Use 实战：Codex 接管你电脑的能力图谱</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/06-computer-use.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/06-computer-use.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 5 月 29 日，OpenAI 发布 Codex App v26.527，Windows 平台正式获得 Computer Use 能力。这一章讲清楚这个能力到底是什么、它实际能做什么、不能做什么、独立开发者怎么用。</description>
   </item>
   <item>
     <title>Codex 实战案例 · CI/CD + Git 自动化：Codex 的工程化闭环</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/07-cicd-git.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/07-cicd-git.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>Codex 不只是个能写代码的 agent。真正能改变独立开发者工作流的是它跟 CI/CD + Git 的深度集成。这一章讲清楚 Codex 在工程化层面的 5 个核心场景、怎么配置、避坑指南。</description>
   </item>
   <item>
     <title>Codex 实战案例 · 飞书 CLI 实测：让 Codex 真正进入你的办公流</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/08-office-flow.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/08-office-flow.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>agent 进不了办公系统，再聪明的 AI 也只是聊天窗口。这一章讲一个真实案例——用 Codex + 飞书 CLI 接入你的日常办公，从&quot;能发一条测试消息&quot;到&quot;每天定时提醒检查 SEO/GEO&quot;的完整闭环。</description>
   </item>
   <item>
     <title>Codex 实战案例 · AIGrader 复盘：1 个人半天做出全栈 AI 批改平台</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/09-aigrader.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/09-aigrader.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>github.com/xiaodangjia/AIGrader 是 2026 年最值得拆的独立开发者项目之一——1 个人 1 半天做出 Spring Boot + React + pgvector 全栈 AI 批改平台。这一章把它彻底拆开，给你一个&quot;独立开发者用 AI 做到这种程度&quot;的具体路径。</description>
   </item>
   <item>
     <title>Codex 实战案例 · AI Agent 未来 6 个月 + 个人 Pick</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/10-future-pick.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/10-future-pick.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>写完前 9 章，我自己对 2026 下半年的判断也清晰了。这一章是收尾——讲清楚 3 个核心趋势、3 个独立开发者该抓的机会、3 个我正在押的方向。</description>
   </item>
   <item>
     <title>Codex 实战案例 · Codex 工具生态全景：4 条官方线 + 3 个第三方平替</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/11-tools-ecosystem.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/11-tools-ecosystem.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>国外独立开发者用 Codex 一年多了，真正在生产环境跑的，不只是一个 CLI。OpenAI 自己把 Codex 拆成了 4 条入口，社区又冒出了 3 个值得知道的平替工具。这一章把整张生态图完整画出来——每条线解决什么问题、什么场景用、跟谁配合。</description>
   </item>
   <item>
     <title>Codex 实战案例 · AGENTS.md + Skills 最佳实践：个人 ECC 系统</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/12-skills-best-practices.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/12-skills-best-practices.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>国外独立开发者用 Codex 一年后，沉淀出一套&quot;个人 ECC（Engineering Capability Center）&quot;——围绕 Codex 打造的个人工程能力系统。这一章讲清楚 AGENTS.md + Skills + MCP + Plan 模式的完整组合，给你一套今天就能抄走的工作流。</description>
   </item>
   <item>
     <title>Codex 实战案例 · Codex + MCP 完整实战：把外部世界接进你的 agent</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/13-mcp-playbook.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/13-mcp-playbook.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>MCP（Model Context Protocol）2025 年 11 月由 Anthropic 推出，到 2026 年 5 月已经有 9,723 个服务器、1.2 亿月下载。这一章讲清楚 Codex + MCP 的完整实战——最常用的 8 个 MCP、配置方法、组合策略、避坑。</description>
   </item>
   <item>
     <title>Codex 实战案例 · Codex vs Claude Code vs Cursor：三种哲学 + 组合策略</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/14-vs-cc-cursor.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/14-vs-cc-cursor.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>国外独立开发者 2026 年的真实状态：不再问&quot;哪个最好&quot;，而是&quot;我该怎么组合&quot;。这一章讲清楚三种工具的根本差异、场景选择、组合策略。这是 Codex 实战最关键的一章——选错工具，再多技巧都没用。</description>
   </item>
   <item>
     <title>Codex 实战案例 · 独立开发者 Codex 工作流模板：5 套真实可复制</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/15-indie-workflow.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/15-indie-workflow.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>最后一章给你 5 套国外独立开发者真实在跑的 Codex 工作流——复制 prompt + 配置 + 步骤。这一章是&quot;工具书&quot;，打开就能用。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 中国版 Codex 大乱斗：6 个月 15 款产品集体入场</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/01-battlefield.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/01-battlefield.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2026 年 1 月到 6 月，15 款国产 AI 编程 / 桌面 Agent 集体入场。这是我做独立开发以来，国内工具赛道最密集的 6 个月。这一章把这个时间线、为什么是这个时点、各家差异拆清楚——后面 9 章分别深入每家产品。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 字节三连：TRAE Work + 豆包 + 豆包专业版</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/02-bytedance.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/02-bytedance.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>字节在 6 个月内连发 3 款产品——TRAE Work（6/9）、豆包任务模式（6/12）、豆包专业版（6/24）。这一章把字节系一锅端。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 阿里四面：QoderWork + Qoder CN + 通义灵码 + 钉钉 AI</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/03-alibaba.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/03-alibaba.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>阿里 5 个月内连发 + 改名 4 款产品——QoderWork（1/30）、Qoder CN 改名（5/20）、通义灵码（持续）、钉钉 AI（持续）。通义灵码是国内 AI 编程市占率第一（800 万用户）。这一章把阿里系四面全拆。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 腾讯三连：WorkBuddy + Marvis + CodeBuddy</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/04-tencent.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/04-tencent.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>腾讯在 6 个月内发布 3 款产品——WorkBuddy（3/9）、Marvis（5/20）、CodeBuddy（持续）。WorkBuddy 3 月份月访问量国内第一。这一章把腾讯系三连全拆。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · Kimi Work 深度：300 子 Agent 集群 + 13 小时长任务 + 开源 K2.6</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/05-kimi.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/05-kimi.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>月之暗面 6/3-4 公测 Kimi Work ——这是 15 款产品里最技术野心的一个：300 个子 Agent 并行、13 小时长任务、4000+ 工具调用、底层 Kimi K2.6（1 万亿参数 MoE）完全开源。这一章深度拆。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 专业派：百度文心快码 + 智谱 CodeGeeX + 华为 CodeArts</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/06-baidu-zhipu-huawei.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/06-baidu-zhipu-huawei.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>前 5 章拆了 4 大头部厂商（字节 / 阿里 / 腾讯 / 月之暗面）。这一章拆专业派 3 款——百度文心快码 Comate 4.0（C++ 行业第一、政企市场）、智谱 CodeGeeX（完全开源 + 130 语言）、华为云 CodeArts（鸿蒙 + 嵌入式）。这 3 款不是&quot;大众产品&quot;，但在各自细分市场有真功夫。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 共同模式：15 款桌面 Agent 收敛的 5 个核心范式</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/07-common-patterns.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/07-common-patterns.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>15 款产品看似眼花缭乱，实际在收敛 5 个共同模式——worktree / 多 Agent 编排 / 异步执行 / Skills 生态 / 定时任务。这一章拆这 5 个范式，让你看透桌面 Agent 战场的底层逻辑。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 国内 API 接入方案：DeepSeek / Qwen / GLM / Kimi / 豆包</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/08-cn-api.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/08-cn-api.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>5 大国产模型对比 + 反代技巧 + 独立开发者省钱秘技——这一章给&quot;用 Codex 跑国产模型&quot;的完整方案。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 账号 / 订阅 / 配额：15 款产品的选型决策树</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/09-account-billing.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/09-account-billing.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>15 款产品怎么订阅、怎么计费、个人 / 团队 / 企业怎么选——这一章给最实际的&quot;我该选哪款&quot;决策。</description>
   </item>
   <item>
     <title>中国版 Codex 大乱斗 · 独立开发者选型 + GEO 视角：6 个月赢家预测 + 引流打法</title>
     <link>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/10-pick-geo.html</link>
     <guid isPermaLink="true">https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/10-pick-geo.html</guid>
-    <pubDate>Fri, 26 Jun 2026 14:42:52 +0000</pubDate>
+    <pubDate>Fri, 26 Jun 2026 15:01:22 +0000</pubDate>
     <description>2. GEO 视角引流打法——写这一系列怎么反向给自己主站（kunpeng-ai.com）引流</description>
   </item>
 </channel>
