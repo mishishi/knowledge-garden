@@ -537,7 +537,12 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     # D3 每周回顾（运行时由 JS 填）
     # ============================================================
     parts.append('<div class="weekly-recap" id="weekly-recap">')
-    parts.append('<h2 class="section-h2">本周回顾</h2>')
+    parts.append('<div class="recap-tabs">')
+    parts.append('<button class="recap-tab active" data-range="week">本周</button>')
+    parts.append('<button class="recap-tab" data-range="month">本月</button>')
+    parts.append('<button class="recap-tab" data-range="year">今年</button>')
+    parts.append('</div>')
+    parts.append('<div class="recap-summary" id="recap-summary"></div>')
     parts.append('<div class="weekly-grid" id="weekly-grid"></div>')
     parts.append('</div>')
 
@@ -1449,6 +1454,36 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     margin: 0 auto;
     padding: 0 20px;
 }
+.recap-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+.recap-tab {
+    background: transparent;
+    border: none;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-family: inherit;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+}
+.recap-tab:hover { color: var(--text); }
+.recap-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+.recap-summary {
+    font-size: 12.5px;
+    color: var(--text-faint);
+    margin-bottom: 8px;
+    font-style: italic;
+}
+.recap-summary strong { color: var(--text); font-weight: 500; font-style: normal; }
 .weekly-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -6281,50 +6316,8 @@ function renderOverview() {
     // 6. 周阅读目标进度（基于本周 dailyTime 总和）
     refreshWeeklyGoal(daily);
 
-    // 5. 每周回顾（基于 dailyTime + completed 时间戳）
-    const weeklyGrid = document.getElementById('weekly-grid');
-    if (weeklyGrid) {
-        const oneDay = 86400000;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        let weekSec = 0, weekCount = 0;
-        for (let i = 0; i < 7; i++) {
-            const d = new Date(today.getTime() - i * oneDay);
-            const k = d.toISOString().slice(0, 10);
-            weekSec += (daily[k] || 0);
-        }
-        // 本周已读章节（基于 completed 字典的 value 时间戳）
-        for (const [cid, ts] of Object.entries(progress.completed || {})) {
-            if (!ts || typeof ts !== 'number') continue;
-            const dt = new Date(ts);
-            const diff = today.getTime() - new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
-            if (diff >= 0 && diff < 7 * oneDay) weekCount++;
-        }
-        // 本周新增笔记（notes 字典里每个数组元素的 timestamp 字段）
-        let weekNotes = 0;
-        for (const arr of Object.values(notes)) {
-            for (const n of (Array.isArray(arr) ? arr : [])) {
-                if (!n || typeof n.timestamp !== 'number') continue;
-                const dt = new Date(n.timestamp);
-                const diff = today.getTime() - new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
-                if (diff >= 0 && diff < 7 * oneDay) weekNotes++;
-            }
-        }
-        const cells = [
-            { num: weekCount, lbl: '已读章节' },
-            { num: Math.round(weekSec / 60), lbl: '阅读分钟' },
-            { num: weekNotes, lbl: '新增笔记' },
-            { num: streak, lbl: '连续天数' },
-        ];
-        const hasAny = cells.some(c => c.num > 0);
-        if (hasAny) {
-            weeklyGrid.innerHTML = cells.map(c =>
-                '<div class="weekly-cell"><div class="weekly-num">' + c.num + '</div><div class="weekly-lbl">' + c.lbl + '</div></div>'
-            ).join('');
-        } else {
-            weeklyGrid.innerHTML = '<div class="weekly-empty">本周还没有阅读记录 — 去读一章开始累计。</div>';
-        }
-    }
+    // 5. 每周回顾（基于 dailyTime + completed 时间戳）— 支持 本周/本月/今年 三档
+    renderRecap();
 
     // 4. 继续阅读卡 (有 lastRead 才显示)
     const resume = document.getElementById('overview-resume');
@@ -6344,6 +6337,105 @@ function renderOverview() {
     // 5. 个性化推荐 (基于 reading history)
     renderPersonalRecs();
 }
+
+// ============================================================
+// 全局当前 recap tab，刷新 overview 时保留
+// （renderRecap + 点击事件定义在 renderOverview 外部，避免内部 let TDZ）
+// ============================================================
+let _recapRange = 'week';
+function renderRecap() {
+    const weeklyGrid = document.getElementById('weekly-grid');
+    const summaryEl = document.getElementById('recap-summary');
+    if (!weeklyGrid) return;
+
+    const oneDay = 86400000;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const range = _recapRange;
+    const rangeMs = range === 'week' ? 7 * oneDay : range === 'month' ? 30 * oneDay : 365 * oneDay;
+    const rangeLabel = range === 'week' ? '本周' : range === 'month' ? '本月' : '今年';
+    // 重新读 localStorage（独立函数不依赖外层局部变量）
+    const prog = JSON.parse(localStorage.getItem('progress') || '{}');
+    // 笔记是 array of {chapterId, bookSlug, text, timestamp}，不是按 chapterId 分组的 map
+    const notesArr = Array.isArray(notes) ? notes : JSON.parse(localStorage.getItem('notes') || '[]');
+    const daily = prog.daily || {};
+
+    // 区间内阅读秒数（按 daily）
+    let rangeSec = 0;
+    const daysToScan = Math.min(rangeMs / oneDay, 366);
+    for (let i = 0; i < daysToScan; i++) {
+        const d = new Date(today.getTime() - i * oneDay);
+        const k = d.toISOString().slice(0, 10);
+        rangeSec += (daily[k] || 0);
+    }
+    // 区间内已读章节
+    let rangeCount = 0;
+    for (const [cid, ts] of Object.entries(prog.completed || {})) {
+        if (!ts || typeof ts !== 'number') continue;
+        const dt = new Date(ts);
+        const diff = today.getTime() - new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
+        if (diff >= 0 && diff < rangeMs) rangeCount++;
+    }
+    // 区间内新增笔记
+    let rangeNotes = 0;
+    for (const n of notesArr) {
+        if (!n || typeof n.timestamp !== 'number') continue;
+        const dt = new Date(n.timestamp);
+        const diff = today.getTime() - new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
+        if (diff >= 0 && diff < rangeMs) rangeNotes++;
+    }
+    // 区间内涉及的不同书数
+    const rangeBooks = new Set();
+    for (const [cid, ts] of Object.entries(prog.completed || {})) {
+        if (!ts || typeof ts !== 'number') continue;
+        const dt = new Date(ts);
+        const diff = today.getTime() - new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()).getTime();
+        if (diff >= 0 && diff < rangeMs) {
+            const m = cid.match(/^([^_]+)__/);
+            if (m) rangeBooks.add(m[1]);
+        }
+    }
+
+    const cells = [
+        { num: rangeCount, lbl: '已读章节' },
+        { num: Math.round(rangeSec / 60), lbl: '阅读分钟' },
+        { num: rangeNotes, lbl: '新增笔记' },
+        { num: rangeBooks.size, lbl: '涉及系列' },
+    ];
+    const hasAny = cells.some(c => c.num > 0);
+    if (hasAny) {
+        weeklyGrid.innerHTML = cells.map(c =>
+            '<div class="weekly-cell"><div class="weekly-num">' + c.num + '</div><div class="weekly-lbl">' + c.lbl + '</div></div>'
+        ).join('');
+    } else {
+        const emptyMsg = range === 'week' ? '本周还没有阅读记录 — 去读一章开始累计。'
+            : range === 'month' ? '本月还没有阅读记录。'
+            : '今年还没有阅读记录。';
+        weeklyGrid.innerHTML = '<div class="weekly-empty">' + emptyMsg + '</div>';
+    }
+    // 顶上一行简短 summary
+    if (summaryEl) {
+        const totalChapters = document.querySelectorAll('.chapter[data-book]').length;
+        const pct = totalChapters ? Math.round(Object.keys(prog.completed || {}).length / totalChapters * 100) : 0;
+        summaryEl.innerHTML = rangeLabel + '读了 <strong>' + rangeCount + '</strong> 章 · '
+            + Math.round(rangeSec / 60) + ' 分钟 · 涉及 <strong>' + rangeBooks.size + '</strong> 个系列 · '
+            + '累计 ' + pct + '% 进度';
+    }
+}
+
+// 切换本周/本月/今年
+document.addEventListener('click', (e) => {
+    const tab = e.target.closest('.recap-tab');
+    if (tab) {
+        e.preventDefault();
+        const range = tab.dataset.range;
+        if (range && range !== _recapRange) {
+            _recapRange = range;
+            document.querySelectorAll('.recap-tab').forEach(t => t.classList.toggle('active', t === tab));
+            renderRecap();
+        }
+    }
+});
 
 // 个性化推荐：基于用户阅读历史 / 笔记 / 书签
 function renderPersonalRecs() {
