@@ -27,6 +27,8 @@ build_reader.py - v4 多书版阅读器
 import base64
 import json
 import re
+import time
+import os
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timezone
@@ -560,6 +562,90 @@ def build_knowledge_index(books) -> None:
     import os as _os_kb
     size_kb = _os_kb.path.getsize(out) / 1024
     print(f"生成 {out} ({N} chunks, {size_kb:.1f} KB)")
+
+
+def build_dense_index(books) -> None:
+    """生成 assets/knowledge_dense.json — BGE 中文 dense embedding.
+
+    - 用 sentence-transformers BAAI/bge-small-zh-v1.5 (512-dim, Chinese-specialized)
+    - 浏览器侧用 Xenova/bge-small-zh-v1.5 (transformers.js, 24MB int8 量化)
+    - chunk 切片复用 _kb_chunk_text + _kb_strip_markdown, ID 格式跟 TF-IDF 一致 (book__chap__i)
+    - 文件存 chunks[i].embedding = [512 floats]，JSON 格式，浏览器侧 fetch 解析
+    """
+    print("加载 BAAI/bge-small-zh-v1.5 (首次下载约 400MB,之后缓存)...")
+    from sentence_transformers import SentenceTransformer
+    t0 = time.time()
+    model = SentenceTransformer("BAAI/bge-small-zh-v1.5")
+    print(f"  模型加载 {time.time() - t0:.1f}s, dim={model.get_sentence_embedding_dimension()}")
+
+    # 切片（跟 TF-IDF 用同一函数，ID 格式一致）
+    chunks = []
+    for slug, meta, chapters in books:
+        for chap_slug, chap_path in chapters:
+            raw = chap_path.read_text(encoding="utf-8")
+            text = _kb_strip_markdown(raw)
+            if not text:
+                continue
+            chap_chunks = _kb_chunk_text(text, size=500, overlap=80)
+            chapter_title = chapter_display_title(raw, chap_slug)
+            for i, ct in enumerate(chap_chunks):
+                chunks.append({
+                    "id": f"{slug}__{chap_slug}__{i}",
+                    "chapterId": f"{slug}__{chap_slug}",
+                    "chapterTitle": chapter_title,
+                    "bookSlug": slug,
+                    "bookTitle": meta.get("title", slug),
+                    "text": ct,
+                })
+
+    if not chunks:
+        print("WARN: no chunks to embed")
+        return
+
+    print(f"  embedding {len(chunks)} chunks (batch 32)...")
+    t0 = time.time()
+    texts = [c["text"] for c in chunks]
+    # BGE 中文模型推荐 query 加 "为这个句子生成表示以用于检索相关文章：" prefix
+    # 但这里 chunk 不是 query,是文档侧,不需要 prefix
+    embeddings = model.encode(
+        texts,
+        batch_size=32,
+        show_progress_bar=True,
+        normalize_embeddings=True,  # L2 归一 → cosine = dot product
+        convert_to_numpy=True,
+    )
+    print(f"  embedding {time.time() - t0:.1f}s")
+
+    # 只存 id + embedding (base64-encoded float32)。text/title/bookSlug 在 TF-IDF 索引里有,
+    # 浏览器通过 id 关联获取。
+    # 用紧凑数组格式 [id1, emb1, id2, emb2, ...] 比 [{id, embedding}, ...] 小 ~15%
+    import base64 as _base64_dense
+    chunks_array = []
+    for i, c in enumerate(chunks):
+        emb_bytes = embeddings[i].astype("<f4").tobytes()  # 512 × 4 = 2048 bytes
+        emb_b64 = _base64_dense.b64encode(emb_bytes).decode("ascii")
+        chunks_array.append(c["id"])
+        chunks_array.append(emb_b64)
+
+    index = {
+        "version": 1,
+        "model": "BAAI/bge-small-zh-v1.5",
+        "dim": model.get_sentence_embedding_dimension(),
+        "encoding": "float32-base64",  # chunks 是 [id1, emb1, id2, emb2, ...] 紧凑数组
+        "N": len(chunks),
+        "chunkSize": 500,
+        "overlap": 80,
+        "chunks": chunks_array,
+    }
+
+    out = ROOT / "assets" / "knowledge_dense.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w", encoding="utf-8") as f:
+        _json_kb.dump(index, f, ensure_ascii=False, separators=(",", ":"))
+
+    import os as _os_kb
+    size_kb = _os_kb.path.getsize(out) / 1024
+    print(f"生成 {out} ({len(chunks)} chunks × {index['dim']}-dim, {size_kb:.1f} KB)")
 
 
 def build_overview_html(books, total_chapters, total_chars, total_minutes) -> str:
@@ -1292,6 +1378,21 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     font-family: inherit;
 }
 .kb-search-btn:hover { opacity: 0.9; }
+.kb-options {
+    padding: 0 22px 12px;
+    border-bottom: 1px solid var(--border);
+}
+.kb-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-soft);
+    user-select: none;
+}
+.kb-toggle input { cursor: pointer; }
+.kb-toggle-hint { color: var(--text-faint); font-size: 11px; }
 .kb-results {
     flex: 1;
     overflow-y: auto;
@@ -7033,6 +7134,214 @@ function kbHighlight(text, query) {
     return text.replace(re, '<mark>$1</mark>');
 }
 
+// ============================================================
+// 同义词扩展（精简版，只放 1-2 个最近同义词，避免 query 被稀释）
+// - 优先 CJK ↔ CJK，English ↔ English，不跨语言扩展（太泛）
+// - 权重 ×0.5（用空格重复一次模拟半权，TF-IDF 算 TF=2 vs TF=1）
+// - 不引入模型，纯字符串替换
+// ============================================================
+const KB_SYNONYMS = {
+    // RAG
+    'rag': '检索增强生成',
+    '检索增强生成': 'rag',
+    // Agent（中文最常见，英文不扩展——agent 单独太泛）
+    '智能体': 'agent 代理',
+    '多智能体': 'multi-agent 多代理',
+    '多代理': 'multi-agent 多智能体',
+    'multi-agent': '多智能体',
+    // LLM
+    'llm': '大模型 大语言模型',
+    '大模型': 'llm',
+    '大语言模型': 'llm',
+    // Embedding
+    'embedding': '向量',
+    '向量': 'embedding',
+    '向量数据库': 'vector database',
+    // Prompt
+    'prompt': '提示词',
+    '提示词': 'prompt',
+    // Context
+    '上下文窗口': 'context window',
+    'context window': '上下文窗口',
+    // CoT
+    'cot': '思维链',
+    '思维链': 'cot',
+    // Fine-tuning
+    '微调': 'fine-tuning',
+    'fine-tuning': '微调',
+    // Hallucination
+    '幻觉': 'hallucination',
+    // Knowledge cutoff
+    '知识截止': 'knowledge cutoff',
+    // Tool
+    '工具调用': 'function calling',
+    'function calling': '工具调用',
+    // Codex / Claude Code / Vibe Coding
+    'claude code': 'claude-code',
+    'vibe coding': '氛围编程',
+    '氛围编程': 'vibe coding',
+    // Memory
+    '长期记忆': 'long-term memory',
+    // Harness
+    'harness': '脚手架',
+    '脚手架': 'harness',
+    // MCP / A2A
+    'mcp': 'model context protocol',
+    'a2a': 'agent-to-agent',
+};
+
+function kbExpandSynonyms(query) {
+    const lower = query.toLowerCase();
+    let expanded = query;
+    const escChars = new Set(['.', '*', '+', '?', '^', '$', '{', '}', '(', ')', '|', '[', ']', String.fromCharCode(92)]);
+    for (const [key, syns] of Object.entries(KB_SYNONYMS)) {
+        const k = key.toLowerCase();
+        // Per-char escape 避免 char class 里 \\ 嵌套问题
+        let escK = '';
+        for (let i = 0; i < k.length; i++) {
+            const c = k[i];
+            escK += escChars.has(c) ? (String.fromCharCode(92) + c) : c;
+        }
+        const re = new RegExp('(^|[^a-z0-9\u4e00-\u9fff])' + escK + '(?=$|[^a-z0-9\u4e00-\u9fff])', 'i');
+        if (re.test(lower)) {
+            expanded += ' ' + syns;
+        }
+    }
+    return expanded;
+}
+
+// 章节标题命中加权：query term 出现在 chapterTitle → 该 chunk 的 TF-IDF 分 ×1.5
+function kbTitleBoost(chunkIdx, query, boost) {
+    if (boost == null) boost = 1.5;
+    const idx = _kbIndex;
+    if (!idx) return 1;
+    const c = idx.chunks[chunkIdx];
+    if (!c || !c.chapterTitle) return 1;
+    const qLower = query.toLowerCase();
+    const titleLower = c.chapterTitle.toLowerCase();
+    // 任一 query term 出现在 title → 命中
+    const cjk = qLower.match(/[\u4e00-\u9fff]+/g) || [];
+    const ascii = qLower.match(/[a-z0-9]+/g) || [];
+    const qTerms = [...cjk, ...ascii];
+    for (const t of qTerms) {
+        if (t.length >= 2 && titleLower.includes(t)) return boost;
+    }
+    return 1;
+}
+
+// ============================================================
+// Dense embedding 搜索（可选，需用户启用 AI 语义搜索）
+// - 浏览器侧 lazy 加载 @xenova/transformers
+// - 模型 Xenova/bge-small-zh-v1.5 (24MB int8 量化)，首次下载后续缓存
+// - 跟 TF-IDF 索引 chunk ID 对齐
+// ============================================================
+let _kbDenseIndex = null;
+let _kbDenseIndexLoading = null;
+let _kbPipe = null;
+let _kbPipeLoading = null;
+
+async function loadKbDenseIndex() {
+    if (_kbDenseIndex) return _kbDenseIndex;
+    if (_kbDenseIndexLoading) return _kbDenseIndexLoading;
+    _kbDenseIndexLoading = fetch('assets/knowledge_dense.json').then(r => r.json());
+    _kbDenseIndex = await _kbDenseIndexLoading;
+    return _kbDenseIndex;
+}
+
+async function loadKbPipe(onProgress) {
+    if (_kbPipe) return _kbPipe;
+    if (_kbPipeLoading) return _kbPipeLoading;
+    // 1) 加载 transformers.js (本地 ESM)
+    if (!window.transformers) {
+        if (onProgress) onProgress('加载 transformers.js...');
+        const url = new URL('assets/transformers.js', document.baseURI).href;
+        const mod = await import(url);
+        window.transformers = mod;
+    }
+    // 2) 加载模型（首次会下载 ~24MB int8 量化 ONNX）
+    if (onProgress) onProgress('加载 AI 模型（首次约 24 MB）...');
+    const { pipeline, env } = window.transformers;
+    env.allowLocalModels = false;
+    env.useBrowserCache = true;
+    _kbPipeLoading = pipeline('feature-extraction', 'Xenova/bge-small-zh-v1.5', { quantized: true });
+    _kbPipe = await _kbPipeLoading;
+    return _kbPipe;
+}
+
+// 把 base64 编码的 512-dim float32 → Float32Array
+function kbDecodeEmbedding(b64) {
+    const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    return new Float32Array(bytes.buffer);
+}
+
+async function kbEmbedQuery(query) {
+    const pipe = await loadKbPipe();
+    // BGE 中文模型推荐 query 加 "为这个句子生成表示以用于检索相关文章：" prefix
+    const prefixed = '为这个句子生成表示以用于检索相关文章：' + query;
+    const out = await pipe(prefixed, { pooling: 'mean', normalize: true });
+    return new Float32Array(out.data);
+}
+
+function kbDenseScore(queryEmb, topN) {
+    if (topN == null) topN = 50;
+    const idx = _kbDenseIndex;
+    if (!idx) return new Map();
+    const chunks = idx.chunks;  // [id1, b641, id2, b642, ...]
+    const scores = new Map();
+    for (let i = 0; i < chunks.length; i += 2) {
+        const id = chunks[i];
+        const b64 = chunks[i + 1];
+        const emb = kbDecodeEmbedding(b64);
+        let dot = 0;
+        for (let j = 0; j < 512; j++) dot += queryEmb[j] * emb[j];
+        scores.set(id, dot);
+    }
+    // 返回 top-N (用 id 作 key,方便跟 TF-IDF id 合并)
+    const sorted = Array.from(scores.entries()).sort((a, b) => b[1] - a[1]).slice(0, topN);
+    return new Map(sorted);
+}
+
+// 混合搜索：dense + TF-IDF + 标题加权 + 同义词扩展
+async function kbHybridSearch(query, useDense, topK) {
+    if (topK == null) topK = 5;
+    await loadKnowledgeIndex();
+    const expandedQuery = kbExpandSynonyms(query);
+    // 1) TF-IDF (用扩展 query 算)
+    const tfidfHits = kbSearch(expandedQuery, 50);  // top-50 TF-IDF candidates
+    // 标题加权
+    const tfidfMap = new Map();
+    for (const h of tfidfHits) {
+        const boost = kbTitleBoost(h.idx, query, 1.5);
+        tfidfMap.set(_kbIndex.chunks[h.idx].id, h.score * boost);
+    }
+    // 2) Dense (如果启用)
+    let denseMap = null;
+    if (useDense) {
+        await loadKbDenseIndex();
+        const queryEmb = await kbEmbedQuery(query);
+        denseMap = kbDenseScore(queryEmb, 50);
+    }
+    // 3) Merge：每个 chunk id 一个综合分
+    const merged = new Map();
+    // 先把所有 TF-IDF 候选纳入
+    for (const [id, score] of tfidfMap) merged.set(id, { tfidf: score, dense: 0 });
+    // 加 dense
+    if (denseMap) {
+        for (const [id, score] of denseMap) {
+            if (!merged.has(id)) merged.set(id, { tfidf: 0, dense: score });
+            else merged.get(id).dense = score;
+        }
+    }
+    // 综合分：dense*0.7 + tfidf*0.3 (权重可调)
+    const final = [];
+    for (const [id, s] of merged) {
+        const score = s.dense * 0.7 + s.tfidf * 0.3;
+        if (score > 0) final.push({ id, score });
+    }
+    final.sort((a, b) => b.score - a.score);
+    return final.slice(0, topK);
+}
+
 async function kbRunSearch() {
     const input = document.getElementById('kb-input');
     const results = document.getElementById('kb-results');
@@ -7041,37 +7350,59 @@ async function kbRunSearch() {
         results.innerHTML = '<div class="kb-empty">先在上面输入问题吧。</div>';
         return;
     }
+    const aiToggle = document.getElementById('kb-ai-toggle');
+    const useDense = aiToggle && aiToggle.checked;
     results.innerHTML = '<div class="kb-loading">加载索引中（首次约 1.7 MB）…</div>';
     try {
-        await loadKnowledgeIndex();
+        let hits;
+        if (useDense) {
+            // 加载 AI 模型进度提示
+            if (!_kbPipe) results.innerHTML = '<div class="kb-loading">加载 AI 模型中（首次约 24 MB）…</div>';
+            hits = await kbHybridSearch(query, true, 5);
+        } else {
+            await loadKnowledgeIndex();
+            const expanded = kbExpandSynonyms(query);
+            // 用扩展 query 搜 + 标题加权
+            const tfidfHits = kbSearch(expanded, 50);
+            hits = tfidfHits.slice(0, 5).map(h => {
+                const boost = kbTitleBoost(h.idx, query, 1.5);
+                return { id: _kbIndex.chunks[h.idx].id, score: h.score * boost };
+            });
+            // 重新排序（因为 boost 后顺序可能变）
+            hits.sort((a, b) => b.score - a.score);
+        }
+        if (!hits.length) {
+            results.innerHTML = '<div class="kb-empty">没找到相关段落。试试更短或不同的关键词，或启用 AI 语义搜索（需下载 24 MB 模型）。</div>';
+            return;
+        }
+        const idx = _kbIndex;
+        // 用 id 反查 TF-IDF 拿 text/title/bookSlug
+        const idToChunk = new Map(idx.chunks.map((c, i) => [c.id, { chunk: c, idx: i }]));
+        const topScore = hits[0].score || 1;
+        results.innerHTML = hits.map((h, i) => {
+            const meta = idToChunk.get(h.id);
+            if (!meta) return '';
+            const c = meta.chunk;
+            const bm = BOOK_META[c.bookSlug] || BOOKS_META[c.bookSlug] || {};
+            const color = bm.color || '#b08968';
+            const rel = (h.score / topScore * 100).toFixed(0);
+            const tag = useDense
+                ? (i === 0 ? '★ AI 最相关' : '相关度 ' + rel + '%')
+                : (i === 0 ? '★ 最相关' : '相关度 ' + rel + '%');
+            return (
+                '<a class="kb-result" href="#' + c.chapterId + '">' +
+                '<div class="kb-result-meta">' +
+                '<span class="kb-result-book" style="color:' + color + '">' + c.bookTitle + '</span>' +
+                '<span class="kb-result-chapter">' + c.chapterTitle + '</span>' +
+                '<span class="kb-result-score">' + tag + '</span>' +
+                '</div>' +
+                '<div class="kb-result-text">' + kbHighlight(c.text, query) + '</div>' +
+                '</a>'
+            );
+        }).join('');
     } catch (e) {
-        results.innerHTML = '<div class="kb-empty">索引加载失败：' + e.message + '</div>';
-        return;
+        results.innerHTML = '<div class="kb-empty">搜索失败：' + e.message + '</div>';
     }
-    const hits = kbSearch(query, 5);
-    if (!hits.length) {
-        results.innerHTML = '<div class="kb-empty">没找到相关段落。试试更短或不同的关键词 — 这版是 TF-IDF 关键词匹配，不理解同义词。</div>';
-        return;
-    }
-    const idx = _kbIndex;
-    const topScore = hits[0].score || 1;
-    results.innerHTML = hits.map((h, i) => {
-        const c = idx.chunks[h.idx];
-        const bm = BOOK_META[c.bookSlug] || BOOKS_META[c.bookSlug] || {};
-        const color = bm.color || '#b08968';
-        // 相对 top 的相关度（#1 = 100%），比绝对 cosine 更直观
-        const rel = (h.score / topScore * 100).toFixed(0);
-        return (
-            '<a class="kb-result" href="#' + c.chapterId + '">' +
-            '<div class="kb-result-meta">' +
-            '<span class="kb-result-book" style="color:' + color + '">' + c.bookTitle + '</span>' +
-            '<span class="kb-result-chapter">' + c.chapterTitle + '</span>' +
-            '<span class="kb-result-score">' + (i === 0 ? '★ 最相关' : '相关度 ' + rel + '%') + '</span>' +
-            '</div>' +
-            '<div class="kb-result-text">' + kbHighlight(c.text, query) + '</div>' +
-            '</a>'
-        );
-    }).join('');
 }
 
 function kbOpen() {
@@ -9322,8 +9653,15 @@ def build_html():
                 <input type="text" class="kb-input" id="kb-input" placeholder="例如：什么是 RAG？怎么估算 token 成本？" autocomplete="off">
                 <button class="kb-search-btn" id="kb-search-btn">{svg_icon('search', 14)} 搜</button>
             </div>
+            <div class="kb-options">
+                <label class="kb-toggle">
+                    <input type="checkbox" id="kb-ai-toggle">
+                    <span>启用 AI 语义搜索</span>
+                    <span class="kb-toggle-hint">(首次 ~24 MB BGE 中文模型)</span>
+                </label>
+            </div>
             <div class="kb-results" id="kb-results">
-                <div class="kb-empty kb-hint">键入问题后回车，浏览器会基于 1298 个段落的 TF-IDF 向量做 cosine 相似度匹配。首次加载约 1.7 MB（之后缓存）。</div>
+                <div class="kb-empty kb-hint">键入问题后回车。默认走 TF-IDF + 同义词扩展 + 标题加权，勾选 AI 语义搜索可加载 BGE 中文模型做 dense embedding 混合检索。</div>
             </div>
         </div>
     </div>
@@ -9617,6 +9955,14 @@ def build_html():
     build_per_chapter_pages(books)
     # 生成 knowledge index (RAG 知识问答用 — TF-IDF 向量 + 章节 chunk)
     build_knowledge_index(books)
+    # 生成 dense embedding index (sentence-transformers BGE 中文,浏览器 transformers.js)
+    # 首次会下载约 400MB 模型,之后缓存;可关 SKIP_DENSE=1 跳过
+    if not os.environ.get("SKIP_DENSE"):
+        try:
+            build_dense_index(books)
+        except Exception as e:
+            print(f"WARN: dense index build failed: {e}")
+            print("  (继续构建,知识问答仍可用 TF-IDF 模式)")
 
 
 if __name__ == "__main__":
