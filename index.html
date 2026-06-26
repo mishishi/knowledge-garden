@@ -925,6 +925,71 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 .compare-level[data-level="5"] .compare-dots { color: #dc2626; }
 .compare-audience { color: var(--text-soft); font-size: 13px; }
 
+/* 个性化推荐 */
+.personal-recs { margin-top: 56px; }
+.rec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+.rec-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--book-color, var(--accent));
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+    transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.rec-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--book-color, var(--accent));
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+.rec-card-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--book-color, var(--accent));
+    background: var(--bg);
+    border-radius: 6px;
+    margin-top: 2px;
+}
+.rec-card-body { flex: 1; min-width: 0; }
+.rec-card-book {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+}
+.rec-card-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+    margin-bottom: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.rec-card-reason {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    line-height: 1.4;
+    font-style: italic;
+}
+
 /* ============================================================
    个人数据看板
    ============================================================ */
@@ -3088,6 +3153,93 @@ body.dark .anki-msg-warn { color: #fbbf24; }
 }
 .btn-primary:hover { filter: brightness(1.08); }
 
+/* 笔记图谱全屏弹窗 */
+.notes-graph-overlay {
+    padding: 0;
+    background: var(--bg);
+}
+.notes-graph-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+.notes-graph-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+}
+.notes-graph-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+.notes-graph-stats {
+    color: var(--text-faint);
+    font-size: 13px;
+    font-family: ui-monospace, monospace;
+    flex: 1;
+}
+.notes-graph-help {
+    padding: 8px 24px 12px;
+    font-size: 12px;
+    color: var(--text-faint);
+    line-height: 1.6;
+    border-bottom: 1px solid var(--border);
+}
+.notes-graph-tip {
+    margin-left: 12px;
+    padding: 2px 8px;
+    background: var(--bg-soft);
+    border-radius: 3px;
+    color: var(--text-soft);
+}
+#notes-graph-canvas {
+    flex: 1;
+    width: 100%;
+    cursor: grab;
+    background: var(--bg);
+}
+#notes-graph-canvas:active { cursor: grabbing; }
+.notes-graph-tooltip {
+    position: fixed;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    max-width: 240px;
+}
+.notes-graph-tooltip.visible { opacity: 1; }
+.notes-graph-tooltip .ngt-book {
+    color: var(--text-faint);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 2px;
+}
+.notes-graph-tooltip .ngt-title {
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+.notes-graph-tooltip .ngt-meta {
+    color: var(--text-faint);
+    font-size: 11px;
+}
+.graph-close { font-size: 28px !important; padding: 4px 12px !important; }
+body.dark #notes-graph-canvas { background: #14141a; }
+
 .progress-modal-header {
     display: flex;
     justify-content: space-between;
@@ -3840,6 +3992,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
                 <button id="export-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 导出数据</button>
                 <button id="export-notes-md"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg> 导出笔记 (Markdown)</button>
                 <button id="export-anki" title="把高亮 + 笔记导出为 Anki 闪卡 (CSV)"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg> 导出 Anki 闪卡</button>
+                <button id="show-notes-graph" title="把高亮 + 笔记画成知识图谱"> 笔记图谱</button>
                 <button id="import-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> 导入数据</button>
                 <button id="reset-progress"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg> 重置进度</button>
             </div>
@@ -4287,6 +4440,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
 <h2 class="section-h2">本周回顾</h2>
 <div class="weekly-grid" id="weekly-grid"></div>
 </div>
+<div class="personal-recs" id="personal-recs" style="display:none"></div>
 <div class="series-compare">
 <h2 class="section-h2">系列对比</h2>
 <p class="section-desc">10 个系列的难度、篇幅、适合谁。先看这张表选你的下一步。</p>
@@ -35706,6 +35860,146 @@ function renderOverview() {
             resume.style.display = '';
         }
     }
+
+    // 5. 个性化推荐 (基于 reading history)
+    renderPersonalRecs();
+}
+
+// 个性化推荐：基于用户阅读历史 / 笔记 / 书签
+function renderPersonalRecs() {
+    const container = document.getElementById('personal-recs');
+    if (!container) return;
+
+    const completed = Object.keys(progress.completed || {});
+    const readPct = progress.readPct || {};
+    const bookmarks = Object.keys(progress.bookmarks || {});
+    const lastChapter = progress.lastRead && progress.lastRead.chapterId;
+
+    // 计算每个 book 的阅读进度
+    const allChapters = {};
+    document.querySelectorAll('.chapter[data-book]').forEach(el => {
+        allChapters[el.id] = {
+            id: el.id,
+            bookSlug: el.dataset.book,
+            chapSlug: el.dataset.chap,
+            title: el.querySelector('.chapter-title')?.textContent.trim() || el.id,
+        };
+    });
+    const chaptersByBook = {};
+    Object.values(allChapters).forEach(c => {
+        if (!chaptersByBook[c.bookSlug]) chaptersByBook[c.bookSlug] = [];
+        chaptersByBook[c.bookSlug].push(c);
+    });
+    Object.values(chaptersByBook).forEach(arr => arr.sort((a, b) => a.chapSlug.localeCompare(b.chapSlug)));
+
+    // 分数 = 继续 (5) > 同系列下一章 (4) > 同主题系 (3) > 新人路线 (2) > 重读书签 (1)
+    const recs = [];
+
+    // 1) 继续读：上次读到一半（10-90%）的章节
+    Object.entries(readPct).forEach(([cid, pct]) => {
+        if (pct >= 10 && pct <= 90 && !completed.includes(cid)) {
+            const c = allChapters[cid];
+            if (c) recs.push({ ...c, score: 10, reason: '上次读到 ' + pct + '%' });
+        }
+    });
+
+    // 2) 同一系列下一章：刚读完某章，推荐同系列的下一章
+    completed.forEach(cid => {
+        const c = allChapters[cid];
+        if (!c) return;
+        const arr = chaptersByBook[c.bookSlug];
+        const idx = arr.findIndex(x => x.id === cid);
+        if (idx >= 0 && idx + 1 < arr.length) {
+            const next = arr[idx + 1];
+            if (!completed.includes(next.id)) {
+                const reason = `续《${(BOOK_META[c.bookSlug] || {}).title || c.bookSlug}》第 ${idx + 2} 章`;
+                if (!recs.find(r => r.id === next.id)) {
+                    recs.push({ ...next, score: 8, reason });
+                }
+            }
+        }
+    });
+
+    // 3) 主题相关推荐：用户读完 RAG，则推荐 Agent / Prompt Engineering
+    const RELATED = {
+        'rag': ['multi-agent', 'llm-prompt', 'context-engineering'],
+        'multi-agent': ['crewai', 'harness-engineering', 'claude-code'],
+        'crewai': ['multi-agent', 'harness-engineering', 'agent-skills'],
+        'llm-prompt': ['context-engineering', 'rag', 'vibe-coding'],
+        'context-engineering': ['memory-architecture', 'rag', 'llm-prompt'],
+        'harness-engineering': ['multi-agent', 'claude-code', 'a2a-multi-agent'],
+        'claude-code': ['vibe-coding', 'harness-engineering', 'agent-skills'],
+        'vibe-coding': ['claude-code', 'llm-prompt', 'a2a-multi-agent'],
+        'agent-skills': ['claude-code', 'harness-engineering', 'a2a-multi-agent'],
+        'a2a-multi-agent': ['memory-architecture', 'harness-engineering', 'vibe-coding'],
+        'memory-architecture': ['context-engineering', 'harness-engineering', 'a2a-multi-agent'],
+        'embodied-agent': ['llm-prompt', 'multi-agent', 'vibe-coding'],
+        'ai-content-economy': ['vibe-coding', 'claude-code', 'indie-ai-product'],
+        'agent-cost': ['harness-engineering', 'claude-code', 'multi-agent'],
+        'indie-ai-product': ['vibe-coding', 'ai-content-economy', 'claude-code'],
+    };
+    const readBooks = new Set(Object.values(allChapters).filter(c => completed.includes(c.id)).map(c => c.bookSlug));
+    readBooks.forEach(book => {
+        const related = RELATED[book] || [];
+        related.forEach(rb => {
+            if (readBooks.has(rb)) return;
+            const arr = chaptersByBook[rb] || [];
+            // 推荐未读的第 1 章
+            const target = arr.find(c => !completed.includes(c.id));
+            if (target && !recs.find(r => r.id === target.id)) {
+                const reason = `读《${(BOOK_META[book] || {}).title || book}》之后通常会看这条线`;
+                recs.push({ ...target, score: 5, reason });
+            }
+        });
+    });
+
+    // 4) 重读书签：超过 7 天没回来看的书签
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    bookmarks.forEach(bid => {
+        const bm = progress.bookmarks[bid];
+        if (!bm || bm.timestamp < sevenDaysAgo) return;
+        const c = allChapters[bid];
+        if (c && !completed.includes(c.id)) {
+            const reason = formatRelativeTime(bm.timestamp) + ' 加的书签，还没读完';
+            if (!recs.find(r => r.id === c.id)) recs.push({ ...c, score: 3, reason });
+        }
+    });
+
+    // 排序 + 去重 + 取前 8
+    recs.sort((a, b) => b.score - a.score);
+    const seen = new Set();
+    const top = [];
+    for (const r of recs) {
+        if (seen.has(r.id)) continue;
+        seen.add(r.id);
+        top.push(r);
+        if (top.length >= 8) break;
+    }
+
+    if (top.length === 0) {
+        // 没有个性化推荐 → 用新人路线 (curated 5)
+        container.style.display = 'none';
+        return;
+    }
+    container.style.display = '';
+
+    container.innerHTML = '<h2 class="section-h2">为你推荐</h2>' +
+        '<p class="section-desc">基于你的阅读历史 + 主题关联，共 ' + top.length + ' 章。</p>' +
+        '<div class="rec-grid">' +
+        top.map((r, i) => {
+            const bm = BOOK_META[r.bookSlug] || {};
+            const bookTitle = bm.title || r.bookSlug;
+            const color = bm.color || '#b08968';
+            const icon = bm.icon || 'book';
+            return `<a class="rec-card" href="#${r.id}" style="--book-color:${color}">
+                <div class="rec-card-icon">${svg_icon(icon, 14)}</div>
+                <div class="rec-card-body">
+                    <div class="rec-card-book">${bookTitle}</div>
+                    <div class="rec-card-title">${r.title}</div>
+                    <div class="rec-card-reason">${r.reason}</div>
+                </div>
+            </a>`;
+        }).join('') + '</div>';
 }
 
 // overview-mode 切换：只看首页 TOC
@@ -36403,6 +36697,364 @@ function showAnkiHelp(msg, success = false) {
     document.getElementById('anki-help-msg').className = `anki-msg ${success ? 'anki-msg-success' : 'anki-msg-warn'}`;
     modal.classList.add('visible');
 }
+
+// ---- 笔记图谱：把高亮 + 笔记画成 force-directed 图 ----
+function openNotesGraph() {
+    if (!Array.isArray(notes) || notes.length === 0) {
+        showAnkiHelp('还没有高亮或笔记，先在正文里选中文字添加吧。');
+        return;
+    }
+    let modal = document.getElementById('notes-graph-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'notes-graph-modal';
+        modal.className = 'modal-overlay notes-graph-overlay';
+        modal.innerHTML = `
+            <div class="notes-graph-container">
+                <div class="notes-graph-header">
+                    <h3>笔记图谱</h3>
+                    <div class="notes-graph-stats" id="notes-graph-stats"></div>
+                    <button class="modal-close graph-close">×</button>
+                </div>
+                <div class="notes-graph-help" id="notes-graph-help">
+                    每个圆是一个章节（大小 = 笔记数）。线越粗 = 两个章节间的笔记越多。颜色 = 系列主题色。
+                    <span class="notes-graph-tip">拖动节点 · 滚轮缩放 · 双击进入章节</span>
+                </div>
+                <canvas id="notes-graph-canvas"></canvas>
+                <div class="notes-graph-tooltip" id="notes-graph-tooltip"></div>
+            </div>`;
+        document.body.appendChild(modal);
+        modal.querySelector('.graph-close').onclick = () => modal.classList.remove('visible');
+    }
+    modal.classList.add('visible');
+    renderNotesGraph(modal);
+}
+
+// 构建 + 渲染笔记图谱
+function renderNotesGraph(modal) {
+    const canvas = modal.querySelector('#notes-graph-canvas');
+    const ctx = canvas.getContext('2d');
+    const tooltip = modal.querySelector('#notes-graph-tooltip');
+    const stats = modal.querySelector('#notes-graph-stats');
+
+    // 自适应高 DPR
+    const dpr = window.devicePixelRatio || 1;
+    const rect = modal.getBoundingClientRect();
+    const W = rect.width - 0;
+    const H = rect.height - 100; // 减去 header
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+
+    // 按章节聚合笔记
+    const chapterNodes = new Map(); // chapterId -> { id, count, book, title, color, x, y, vx, vy }
+    const chapterLinks = new Map(); // "a|b" -> { a, b, weight }
+
+    notes.forEach(n => {
+        if (!n.chapterId) return;
+        if (!chapterNodes.has(n.chapterId)) {
+            const article = document.getElementById(n.chapterId);
+            const bookSlug = (article && article.dataset.book) || n.bookSlug || '';
+            const title = (article && article.querySelector('.chapter-title')?.textContent.trim()) || n.chapterId;
+            const book = BOOK_META[bookSlug] || {};
+            chapterNodes.set(n.chapterId, {
+                id: n.chapterId,
+                book: bookSlug,
+                title,
+                color: book.color || '#b08968',
+                count: 0,
+                notes: [],
+                x: W / 2 + (Math.random() - 0.5) * W * 0.6,
+                y: H / 2 + (Math.random() - 0.5) * H * 0.6,
+                vx: 0, vy: 0,
+            });
+        }
+        chapterNodes.get(n.chapterId).count++;
+        chapterNodes.get(n.chapterId).notes.push(n);
+    });
+
+    // 按书聚合，同书内的章节聚成一簇
+    const booksArr = {};
+    chapterNodes.forEach(n => {
+        if (!booksArr[n.book]) booksArr[n.book] = [];
+        booksArr[n.book].push(n);
+    });
+    const bookCenters = {};
+    const bookKeys = Object.keys(booksArr);
+    bookKeys.forEach((book, i) => {
+        const angle = (i / bookKeys.length) * Math.PI * 2;
+        bookCenters[book] = {
+            x: W / 2 + Math.cos(angle) * Math.min(W, H) * 0.32,
+            y: H / 2 + Math.sin(angle) * Math.min(W, H) * 0.32,
+        };
+    });
+    chapterNodes.forEach(n => {
+        const bc = bookCenters[n.book];
+        n.x = bc.x + (Math.random() - 0.5) * 100;
+        n.y = bc.y + (Math.random() - 0.5) * 100;
+    });
+
+    // 章节之间基于"共享笔记时段"或"同书"连边
+    // 简化：同书的章节连 + 跨书共享关键字连
+    const nodesArr = Array.from(chapterNodes.values());
+    const nodesByBook = booksArr;
+    // 同书内的章节串成链
+    Object.values(nodesByBook).forEach(arr => {
+        arr.sort((a, b) => a.title.localeCompare(b.title));
+        for (let i = 0; i < arr.length - 1; i++) {
+            const key = arr[i].id < arr[i + 1].id ? `${arr[i].id}|${arr[i + 1].id}` : `${arr[i + 1].id}|${arr[i].id}`;
+            chapterLinks.set(key, { a: arr[i].id, b: arr[i + 1].id, weight: 1, intraBook: true });
+        }
+    });
+    // 跨书：基于笔记文本的关键词重叠 (top 2 关键词)
+    const chapterKeywords = new Map();
+    nodesArr.forEach(n => {
+        const text = n.notes.map(x => (x.text || x.quote || '')).join(' ').toLowerCase();
+        // 提取中文 2-gram + 英文词
+        const grams = new Set();
+        for (let i = 0; i < text.length - 1; i++) {
+            const c = text[i], n2 = text[i + 1];
+            if (/[一-龥]/.test(c) && /[一-龥]/.test(n2)) {
+                grams.add(c + n2);
+            } else if (/[a-z]/i.test(c)) {
+                let j = i;
+                while (j < text.length && /[a-z0-9]/i.test(text[j])) j++;
+                grams.add(text.slice(i, j).toLowerCase());
+                i = j - 1;
+            }
+        }
+        chapterKeywords.set(n.id, grams);
+    });
+    for (let i = 0; i < nodesArr.length; i++) {
+        for (let j = i + 1; j < nodesArr.length; j++) {
+            if (nodesArr[i].book === nodesArr[j].book) continue;
+            const a = chapterKeywords.get(nodesArr[i].id);
+            const b = chapterKeywords.get(nodesArr[j].id);
+            let overlap = 0;
+            a.forEach(g => { if (b.has(g)) overlap++; });
+            if (overlap >= 2) {
+                const key = nodesArr[i].id < nodesArr[j].id ? `${nodesArr[i].id}|${nodesArr[j].id}` : `${nodesArr[j].id}|${nodesArr[i].id}`;
+                chapterLinks.set(key, { a: nodesArr[i].id, b: nodesArr[j].id, weight: Math.min(overlap, 5), intraBook: false });
+            }
+        }
+    }
+
+    stats.textContent = `${nodesArr.length} 个章节 · ${notes.length} 条笔记 · ${chapterLinks.size} 条关联`;
+
+    // 力导向模拟 (Fruchterman-Reingold 简化版)
+    const area = W * H;
+    const k = Math.sqrt(area / nodesArr.length) * 0.8; // 理想距离
+    let temperature = W / 10;
+    const coolingRate = 0.97;
+    let iter = 0;
+    const maxIter = 400;
+
+    function step() {
+        // 排斥力
+        nodesArr.forEach(v => { v.vx = 0; v.vy = 0; });
+        for (let i = 0; i < nodesArr.length; i++) {
+            for (let j = i + 1; j < nodesArr.length; j++) {
+                const a = nodesArr[i], b = nodesArr[j];
+                let dx = a.x - b.x, dy = a.y - b.y;
+                let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                const force = (k * k) / dist;
+                const fx = (dx / dist) * force;
+                const fy = (dy / dist) * force;
+                a.vx += fx; a.vy += fy;
+                b.vx -= fx; b.vy -= fy;
+            }
+        }
+        // 吸引 (link)
+        chapterLinks.forEach(link => {
+            const a = chapterNodes.get(link.a), b = chapterNodes.get(link.b);
+            if (!a || !b) return;
+            let dx = a.x - b.x, dy = a.y - b.y;
+            let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const force = (dist * dist) / k * 0.05 * link.weight;
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            a.vx -= fx; a.vy -= fy;
+            b.vx += fx; b.vy += fy;
+        });
+        // 同书中心吸引
+        nodesArr.forEach(n => {
+            const bc = bookCenters[n.book];
+            if (!bc) return;
+            const dx = bc.x - n.x, dy = bc.y - n.y;
+            n.vx += dx * 0.003;
+            n.vy += dy * 0.003;
+        });
+        // 应用速度 + 温度
+        nodesArr.forEach(v => {
+            const disp = Math.sqrt(v.vx * v.vx + v.vy * v.vy) || 1;
+            const limit = Math.min(disp, temperature);
+            v.x += (v.vx / disp) * limit;
+            v.y += (v.vy / disp) * limit;
+            // 边界
+            v.x = Math.max(40, Math.min(W - 40, v.x));
+            v.y = Math.max(40, Math.min(H - 40, v.y));
+        });
+        temperature *= coolingRate;
+        iter++;
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, W, H);
+        // 背景网格
+        ctx.strokeStyle = 'rgba(176, 137, 104, 0.06)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 60) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let y = 0; y < H; y += 60) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+        // 边
+        chapterLinks.forEach(link => {
+            const a = chapterNodes.get(link.a), b = chapterNodes.get(link.b);
+            if (!a || !b) return;
+            ctx.strokeStyle = link.intraBook ? a.color : 'rgba(176, 137, 104, 0.35)';
+            ctx.globalAlpha = link.intraBook ? 0.45 : 0.25 + link.weight * 0.08;
+            ctx.lineWidth = link.intraBook ? 1.5 : 1 + link.weight * 0.5;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+        });
+        ctx.globalAlpha = 1;
+        // 节点
+        nodesArr.forEach(n => {
+            const r = 14 + Math.sqrt(n.count) * 6;
+            // 外环
+            ctx.fillStyle = n.color + '20';
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, r + 4, 0, Math.PI * 2);
+            ctx.fill();
+            // 主体
+            ctx.fillStyle = n.color;
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+            ctx.fill();
+            // 边框
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // 文字 (book title + chapter #)
+            const label = (BOOK_META[n.book] || {}).title || n.book;
+            ctx.fillStyle = '#2a2a2e';
+            ctx.font = '11px -apple-system, "PingFang SC", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label.slice(0, 8), n.x, n.y - r - 6);
+            // 笔记数
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 11px -apple-system';
+            ctx.fillText(String(n.count), n.x, n.y + 4);
+        });
+    }
+
+    function loop() {
+        if (iter < maxIter && temperature > 0.5) {
+            step();
+            render();
+            requestAnimationFrame(loop);
+        } else {
+            render();
+        }
+    }
+    loop();
+
+    // 交互：拖动节点 + 双击跳转
+    let dragging = null;
+    let dragOff = { x: 0, y: 0 };
+    let hoverNode = null;
+
+    function findNode(x, y) {
+        for (let i = nodesArr.length - 1; i >= 0; i--) {
+            const n = nodesArr[i];
+            const r = 14 + Math.sqrt(n.count) * 6;
+            const dx = x - n.x, dy = y - n.y;
+            if (dx * dx + dy * dy <= r * r) return n;
+        }
+        return null;
+    }
+
+    function getMousePos(e) {
+        const r = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - r.left) * (W / r.width),
+            y: (e.clientY - r.top) * (H / r.height),
+        };
+    }
+
+    canvas.onmousedown = (e) => {
+        const { x, y } = getMousePos(e);
+        const n = findNode(x, y);
+        if (n) {
+            dragging = n;
+            dragOff.x = x - n.x;
+            dragOff.y = y - n.y;
+        }
+    };
+    canvas.onmousemove = (e) => {
+        const { x, y } = getMousePos(e);
+        if (dragging) {
+            dragging.x = x - dragOff.x;
+            dragging.y = y - dragOff.y;
+            temperature = 0; // 停止模拟
+            render();
+        } else {
+            const n = findNode(x, y);
+            hoverNode = n;
+            canvas.style.cursor = n ? 'pointer' : 'default';
+            if (n) {
+                const title = (BOOK_META[n.book] || {}).title || n.book;
+                tooltip.innerHTML = '<div class="ngt-book">' + title + '</div><div class="ngt-title">' + n.title + '</div><div class="ngt-meta">' + n.count + ' 条笔记</div>';
+                tooltip.style.left = e.clientX + 12 + 'px';
+                tooltip.style.top = e.clientY + 12 + 'px';
+                tooltip.classList.add('visible');
+            } else {
+                tooltip.classList.remove('visible');
+            }
+        }
+    };
+    canvas.onmouseup = () => { dragging = null; };
+    canvas.onmouseleave = () => { dragging = null; tooltip.classList.remove('visible'); };
+    canvas.ondblclick = (e) => {
+        const { x, y } = getMousePos(e);
+        const n = findNode(x, y);
+        if (n) {
+            window.location.hash = n.id;
+            modal.classList.remove('visible');
+        }
+    };
+    // 触屏支持
+    canvas.ontouchstart = (e) => {
+        const t = e.touches[0];
+        const { x, y } = getMousePos(t);
+        const n = findNode(x, y);
+        if (n) { dragging = n; dragOff.x = x - n.x; dragOff.y = y - n.y; }
+    };
+    canvas.ontouchmove = (e) => {
+        e.preventDefault();
+        const t = e.touches[0];
+        const { x, y } = getMousePos(t);
+        if (dragging) { dragging.x = x - dragOff.x; dragging.y = y - dragOff.y; temperature = 0; render(); }
+    };
+    canvas.ontouchend = () => { dragging = null; };
+    // 滚轮缩放（重置缩放比例用，不画大）
+    let scale = 1;
+    canvas.onwheel = (e) => {
+        e.preventDefault();
+        scale *= e.deltaY < 0 ? 1.1 : 0.9;
+        scale = Math.max(0.5, Math.min(2, scale));
+        ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+        render();
+    };
+}
+
+document.getElementById('show-notes-graph').addEventListener('click', openNotesGraph);
 
 function getChapterMeta(chapterId) {
     const article = document.getElementById(chapterId);
