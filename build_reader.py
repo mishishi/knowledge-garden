@@ -163,6 +163,7 @@ ICONS = {
     'database': '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
     'layers':   '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
     'share':    '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
+    'brain':    '<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2"/>',
     'qr':       '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/>',
     'disc':     '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M6 12c0-1.7 1.3-3 3-3"/>',
     'coin':     '<circle cx="12" cy="12" r="9"/><path d="M12 6v12"/><path d="M15.5 9.5C15.5 8.5 14 8 12 8s-3.5.5-3.5 1.8c0 1.3 1.5 1.7 3.5 1.9 2 .2 3.5.6 3.5 1.9 0 1.3-1.5 2-3.5 2s-3.5-.7-3.5-2"/>',
@@ -433,6 +434,7 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     parts.append('<div class="weekly-goal-progress">')
     parts.append('<div class="weekly-goal-bar"><div class="weekly-goal-fill" id="weekly-goal-fill"></div></div>')
     parts.append('<div class="weekly-goal-text"><span id="weekly-goal-current">0 分钟</span> · <span id="weekly-goal-percent">0%</span> · <span id="weekly-goal-target">目标 3 小时</span></div>')
+    parts.append('<div class="review-queue" id="review-queue" style="display:none"></div>')
     parts.append('</div>')
     parts.append('</div>')
     parts.append('</div>')
@@ -1749,6 +1751,221 @@ body.dark .weekly-goal-bar { background: rgba(255, 255, 255, 0.08); }
     align-items: center;
 }
 .weekly-goal-text span:last-child { color: var(--text-faint); font-size: 12px; }
+
+/* 今日复习 (间隔重复) */
+.review-queue {
+    margin: 14px auto 0;
+    max-width: 480px;
+    padding: 12px 16px;
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.review-queue-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.review-queue-body { flex: 1; min-width: 0; }
+.review-queue-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.review-queue-desc { font-size: 12px; color: var(--text-faint); }
+.review-queue-btn {
+    flex-shrink: 0;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.review-queue-btn:hover { filter: brightness(1.08); }
+
+/* 复习全屏弹窗 */
+.review-overlay { padding: 0; background: var(--bg); }
+.review-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+}
+.review-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 28px;
+    border-bottom: 1px solid var(--border);
+}
+.review-progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-soft);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.review-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.3s;
+}
+.review-progress-text {
+    font-size: 13px;
+    color: var(--text-faint);
+    font-family: ui-monospace, monospace;
+    min-width: 60px;
+    text-align: right;
+}
+.review-card-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-y: auto;
+}
+.review-card {
+    width: 100%;
+    max-width: 640px;
+    min-height: 320px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+.review-card-hint {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-faint);
+    margin-bottom: 24px;
+    text-align: center;
+}
+.review-card-front {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.5;
+    text-align: center;
+    margin-bottom: 16px;
+}
+.review-card-source {
+    font-size: 13px;
+    color: var(--text-faint);
+    text-align: center;
+    margin-top: 16px;
+}
+.review-card-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+}
+.review-card-back {
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre-wrap;
+    font-family: Georgia, serif;
+}
+.review-card-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 24px;
+}
+.review-show-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 12px 36px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.review-show-btn:hover { filter: brightness(1.08); }
+.review-grade-btn {
+    flex: 1;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text);
+    transition: all 0.15s;
+}
+.review-grade-btn:hover { border-color: var(--accent); transform: translateY(-1px); }
+.review-grade-btn .gg-label { font-size: 14px; font-weight: 500; display: block; }
+.review-grade-btn .gg-interval { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+.review-grade-btn.again { border-color: #ef4444; }
+.review-grade-btn.again .gg-label { color: #ef4444; }
+.review-grade-btn.hard { border-color: #f59e0b; }
+.review-grade-btn.hard .gg-label { color: #f59e0b; }
+.review-grade-btn.good { border-color: #10b981; }
+.review-grade-btn.good .gg-label { color: #10b981; }
+.review-grade-btn.easy { border-color: #3b82f6; }
+.review-grade-btn.easy .gg-label { color: #3b82f6; }
+.review-empty {
+    text-align: center;
+    padding: 60px 40px;
+    color: var(--text-soft);
+}
+.review-empty h3 { font-size: 24px; margin: 0 0 12px; color: var(--text); }
+.review-empty p { font-size: 14px; line-height: 1.6; margin: 0 0 20px; }
+.review-summary {
+    text-align: center;
+    padding: 40px 32px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+.review-summary h3 { font-size: 28px; margin: 0 0 12px; color: var(--text); }
+.review-summary .score-num {
+    font-size: 64px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), #d4a574);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin: 12px 0;
+}
+.review-summary .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin: 20px 0 28px;
+}
+.review-summary .stat-cell {
+    text-align: center;
+}
+.review-summary .stat-cell .n { font-size: 22px; font-weight: 600; color: var(--text); }
+.review-summary .stat-cell .l { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.8px; }
+.review-next-due {
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-top: 12px;
+}
+body.dark .review-card { background: #1f1f24; border-color: #333; }
+body.dark .review-grade-btn { background: #1f1f24; }
 
 /* 章节分享按钮 */
 .chapter-meta-row {
@@ -5926,6 +6143,12 @@ function renderOverview() {
     // 6. 周阅读目标进度（基于本周 dailyTime 总和）
     refreshWeeklyGoal(daily);
 
+    // 7. 今日复习队列（基于笔记 + 间隔重复状态）
+    refreshReviewQueue();
+
+    // 6. 周阅读目标进度（基于本周 dailyTime 总和）
+    refreshWeeklyGoal(daily);
+
     // 5. 每周回顾（基于 dailyTime + completed 时间戳）
     const weeklyGrid = document.getElementById('weekly-grid');
     if (weeklyGrid) {
@@ -7171,6 +7394,365 @@ function renderNotesGraph(modal) {
 
 document.getElementById('show-notes-graph').addEventListener('click', openNotesGraph);
 
+// ---- Spaced Repetition 复习（FSRS-lite） ----
+// 卡片状态存储在 localStorage['reviewCards']，按 cardId 索引
+// 每张卡片状态: { due (ms), interval (days), ease (1.3-2.5), reps, lapses, lastReview, isNew }
+// 算法简化版 SM-2：Again 重置 1天 + ease-0.2; Hard interval*1.2; Good interval*ease; Easy interval*ease*1.3
+function getReviewStore() {
+    try { return JSON.parse(localStorage.getItem('reviewCards') || '{}'); }
+    catch (e) { return {}; }
+}
+function saveReviewStore(store) { localStorage.setItem('reviewCards', JSON.stringify(store)); }
+
+function cardKeyFromNote(note) {
+    // 用 chapterId + text 的 hash 做唯一 ID
+    const txt = (note.text || note.quote || '').trim().slice(0, 200);
+    return (note.chapterId || '') + '::' + txt;
+}
+
+function buildCardFromNote(note) {
+    const article = note.chapterId && document.getElementById(note.chapterId);
+    const bookSlug = (article && article.dataset.book) || note.bookSlug || '';
+    const bookTitle = (BOOK_META[bookSlug] && BOOK_META[bookSlug].title) || bookSlug;
+    const chapterTitle = (article && article.querySelector('.chapter-title')?.textContent.trim()) || note.chapterId || '';
+    const content = (note.text || note.quote || '').trim();
+    return {
+        front: `${bookTitle}\n${chapterTitle}`,
+        back: content,
+        source: { chapterId: note.chapterId, book: bookTitle, chap: chapterTitle },
+        isNote: note.type === 'note',
+    };
+}
+
+function refreshReviewQueue() {
+    const container = document.getElementById('review-queue');
+    if (!container) return;
+    if (!Array.isArray(notes) || notes.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+    const store = getReviewStore();
+    const now = Date.now();
+    const todayKey = localDateKey(new Date());
+    // 对每个 note 检查 card 状态，统计今天到期的数量
+    const dueKeys = [];
+    notes.forEach(n => {
+        const key = cardKeyFromNote(n);
+        if (!key) return;
+        const card = store[key];
+        if (!card) {
+            // 新卡片 — 没复习过，立即入队
+            dueKeys.push({ key, n, due: true, isNew: true });
+        } else if (card.due && card.due <= now + 86400000) {
+            // 已到期或在 24h 内到期
+            dueKeys.push({ key, n, due: true, isNew: false });
+        } else if (card.lastReview && localDateKey(new Date(card.lastReview)) === todayKey) {
+            // 今天已经复习过，不重复
+        }
+    });
+    const newCount = dueKeys.filter(d => d.isNew).length;
+    const dueCount = dueKeys.filter(d => !d.isNew).length;
+    if (dueKeys.length === 0) {
+        // 找出最早的 due
+        let earliest = null;
+        Object.values(store).forEach(c => {
+            if (!earliest || c.due < earliest) earliest = c.due;
+        });
+        const nextLabel = earliest ? new Date(earliest).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) : '';
+        container.innerHTML = `
+            <div class="review-queue-icon">${svg_icon('brain', 14)}</div>
+            <div class="review-queue-body">
+                <div class="review-queue-title">今日复习完成</div>
+                <div class="review-queue-desc">${nextLabel ? '下次复习 ' + nextLabel : '继续读章节自动加入复习'}</div>
+            </div>
+            <button class="review-queue-btn" disabled style="opacity:.5;cursor:default">已完成</button>`;
+        container.style.display = '';
+        return;
+    }
+    container.innerHTML = `
+        <div class="review-queue-icon">${svg_icon('brain', 14)}</div>
+        <div class="review-queue-body">
+            <div class="review-queue-title">${dueKeys.length} 张卡片待复习</div>
+            <div class="review-queue-desc">${newCount ? newCount + ' 张新 · ' : ''}${dueCount ? dueCount + ' 张到期' : ''}</div>
+        </div>
+        <button class="review-queue-btn" id="start-review-now">开始复习</button>`;
+    container.style.display = '';
+    const btn = document.getElementById('start-review-now');
+    if (btn) btn.onclick = () => startReviewSession(dueKeys);
+}
+
+// 开始复习 session
+let reviewSession = null;
+function startReviewSession(dueList) {
+    if (!dueList || dueList.length === 0) {
+        refreshReviewQueue();
+        return;
+    }
+    let modal = document.getElementById('review-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'review-modal';
+        modal.className = 'modal-overlay review-overlay';
+        modal.innerHTML = `
+            <div class="review-container">
+                <div class="review-header">
+                    <div class="review-progress-bar"><div class="review-progress-fill" id="review-progress-fill"></div></div>
+                    <div class="review-progress-text" id="review-progress-text">0 / 0</div>
+                    <button class="modal-close graph-close" id="review-close-btn">×</button>
+                </div>
+                <div class="review-card-area" id="review-card-area"></div>
+            </div>`;
+        document.body.appendChild(modal);
+        document.getElementById('review-close-btn').onclick = () => {
+            modal.classList.remove('visible');
+            refreshReviewQueue();
+        };
+        modal.onclick = (e) => { if (e.target === modal) { modal.classList.remove('visible'); refreshReviewQueue(); } };
+    }
+    reviewSession = {
+        modal,
+        queue: dueList.slice(),
+        total: dueList.length,
+        done: 0,
+        again: 0,
+        hard: 0,
+        good: 0,
+        easy: 0,
+        results: [],
+    };
+    modal.classList.add('visible');
+    showNextReviewCard();
+}
+
+function showNextReviewCard() {
+    const s = reviewSession;
+    if (!s || s.queue.length === 0) {
+        showReviewSummary();
+        return;
+    }
+    const item = s.queue.shift();
+    const card = buildCardFromNote(item.n);
+    const store = getReviewStore();
+    const cardState = store[item.key] || { isNew: true };
+    const area = s.modal.querySelector('#review-card-area');
+    const fill = s.modal.querySelector('#review-progress-fill');
+    const text = s.modal.querySelector('#review-progress-text');
+    const reviewedCount = s.done;
+    const totalCount = s.total;
+    fill.style.width = (reviewedCount / totalCount * 100) + '%';
+    text.textContent = reviewedCount + ' / ' + totalCount;
+
+    area.innerHTML = `
+        <div class="review-card">
+            <div class="review-card-hint">${cardState.isNew ? '新卡片' : '复习'}</div>
+            <div class="review-card-front">${escapeHtml(card.front)}</div>
+            <div class="review-card-source">${card.isNote ? '📝 笔记' : '高亮'}</div>
+            <button class="review-show-btn" id="review-show">显示答案</button>
+        </div>`;
+    area.querySelector('#review-show').onclick = () => showReviewBack(item, card, cardState);
+}
+
+function showReviewBack(item, card, cardState) {
+    const s = reviewSession;
+    const area = s.modal.querySelector('#review-card-area');
+    const preview = (card.back || '').slice(0, 200);
+    area.innerHTML = `
+        <div class="review-card">
+            <div class="review-card-hint">答案</div>
+            <div class="review-card-back">${escapeHtml(preview)}${card.back.length > 200 ? '…' : ''}</div>
+            <div class="review-card-source">来源：${card.source.book} · ${card.source.chap}${card.source.chapterId ? ' (<a href="#' + card.source.chapterId + '">打开章节</a>)' : ''}</div>
+            <div class="review-card-divider"></div>
+            <div class="review-card-hint" style="margin-top:0">回忆得怎么样？</div>
+            <div class="review-card-actions">
+                <button class="review-grade-btn again" data-grade="0">
+                    <span class="gg-label">忘了</span>
+                    <span class="gg-interval" id="gg-int-0">1 天</span>
+                </button>
+                <button class="review-grade-btn hard" data-grade="1">
+                    <span class="gg-label">勉强</span>
+                    <span class="gg-interval" id="gg-int-1">—</span>
+                </button>
+                <button class="review-grade-btn good" data-grade="2">
+                    <span class="gg-label">记得</span>
+                    <span class="gg-interval" id="gg-int-2">—</span>
+                </button>
+                <button class="review-grade-btn easy" data-grade="3">
+                    <span class="gg-label">秒答</span>
+                    <span class="gg-interval" id="gg-int-3">—</span>
+                </button>
+            </div>
+        </div>`;
+    // 预测各选项的 interval 并显示
+    const next = predictNextIntervals(cardState);
+    area.querySelector('#gg-int-0').textContent = formatInterval(next[0]);
+    area.querySelector('#gg-int-1').textContent = formatInterval(next[1]);
+    area.querySelector('#gg-int-2').textContent = formatInterval(next[2]);
+    area.querySelector('#gg-int-3').textContent = formatInterval(next[3]);
+    area.querySelectorAll('.review-grade-btn').forEach(btn => {
+        btn.onclick = () => {
+            const grade = parseInt(btn.dataset.grade, 10);
+            gradeReview(item.key, cardState, grade);
+            const labels = ['again', 'hard', 'good', 'easy'];
+            s[labels[grade]]++;
+            s.done++;
+            showNextReviewCard();
+        };
+    });
+}
+
+// 算法：基于当前状态预测 4 个 grade 后的新 interval
+function predictNextIntervals(state) {
+    const now = Date.now();
+    let interval, ease, reps, lapses;
+    if (state.isNew) {
+        interval = 0; ease = 2.5; reps = 0; lapses = 0;
+    } else {
+        interval = state.interval || 0; ease = state.ease || 2.5; reps = state.reps || 0; lapses = state.lapses || 0;
+    }
+    const out = [];
+    // Again
+    out.push(1);
+    // Hard
+    out.push(Math.max(1, Math.round(interval * 1.2)));
+    // Good
+    out.push(Math.max(1, Math.round((interval + 1) * ease)));
+    // Easy
+    out.push(Math.max(2, Math.round((interval + 1) * ease * 1.3)));
+    return out;
+}
+
+function formatInterval(days) {
+    if (days < 1) return '<1 天';
+    if (days === 1) return '1 天';
+    if (days < 30) return days + ' 天';
+    if (days < 365) return Math.round(days / 30) + ' 月';
+    return Math.round(days / 365 * 10) / 10 + ' 年';
+}
+
+function gradeReview(key, oldState, grade) {
+    const store = getReviewStore();
+    const now = Date.now();
+    const DAY = 86400000;
+    let interval, ease, reps, lapses;
+    if (oldState.isNew) {
+        interval = 0; ease = 2.5; reps = 0; lapses = 0;
+    } else {
+        interval = oldState.interval || 0; ease = oldState.ease || 2.5; reps = oldState.reps || 0; lapses = oldState.lapses || 0;
+    }
+    let nextInterval, nextEase, nextReps, nextLapses;
+    if (grade === 0) {
+        // Again
+        nextInterval = 1;
+        nextEase = Math.max(1.3, ease - 0.2);
+        nextReps = 0;
+        nextLapses = lapses + 1;
+    } else if (grade === 1) {
+        // Hard
+        nextInterval = Math.max(1, Math.round(interval * 1.2));
+        nextEase = Math.max(1.3, ease - 0.05);
+        nextReps = reps + 1;
+        nextLapses = lapses;
+    } else if (grade === 2) {
+        // Good
+        nextInterval = Math.max(1, Math.round((interval + 1) * ease));
+        nextEase = ease;
+        nextReps = reps + 1;
+        nextLapses = lapses;
+    } else {
+        // Easy
+        nextInterval = Math.max(2, Math.round((interval + 1) * ease * 1.3));
+        nextEase = ease + 0.05;
+        nextReps = reps + 1;
+        nextLapses = lapses;
+    }
+    store[key] = {
+        due: now + nextInterval * DAY,
+        interval: nextInterval,
+        ease: nextEase,
+        reps: nextReps,
+        lapses: nextLapses,
+        lastReview: now,
+        isNew: false,
+    };
+    saveReviewStore(store);
+}
+
+function showReviewSummary() {
+    const s = reviewSession;
+    const area = s.modal.querySelector('#review-card-area');
+    const fill = s.modal.querySelector('#review-progress-fill');
+    const text = s.modal.querySelector('#review-progress-text');
+    fill.style.width = '100%';
+    text.textContent = s.done + ' / ' + s.total;
+    const accuracy = Math.round((s.good + s.easy) / Math.max(1, s.done) * 100);
+    let nextDue = null;
+    const store = getReviewStore();
+    Object.values(store).forEach(c => { if (!nextDue || c.due < nextDue) nextDue = c.due; });
+    const nextLabel = nextDue ? new Date(nextDue).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+    area.innerHTML = `
+        <div class="review-summary">
+            <h3>今日复习完成</h3>
+            <div class="score-num">${accuracy}%</div>
+            <div class="stats-row">
+                <div class="stat-cell"><div class="n">${s.again}</div><div class="l">忘了</div></div>
+                <div class="stat-cell"><div class="n">${s.hard}</div><div class="l">勉强</div></div>
+                <div class="stat-cell"><div class="n">${s.good}</div><div class="l">记得</div></div>
+                <div class="stat-cell"><div class="n">${s.easy}</div><div class="l">秒答</div></div>
+            </div>
+            <div class="review-next-due">下次复习：${nextLabel}</div>
+            <button class="btn-primary" id="review-finish-btn" style="margin-top:16px">完成</button>
+        </div>`;
+    area.querySelector('#review-finish-btn').onclick = () => {
+        s.modal.classList.remove('visible');
+        reviewSession = null;
+        refreshReviewQueue();
+        renderOverview();
+    };
+}
+
+function escapeHtml(s) {
+    return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+document.getElementById('start-review').addEventListener('click', () => {
+    if (!Array.isArray(notes) || notes.length === 0) {
+        showAnkiHelp('还没有高亮或笔记，先在正文里选中文字添加吧。');
+        return;
+    }
+    // 计算所有 due（不只是今天到期的）
+    const store = getReviewStore();
+    const now = Date.now();
+    const dueList = [];
+    notes.forEach(n => {
+        const key = cardKeyFromNote(n);
+        if (!key) return;
+        const card = store[key];
+        if (!card) {
+            dueList.push({ key, n, isNew: true });
+        } else if (card.due <= now) {
+            dueList.push({ key, n, isNew: false });
+        }
+    });
+    if (dueList.length === 0) {
+        // 没有到期，但可能有"今天刚复习完的"
+        showAnkiHelp('当前没有到期卡片。继续读章节自动加入复习队列。');
+        return;
+    }
+    // 按到期时间排序（新卡最后，让用户先巩固旧卡）
+    dueList.sort((a, b) => {
+        const sa = store[a.key];
+        const sb = store[b.key];
+        if (!sa && !sb) return 0;
+        if (!sa) return -1; // 新卡在前
+        if (!sb) return 1;
+        return sa.due - sb.due;
+    });
+    startReviewSession(dueList.slice(0, 30)); // 每次最多复习 30 张
+});
+
 function getChapterMeta(chapterId) {
     const article = document.getElementById(chapterId);
     if (!article) return { title: chapterId, book: '' };
@@ -8102,6 +8684,7 @@ def build_html():
                 <button id="export-notes-md">{svg_icon('bookmark')} 导出笔记 (Markdown)</button>
                 <button id="export-anki" title="把高亮 + 笔记导出为 Anki 闪卡 (CSV)">{svg_icon('layers')} 导出 Anki 闪卡</button>
                 <button id="show-notes-graph" title="把高亮 + 笔记画成知识图谱">{svg_icon('network')} 笔记图谱</button>
+                <button id="start-review" title="基于间隔重复算法复习高亮 / 笔记">{svg_icon('brain')} 今日复习</button>
                 <button id="import-progress">{svg_icon('upload')} 导入数据</button>
                 <button id="reset-progress">{svg_icon('trash')} 重置进度</button>
             </div>
