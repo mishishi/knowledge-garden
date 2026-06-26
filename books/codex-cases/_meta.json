@@ -1,6 +1,6 @@
 {
-  "title": "AI Agent 实战案例库",
-  "description": "10 章深挖 2026 最值得学的 AI Agent 实战案例：Codex 大爆发 + AGENTS.md 工程化 + CodexLoop 不偷懒 + 多 Agent 并行 + Computer Use + CI/CD + 飞书 CLI 接入办公 + AIGrader 半天全栈 + 未来趋势",
+  "title": "Codex 实战案例",
+  "description": "10 章深挖 2026 最值得学的 Codex 实战案例：Codex 整合 ChatGPT 大爆发 + AGENTS.md 工程化 + CodexLoop 不偷懒 + spawn_agent 多 Agent 并行 + Windows Computer Use + CI/CD 自动化 + 飞书 CLI 接入办公 + AIGrader 半天全栈 + 未来 6 个月趋势",
   "icon": "terminal",
   "color": "#0891b2",
   "priority": 16,
