@@ -499,39 +499,11 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
         parts.append('</article>')
 
     # ============================================================
-    # D2 编辑推荐 — 新人路线
+    # D2 学习路径 — 运行时由 JS 基于 reading history 生成
+    #  - 老用户：个性化 5 章（in-progress / 同系列下一章 / 主题 RELATED / 7 天书签 / 7 天笔记）
+    #  - 新用户（无 history）：按 priority 取前 5 系列的首章
     # ============================================================
-    RECOMMENDED_PATH = [
-        ("rag", "01-why-rag", "为什么需要 RAG", "LLM 知识截止之后，RAG 是 80% 场景的标准答案"),
-        ("multi-agent", "01-your-first-agent", "你的第一个 Agent", "30 行代码跑通一个 agent 循环，落地最小可行版本"),
-        ("llm-prompt", "03-advanced-patterns", "CoT 思维链", "Let's think step by step — 一句话让 LLM 推理能力跃升一个台阶"),
-        ("context-engineering", "02-context-window-tokens", "Context Window 与 Token", "100K context 到底能用多少？生产里 80% 的 bug 来自这里"),
-        ("crewai", "01-getting-started", "CrewAI 入门", "上手一个 100+ star 的多 agent 框架，3 天能跑生产"),
-    ]
-    parts.append('<div class="recommended-path">')
-    parts.append('<h2 class="section-h2">新人路线 · 5 章入门</h2>')
-    parts.append('<p class="section-desc">不知道从哪开始？按这个顺序读，1 周内建立完整的 AI 应用开发心智模型。</p>')
-    parts.append('<ol class="rec-path-list">')
-    for idx, (slug, chap, title, why) in enumerate(RECOMMENDED_PATH, 1):
-        # 查找这本书的标题和颜色
-        bm = next((m for s, m, _ in books if s == slug), None)
-        btitle = bm["title"] if bm else slug
-        bcolor = bm.get("color", "#b08968") if bm else "#b08968"
-        bicon = bm.get("icon", "book") if bm else "book"
-        anchor = f"{slug}__{chap}"
-        parts.append(
-            f'<li class="rec-path-item">'
-            f'<span class="rec-step">{idx:02d}</span>'
-            f'<a class="rec-link" href="#{anchor}">'
-            f'<span class="rec-icon" style="color:{bcolor}">{svg_icon(bicon, size=18)}</span>'
-            f'<span class="rec-title">{title}</span>'
-            f'<span class="rec-book">{btitle}</span>'
-            f'</a>'
-            f'<span class="rec-why">{why}</span>'
-            f'</li>'
-        )
-    parts.append('</ol>')
-    parts.append('</div>')
+    parts.append('<div class="learning-path" id="learning-path"></div>')
 
     # ============================================================
     # D3 每周回顾（运行时由 JS 填）
@@ -545,11 +517,6 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     parts.append('<div class="recap-summary" id="recap-summary"></div>')
     parts.append('<div class="weekly-grid" id="weekly-grid"></div>')
     parts.append('</div>')
-
-    # ============================================================
-    # D5 个性化推荐（运行时由 JS 基于阅读历史生成）
-    # ============================================================
-    parts.append('<div class="personal-recs" id="personal-recs" style="display:none"></div>')
 
     # ============================================================
     # D4 系列对比表
@@ -5834,6 +5801,7 @@ helpPanel.addEventListener('click', (e) => {
 // ============================================================
 const CHAPTERS = __CHAPTERS_JSON__;
 const CHAPTER_REFS = __CHAPTER_REFS__;
+const BOOKS_META = __BOOKS_META__;
 
 // ============================================================
 // 交叉引用：「第 N 章」自动转链接（同书内）
@@ -6334,8 +6302,8 @@ function renderOverview() {
         }
     }
 
-    // 5. 个性化推荐 (基于 reading history)
-    renderPersonalRecs();
+    // 5. 学习路径 (基于 reading history / RELATED / 7 天书签 / 7 天笔记 / priority)
+    renderLearningPath();
 }
 
 // ============================================================
@@ -6437,17 +6405,18 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// 个性化推荐：基于用户阅读历史 / 笔记 / 书签
-function renderPersonalRecs() {
-    const container = document.getElementById('personal-recs');
+// 学习路径：基于 reading history / RELATED / 7 天书签 / 7 天笔记 / priority
+// - 老用户：5 章个性化（in-progress / 同系列下一章 / 主题 RELATED / 7 天书签 / 7 天笔记）
+// - 新用户（无 history）：5 个 series 按 priority 取首章
+function renderLearningPath() {
+    const container = document.getElementById('learning-path');
     if (!container) return;
 
     const completed = Object.keys(progress.completed || {});
     const readPct = progress.readPct || {};
     const bookmarks = Object.keys(progress.bookmarks || {});
-    const lastChapter = progress.lastRead && progress.lastRead.chapterId;
 
-    // 计算每个 book 的阅读进度
+    // 构建 chapter 索引 (DOM 一次性扫)
     const allChapters = {};
     document.querySelectorAll('.chapter[data-book]').forEach(el => {
         allChapters[el.id] = {
@@ -6464,35 +6433,9 @@ function renderPersonalRecs() {
     });
     Object.values(chaptersByBook).forEach(arr => arr.sort((a, b) => a.chapSlug.localeCompare(b.chapSlug)));
 
-    // 分数 = 继续 (5) > 同系列下一章 (4) > 同主题系 (3) > 新人路线 (2) > 重读书签 (1)
-    const recs = [];
+    const hasHistory = completed.length > 0 || bookmarks.length > 0 || notes.length > 0;
 
-    // 1) 继续读：上次读到一半（10-90%）的章节
-    Object.entries(readPct).forEach(([cid, pct]) => {
-        if (pct >= 10 && pct <= 90 && !completed.includes(cid)) {
-            const c = allChapters[cid];
-            if (c) recs.push({ ...c, score: 10, reason: '上次读到 ' + pct + '%' });
-        }
-    });
-
-    // 2) 同一系列下一章：刚读完某章，推荐同系列的下一章
-    completed.forEach(cid => {
-        const c = allChapters[cid];
-        if (!c) return;
-        const arr = chaptersByBook[c.bookSlug];
-        const idx = arr.findIndex(x => x.id === cid);
-        if (idx >= 0 && idx + 1 < arr.length) {
-            const next = arr[idx + 1];
-            if (!completed.includes(next.id)) {
-                const reason = `续《${(BOOK_META[c.bookSlug] || {}).title || c.bookSlug}》第 ${idx + 2} 章`;
-                if (!recs.find(r => r.id === next.id)) {
-                    recs.push({ ...next, score: 8, reason });
-                }
-            }
-        }
-    });
-
-    // 3) 主题相关推荐：用户读完 RAG，则推荐 Agent / Prompt Engineering
+    // 主题 RELATED（与 renderPersonalRecs 旧版同源）
     const RELATED = {
         'rag': ['multi-agent', 'llm-prompt', 'context-engineering'],
         'multi-agent': ['crewai', 'harness-engineering', 'claude-code'],
@@ -6500,8 +6443,8 @@ function renderPersonalRecs() {
         'llm-prompt': ['context-engineering', 'rag', 'vibe-coding'],
         'context-engineering': ['memory-architecture', 'rag', 'llm-prompt'],
         'harness-engineering': ['multi-agent', 'claude-code', 'a2a-multi-agent'],
-        'claude-code': ['vibe-coding', 'harness-engineering', 'agent-skills'],
-        'vibe-coding': ['claude-code', 'llm-prompt', 'a2a-multi-agent'],
+        'claude-code': ['vibe-coding', 'harness-engineering', 'agent-skills', 'cn-codex'],
+        'vibe-coding': ['claude-code', 'llm-prompt', 'a2a-multi-agent', 'cn-codex'],
         'agent-skills': ['claude-code', 'harness-engineering', 'a2a-multi-agent'],
         'a2a-multi-agent': ['memory-architecture', 'harness-engineering', 'vibe-coding'],
         'memory-architecture': ['context-engineering', 'harness-engineering', 'a2a-multi-agent'],
@@ -6511,71 +6454,142 @@ function renderPersonalRecs() {
         'indie-ai-product': ['vibe-coding', 'ai-content-economy', 'claude-code'],
         'codex-cases': ['vibe-coding', 'claude-code', 'harness-engineering', 'a2a-multi-agent', 'cn-codex'],
         'cn-codex': ['codex-cases', 'vibe-coding', 'claude-code', 'a2a-multi-agent'],
-        'vibe-coding': ['claude-code', 'llm-prompt', 'a2a-multi-agent', 'cn-codex'],
-        'claude-code': ['vibe-coding', 'harness-engineering', 'agent-skills', 'cn-codex'],
     };
-    const readBooks = new Set(Object.values(allChapters).filter(c => completed.includes(c.id)).map(c => c.bookSlug));
-    readBooks.forEach(book => {
-        const related = RELATED[book] || [];
-        related.forEach(rb => {
-            if (readBooks.has(rb)) return;
-            const arr = chaptersByBook[rb] || [];
-            // 推荐未读的第 1 章
-            const target = arr.find(c => !completed.includes(c.id));
-            if (target && !recs.find(r => r.id === target.id)) {
-                const reason = `读《${(BOOK_META[book] || {}).title || book}》之后通常会看这条线`;
-                recs.push({ ...target, score: 5, reason });
+
+    let top, headerTitle, headerDesc;
+
+    if (hasHistory) {
+        // === 老用户：5 策略打分 ===
+        const recs = [];
+
+        // 1) 继续读 (10 分)
+        Object.entries(readPct).forEach(([cid, pct]) => {
+            if (pct >= 10 && pct <= 90 && !completed.includes(cid)) {
+                const c = allChapters[cid];
+                if (c) recs.push({ ...c, score: 10, reason: '上次读到 ' + pct + '%，还没看完' });
             }
         });
-    });
 
-    // 4) 重读书签：超过 7 天没回来看的书签
-    const sevenDaysAgo = Date.now() - 7 * 86400000;
-    bookmarks.forEach(bid => {
-        const bm = progress.bookmarks[bid];
-        if (!bm || bm.timestamp < sevenDaysAgo) return;
-        const c = allChapters[bid];
-        if (c && !completed.includes(c.id)) {
-            const reason = formatRelativeTime(bm.timestamp) + ' 加的书签，还没读完';
-            if (!recs.find(r => r.id === c.id)) recs.push({ ...c, score: 3, reason });
+        // 2) 同系列下一章 (8 分)
+        completed.forEach(cid => {
+            const c = allChapters[cid];
+            if (!c) return;
+            const arr = chaptersByBook[c.bookSlug];
+            if (!arr) return;
+            const idx = arr.findIndex(x => x.id === cid);
+            if (idx >= 0 && idx + 1 < arr.length) {
+                const next = arr[idx + 1];
+                if (!completed.includes(next.id)) {
+                    const bookTitle = (BOOK_META[c.bookSlug] || {}).title || c.bookSlug;
+                    if (!recs.find(r => r.id === next.id)) {
+                        recs.push({ ...next, score: 8, reason: '续《' + bookTitle + '》第 ' + (idx + 2) + ' 章' });
+                    }
+                }
+            }
+        });
+
+        // 3) 主题 RELATED 跨书桥接 (5 分)
+        const readBooks = new Set(Object.values(allChapters).filter(c => completed.includes(c.id)).map(c => c.bookSlug));
+        const seenTarget = new Set(recs.map(r => r.id));
+        readBooks.forEach(book => {
+            const related = RELATED[book] || [];
+            related.forEach(rb => {
+                if (readBooks.has(rb)) return;
+                const arr = chaptersByBook[rb] || [];
+                const target = arr.find(c => !completed.includes(c.id) && !seenTarget.has(c.id));
+                if (target) {
+                    const bookTitle = (BOOK_META[book] || {}).title || book;
+                    recs.push({ ...target, score: 5, reason: '读《' + bookTitle + '》之后通常会看这条线' });
+                    seenTarget.add(target.id);
+                }
+            });
+        });
+
+        // 4) 7 天内书签 (3 分)
+        const sevenDaysAgo = Date.now() - 7 * 86400000;
+        bookmarks.forEach(bid => {
+            const bm = progress.bookmarks[bid];
+            if (!bm || bm.timestamp < sevenDaysAgo) return;
+            const c = allChapters[bid];
+            if (c && !completed.includes(c.id)) {
+                const reason = formatRelativeTime(bm.timestamp) + ' 加的书签，还没读完';
+                if (!recs.find(r => r.id === c.id)) recs.push({ ...c, score: 3, reason });
+            }
+        });
+
+        // 5) 7 天内有笔记的章节 (2 分) — 笔记代表用户深度关注
+        const recentNoteChapters = new Set();
+        for (const n of notes) {
+            if (n && typeof n.timestamp === 'number' && n.timestamp >= sevenDaysAgo && n.chapterId) {
+                recentNoteChapters.add(n.chapterId);
+            }
         }
-    });
+        recentNoteChapters.forEach(cid => {
+            const c = allChapters[cid];
+            if (c && !completed.includes(cid)) {
+                const reason = '7 天内在这章加了笔记，再翻一遍可能有新发现';
+                if (!recs.find(r => r.id === c.id)) recs.push({ ...c, score: 2, reason });
+            }
+        });
 
-    // 排序 + 去重 + 取前 8
-    recs.sort((a, b) => b.score - a.score);
-    const seen = new Set();
-    const top = [];
-    for (const r of recs) {
-        if (seen.has(r.id)) continue;
-        seen.add(r.id);
-        top.push(r);
-        if (top.length >= 8) break;
+        // 排序 + 去重 + top 5
+        recs.sort((a, b) => b.score - a.score);
+        const seen = new Set();
+        top = [];
+        for (const r of recs) {
+            if (seen.has(r.id)) continue;
+            seen.add(r.id);
+            top.push(r);
+            if (top.length >= 5) break;
+        }
+        headerTitle = '你的学习路径';
+        headerDesc = '基于阅读历史 + 主题关联 + 7 天书签 + 7 天笔记，共 ' + top.length + ' 章。';
+    } else {
+        // === 新用户：按 BOOKS_META priority 取前 5 个 series 的首章 ===
+        const booksArr = Object.entries(BOOKS_META)
+            .map(([slug, m]) => ({ slug, ...m }))
+            .sort((a, b) => a.priority - b.priority)
+            .slice(0, 5);
+        top = booksArr.map(b => ({
+            id: b.firstChapter.anchor,
+            bookSlug: b.slug,
+            title: b.firstChapter.title,
+            reason: b.desc ? (b.desc.length > 50 ? b.desc.slice(0, 50) + '…' : b.desc) : '从这里开始入门',
+        }));
+        headerTitle = '新人路线 · 5 章入门';
+        headerDesc = '不知道从哪开始？按 priority 排序的 5 个系列首章，1 周内建立 AI 应用开发心智模型。';
     }
 
     if (top.length === 0) {
-        // 没有个性化推荐 → 用新人路线 (curated 5)
         container.style.display = 'none';
         return;
     }
     container.style.display = '';
 
-    container.innerHTML = '<h2 class="section-h2">为你推荐</h2>' +
-        '<p class="section-desc">基于你的阅读历史 + 主题关联，共 ' + top.length + ' 章。</p>' +
-        '<div class="rec-grid">' +
+    // 渲染为有序列表 (步骤感)
+    container.innerHTML =
+        '<h2 class="section-h2">' + headerTitle + '</h2>' +
+        '<p class="section-desc">' + headerDesc + '</p>' +
+        '<ol class="rec-path-list">' +
         top.map((r, i) => {
-            const bm = BOOK_META[r.bookSlug] || {};
-            const bookTitle = bm.title || r.bookSlug;
-            const color = bm.color || '#b08968';
-            const icon = bm.icon || 'book';
-            return `<a class="rec-card" href="#${r.id}" style="--book-color:${color}">
-                <div class="rec-card-icon">${svg_icon(icon, 14)}</div>
-                <div class="rec-card-body">
-                    <div class="rec-card-book">${bookTitle}</div>
-                    <div class="rec-card-title">${r.title}</div>
-                    <div class="rec-card-reason">${r.reason}</div>
-                </div>
-            </a>`;
-        }).join('') + '</div>';
+            const bm = (typeof BOOK_META !== 'undefined' && BOOK_META[r.bookSlug]) || {};
+            const booksMetaRow = BOOKS_META[r.bookSlug] || {};
+            const bookTitle = bm.title || booksMetaRow.title || r.bookSlug;
+            const color = booksMetaRow.color || '#b08968';
+            const icon = booksMetaRow.icon || 'book';
+            return (
+                '<li class="rec-path-item">' +
+                '<span class="rec-step">' + String(i + 1).padStart(2, '0') + '</span>' +
+                '<a class="rec-link" href="#' + r.id + '">' +
+                '<span class="rec-icon" style="color:' + color + '">' + svg_icon(icon, 18) + '</span>' +
+                '<span class="rec-title">' + r.title + '</span>' +
+                '<span class="rec-book">' + bookTitle + '</span>' +
+                '</a>' +
+                '<span class="rec-why">' + r.reason + '</span>' +
+                '</li>'
+            );
+        }).join('') +
+        '</ol>';
 }
 
 // overview-mode 切换：只看首页 TOC
@@ -8694,6 +8708,24 @@ def build_html():
             _md = _cp.read_text(encoding="utf-8")
             chapter_titles_map[_anchor] = chapter_display_title(_md, _cs)
     chapter_titles_map_json = _json.dumps(chapter_titles_map, ensure_ascii=False)
+    # 学习路径 fallback 用：每本书的 priority + 首章 anchor/title
+    books_meta = {}
+    for _slug, _meta, _chs in books:
+        if not _chs:
+            continue
+        _first_cs, _first_cp = _chs[0]
+        books_meta[_slug] = {
+            "title": _meta.get("title", _slug),
+            "priority": _meta.get("priority", 999),
+            "color": _meta.get("color", "#b08968"),
+            "icon": _meta.get("icon", "book"),
+            "desc": _meta.get("description", ""),
+            "firstChapter": {
+                "anchor": f"{_slug}__{_first_cs}",
+                "title": chapter_display_title(_first_cp.read_text(encoding="utf-8"), _first_cs),
+            },
+        }
+    books_meta_json = _json.dumps(books_meta, ensure_ascii=False)
     # JS 不是 f-string, 用占位符后替换
     JS = JS.replace("__CHAPTERS_JSON__", chapter_anchors_json)
     JS = JS.replace("__CHAPTER_REFS__", chapter_refs_json)
@@ -8701,6 +8733,7 @@ def build_html():
     JS = JS.replace("__CHAPTER_TITLES_MAP__", chapter_titles_map_json)
     JS = JS.replace("__SITE_URL__", SITE_URL)
     JS = JS.replace("__ICONS_JSON__", _json.dumps(ICONS, ensure_ascii=False))
+    JS = JS.replace("__BOOKS_META__", books_meta_json)
 
     html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
