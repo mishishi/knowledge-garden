@@ -6285,6 +6285,7 @@ function renderPersonalRecs() {
         'ai-content-economy': ['vibe-coding', 'claude-code', 'indie-ai-product'],
         'agent-cost': ['harness-engineering', 'claude-code', 'multi-agent'],
         'indie-ai-product': ['vibe-coding', 'ai-content-economy', 'claude-code'],
+        'agent-cases': ['vibe-coding', 'claude-code', 'harness-engineering', 'a2a-multi-agent'],
     };
     const readBooks = new Set(Object.values(allChapters).filter(c => completed.includes(c.id)).map(c => c.bookSlug));
     readBooks.forEach(book => {

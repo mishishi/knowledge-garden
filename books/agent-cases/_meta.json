@@ -1,0 +1,21 @@
+{
+  "title": "AI Agent 实战案例库",
+  "description": "10 章深挖 2026 最值得学的 AI Agent 实战案例：Codex 大爆发 + AGENTS.md 工程化 + CodexLoop 不偷懒 + 多 Agent 并行 + Computer Use + CI/CD + 飞书 CLI 接入办公 + AIGrader 半天全栈 + 未来趋势",
+  "icon": "terminal",
+  "color": "#0891b2",
+  "priority": 16,
+  "order": [
+    "01-paradigm-shift",
+    "02-codex-explosion",
+    "03-agents-md",
+    "04-codex-loop",
+    "05-multi-agent",
+    "06-computer-use",
+    "07-cicd-git",
+    "08-office-flow",
+    "09-aigrader",
+    "10-future-pick"
+  ],
+  "level": 3,
+  "level_name": "进阶"
+}
