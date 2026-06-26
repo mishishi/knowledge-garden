@@ -162,6 +162,7 @@ ICONS = {
     'bookmark': '<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>',
     'database': '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
     'layers':   '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+    'share':    '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
     'qr':       '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/>',
     'disc':     '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M6 12c0-1.7 1.3-3 3-3"/>',
     'coin':     '<circle cx="12" cy="12" r="9"/><path d="M12 6v12"/><path d="M15.5 9.5C15.5 8.5 14 8 12 8s-3.5.5-3.5 1.8c0 1.3 1.5 1.7 3.5 1.9 2 .2 3.5.6 3.5 1.9 0 1.3-1.5 2-3.5 2s-3.5-.7-3.5-2"/>',
@@ -426,6 +427,14 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     parts.append('<div class="dashboard-card"><div class="d-num" id="d-streak-days">0</div><div class="d-lbl">连续天数</div></div>')
     parts.append('</div>')
     parts.append('<div class="dashboard-streak" id="dashboard-streak"></div>')
+    parts.append('<div class="weekly-goal" id="weekly-goal">')
+    parts.append('<div class="weekly-goal-header"><span class="weekly-goal-title">本周阅读目标</span>')
+    parts.append('<button class="weekly-goal-edit" id="weekly-goal-edit" title="调整目标">编辑</button></div>')
+    parts.append('<div class="weekly-goal-progress">')
+    parts.append('<div class="weekly-goal-bar"><div class="weekly-goal-fill" id="weekly-goal-fill"></div></div>')
+    parts.append('<div class="weekly-goal-text"><span id="weekly-goal-current">0 分钟</span> · <span id="weekly-goal-percent">0%</span> · <span id="weekly-goal-target">目标 3 小时</span></div>')
+    parts.append('</div>')
+    parts.append('</div>')
     parts.append('</div>')
 
     # ---- 5 个 series 卡片 ----
@@ -1609,6 +1618,158 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     color: var(--accent);
     margin-right: 4px;
 }
+
+/* 周阅读目标进度条 */
+.weekly-goal {
+    margin: 16px auto 0;
+    max-width: 480px;
+    padding: 14px 18px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+.weekly-goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.weekly-goal-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-soft);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+.weekly-goal-edit {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 11px;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-family: inherit;
+    transition: color 0.15s, border-color 0.15s;
+}
+.weekly-goal-edit:hover { color: var(--accent); border-color: var(--accent); }
+.weekly-goal-bar {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+body.dark .weekly-goal-bar { background: rgba(255, 255, 255, 0.08); }
+.weekly-goal-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #d4a574);
+    width: 0%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+.weekly-goal-fill.complete {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+.weekly-goal-text {
+    font-size: 12.5px;
+    color: var(--text-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.weekly-goal-text span:last-child { color: var(--text-faint); font-size: 12px; }
+
+/* 章节分享按钮 */
+.chapter-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.chapter-meta-row .chapter-meta { margin-bottom: 0; }
+.chapter-share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 12px;
+    padding: 2px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 11.5px;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-family: inherit;
+    vertical-align: middle;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.chapter-share-btn:hover { color: var(--accent); border-color: var(--accent); }
+.chapter-share-btn.copied {
+    color: #22c55e;
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.08);
+}
+.chapter-share-btn svg { display: block; }
+
+/* 周目标编辑弹窗 */
+.weekly-goal-input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    margin: 12px 0 4px;
+    box-sizing: border-box;
+}
+.weekly-goal-input:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: var(--accent); }
+.weekly-goal-presets {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.weekly-goal-presets button {
+    flex: 1;
+    min-width: 50px;
+    padding: 6px 0;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+}
+.weekly-goal-presets button:hover { border-color: var(--accent); color: var(--accent); }
+.weekly-goal-presets button.selected {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 18px;
+}
+.btn-secondary {
+    background: var(--bg-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+.btn-secondary:hover { border-color: var(--accent); }
+
 .overview-stats {    display: flex;
     justify-content: center;
     gap: 48px;
@@ -5304,6 +5465,173 @@ function refreshCompletionUI() {
     refreshBookProgressUI();
 }
 
+// ---- 周阅读目标 ----
+function getWeeklyGoalMinutes() {
+    // 用户可自定义，默认 180 分钟（3 小时）
+    const v = parseInt(localStorage.getItem('weeklyGoalMinutes') || '180', 10);
+    return Number.isFinite(v) && v >= 30 && v <= 1200 ? v : 180;
+}
+
+function setWeeklyGoalMinutes(min) {
+    localStorage.setItem('weeklyGoalMinutes', String(min));
+    const daily = (progress && progress.dailyTime) || {};
+    refreshWeeklyGoal(daily);
+}
+
+function getWeekSeconds(daily) {
+    const oneDay = 86400000;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // 本周从周一开始
+    const day = today.getDay(); // 0=Sun, 1=Mon...
+    const offsetToMonday = (day + 6) % 7;
+    const weekStart = new Date(today.getTime() - offsetToMonday * oneDay);
+    let sec = 0;
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(weekStart.getTime() + i * oneDay);
+        const k = d.toISOString().slice(0, 10);
+        sec += daily[k] || 0;
+    }
+    return sec;
+}
+
+function refreshWeeklyGoal(daily) {
+    const fill = document.getElementById('weekly-goal-fill');
+    const current = document.getElementById('weekly-goal-current');
+    const percent = document.getElementById('weekly-goal-percent');
+    const target = document.getElementById('weekly-goal-target');
+    if (!fill) return;
+    const goalMin = getWeeklyGoalMinutes();
+    const weekSec = getWeekSeconds(daily || {});
+    const weekMin = Math.round(weekSec / 60);
+    const pct = Math.min(100, Math.round(weekMin / goalMin * 100));
+    fill.style.width = pct + '%';
+    fill.classList.toggle('complete', pct >= 100);
+    current.textContent = `本周已读 ${weekMin} 分钟`;
+    percent.textContent = pct + '%';
+    if (pct >= 100) {
+        target.textContent = `🎯 目标 ${goalMin} 分钟 · 完成！`;
+    } else {
+        target.textContent = `目标 ${goalMin} 分钟`;
+    }
+}
+
+// 周目标编辑弹窗
+function openWeeklyGoalEditor() {
+    let modal = document.getElementById('weekly-goal-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'weekly-goal-modal';
+        modal.className = 'modal-overlay';
+        document.body.appendChild(modal);
+    }
+    const current = getWeeklyGoalMinutes();
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width:420px">
+            <button class="modal-close">×</button>
+            <h3>每周阅读目标</h3>
+            <p style="color:var(--text-soft);font-size:13.5px;margin:0 0 4px;line-height:1.6">
+                一周读多少分钟？30 - 1200 分钟（0.5 - 20 小时）。
+                <br>建议起步 60-180 分钟，重在养成习惯。
+            </p>
+            <input type="number" class="weekly-goal-input" id="weekly-goal-input" 
+                   min="30" max="1200" step="15" value="${current}" />
+            <div class="weekly-goal-presets">
+                <button data-min="60">1 小时</button>
+                <button data-min="120">2 小时</button>
+                <button data-min="180">3 小时</button>
+                <button data-min="300">5 小时</button>
+                <button data-min="600">10 小时</button>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="weekly-goal-cancel">取消</button>
+                <button class="btn-primary" id="weekly-goal-save">保存</button>
+            </div>
+        </div>`;
+    modal.classList.add('visible');
+    const input = modal.querySelector('#weekly-goal-input');
+    setTimeout(() => input.focus(), 50);
+    // preset buttons
+    modal.querySelectorAll('.weekly-goal-presets button').forEach(btn => {
+        btn.classList.toggle('selected', parseInt(btn.dataset.min, 10) === current);
+        btn.onclick = () => {
+            input.value = btn.dataset.min;
+            modal.querySelectorAll('.weekly-goal-presets button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        };
+    });
+    modal.querySelector('.modal-close').onclick = modal.querySelector('#weekly-goal-cancel').onclick = () => modal.classList.remove('visible');
+    modal.querySelector('#weekly-goal-save').onclick = () => {
+        const v = parseInt(input.value, 10);
+        if (!Number.isFinite(v) || v < 30 || v > 1200) {
+            input.focus();
+            return;
+        }
+        setWeeklyGoalMinutes(v);
+        modal.classList.remove('visible');
+    };
+    modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('visible'); };
+}
+
+// ---- 章节分享按钮 ----
+function shareChapter(anchor) {
+    const article = document.getElementById(anchor);
+    if (!article) return;
+    const url = `${SITE_URL}#${anchor}`;
+    const title = article.querySelector('.chapter-title')?.textContent.trim() || anchor;
+    const bookSlug = article.dataset.book || '';
+    const bookTitle = (BOOK_META[bookSlug] && BOOK_META[bookSlug].title) || bookSlug;
+    const fullText = `${bookTitle} · ${title}\n${url}`;
+    const btn = document.querySelector(`.chapter-share-btn[data-share-anchor="${anchor}"]`);
+
+    function markCopied() {
+        if (!btn) return;
+        const orig = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="20 6 9 17 4 12"/></svg>已复制';
+        setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+    }
+
+    // 优先用 navigator.share（手机原生分享）
+    if (navigator.share) {
+        navigator.share({ title: `${bookTitle} · ${title}`, text: title, url }).then(markCopied).catch(() => copyFallback());
+    } else {
+        copyFallback();
+    }
+    function copyFallback() {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(fullText).then(markCopied).catch(() => legacyCopy(fullText, markCopied));
+        } else {
+            legacyCopy(fullText, markCopied);
+        }
+    }
+    function legacyCopy(text, cb) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); cb(); } catch (e) {}
+        document.body.removeChild(ta);
+    }
+}
+
+// 绑定分享按钮（事件委托，章节动态渲染也适用）
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.chapter-share-btn');
+    if (btn) {
+        e.preventDefault();
+        const anchor = btn.dataset.shareAnchor;
+        if (anchor) shareChapter(anchor);
+    }
+    const editBtn = e.target.closest('#weekly-goal-edit');
+    if (editBtn) {
+        e.preventDefault();
+        openWeeklyGoalEditor();
+    }
+});
+
 function refreshReadPctUI() {
     document.querySelectorAll('.ch-read-pct').forEach(el => {
         const id = el.dataset.chapter;
@@ -5437,6 +5765,9 @@ function renderOverview() {
             streakEl.textContent = '开始你的第一次阅读，建立连续记录。';
         }
     }
+
+    // 6. 周阅读目标进度（基于本周 dailyTime 总和）
+    refreshWeeklyGoal(daily);
 
     // 5. 每周回顾（基于 dailyTime + completed 时间戳）
     const weeklyGrid = document.getElementById('weekly-grid');
@@ -5686,6 +6017,10 @@ function commitReadTime() {
         const todayKey = localDateKey(new Date());
         progress.dailyTime[todayKey] = (progress.dailyTime[todayKey] || 0) + elapsed;
         saveProgress();
+        // 实时刷新周目标进度条
+        if (typeof refreshWeeklyGoal === 'function') {
+            refreshWeeklyGoal(progress.dailyTime);
+        }
     }
     readTimerStart = null;
     readTimerChapter = null;
@@ -6779,7 +7114,10 @@ def build_html():
                 f'<div class="chapter-num">CHAPTER {chap_idx:02d}</div>'
                 f'<h1 class="chapter-title">{display_title}</h1>'
                 f'{chap_progress_html}'
+                f'<div class="chapter-meta-row">'
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字 · {level_badge}</div>'
+                f'<button class="chapter-share-btn" data-share-anchor="{anchor}" title="分享本章链接">{svg_icon("share", size=14)} 分享</button>'
+                f'</div>'
                 f'{series_intro_html}'
                 f'<div class="chapter-body">'
                 f'<div class="chapter-content">'
