@@ -1,0 +1,21 @@
+{
+  "title": "中国版 Codex 大乱斗",
+  "description": "10 章拆解 2026 上半年 15 款国产 AI 编程 / 桌面 Agent 集体入场：字节 TRAE Work + 豆包、阿里 QoderWork + Qoder CN + 通义灵码、腾讯 WorkBuddy + Marvis + CodeBuddy、月之暗面 Kimi Work、百度文心快码、智谱 CodeGeeX、华为 CodeArts。从独立开发者视角真实使用 + 选型决策 + GEO 引流打法。",
+  "icon": "zap",
+  "color": "#dc2626",
+  "priority": 17,
+  "order": [
+    "01-battlefield",
+    "02-bytedance",
+    "03-alibaba",
+    "04-tencent",
+    "05-kimi",
+    "06-baidu-zhipu-huawei",
+    "07-common-patterns",
+    "08-cn-api",
+    "09-account-billing",
+    "10-pick-geo"
+  ],
+  "level": 3,
+  "level_name": "进阶"
+}

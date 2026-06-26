@@ -164,6 +164,8 @@ ICONS = {
     'layers':   '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
     'share':    '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>',
     'brain':    '<path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2"/>',
+    'volume':   '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>',
+    'volume-x': '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>',
     'qr':       '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/>',
     'disc':     '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M6 12c0-1.7 1.3-3 3-3"/>',
     'coin':     '<circle cx="12" cy="12" r="9"/><path d="M12 6v12"/><path d="M15.5 9.5C15.5 8.5 14 8 12 8s-3.5.5-3.5 1.8c0 1.3 1.5 1.7 3.5 1.9 2 .2 3.5.6 3.5 1.9 0 1.3-1.5 2-3.5 2s-3.5-.7-3.5-2"/>',
@@ -2000,6 +2002,53 @@ body.dark .review-grade-btn { background: #1f1f24; }
     background: rgba(34, 197, 94, 0.08);
 }
 .chapter-share-btn svg { display: block; }
+
+/* TTS 朗读按钮 + 播放器 */
+.chapter-tts-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 11.5px;
+    color: var(--text-faint);
+    cursor: pointer;
+    font-family: inherit;
+    vertical-align: middle;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+    margin-right: 6px;
+}
+.chapter-tts-btn:hover { color: var(--accent); border-color: var(--accent); }
+.chapter-tts-btn.playing {
+    color: #f59e0b;
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.08);
+}
+.chapter-tts-btn svg { display: block; }
+.chapter-tts-player {
+    margin: 8px 0 0;
+    padding: 0;
+    background: var(--bg-soft, rgba(0,0,0,0.03));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    max-height: 0;
+}
+.chapter-tts-player.open {
+    max-height: 80px;
+}
+.chapter-tts-player audio {
+    width: 100%;
+    display: block;
+    height: 50px;
+    outline: none;
+}
+.chapter-tts-player audio::-webkit-media-controls-panel {
+    background: transparent;
+}
 
 /* 周目标编辑弹窗 */
 .weekly-goal-input {
@@ -6006,6 +6055,94 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// TTS 朗读：检测本地是否有 MP3，有则显示按钮 + 播放，无则隐藏
+(function detectTtsAudio() {
+    const btns = document.querySelectorAll('.chapter-tts-btn');
+    btns.forEach(btn => {
+        const anchor = btn.dataset.ttsAnchor;
+        // audio path: assets/audio/{book}/{chapter}.mp3
+        const article = document.getElementById(anchor);
+        if (!article) return;
+        const book = article.dataset.book;
+        const chap = article.dataset.chap;
+        const audioUrl = `assets/audio/${book}/${chap}.mp3`;
+        // 用 fetch HEAD 检测（带 cache 友好）
+        fetch(audioUrl, { method: 'HEAD' }).then(r => {
+            if (r.ok) {
+                btn.style.display = 'inline-flex';
+                btn.dataset.audioUrl = audioUrl;
+            } else {
+                btn.remove(); // 没音频就直接删按钮
+            }
+        }).catch(() => btn.remove());
+    });
+})();
+
+let ttsCurrentAudio = null;
+let ttsCurrentBtn = null;
+function toggleTts(btn) {
+    const url = btn.dataset.audioUrl;
+    const player = document.querySelector(`.chapter-tts-player[data-tts-player="${btn.dataset.ttsAnchor}"]`);
+    if (!player) return;
+
+    if (ttsCurrentAudio && !ttsCurrentAudio.paused) {
+        ttsCurrentAudio.pause();
+        if (ttsCurrentBtn) {
+            ttsCurrentBtn.classList.remove('playing');
+            ttsCurrentBtn.querySelector('.tts-label').textContent = '朗读';
+            ttsCurrentBtn.innerHTML = ttsCurrentBtn.innerHTML.replace('volume-x', 'volume');
+        }
+        ttsCurrentAudio = null;
+        ttsCurrentBtn = null;
+        return;
+    }
+
+    // 新建或复用 audio
+    if (!player.querySelector('audio')) {
+        player.innerHTML = `<audio controls preload="none" src="${url}"></audio>`;
+    }
+    const audio = player.querySelector('audio');
+
+    // 关闭其他正在播放的
+    if (ttsCurrentAudio && ttsCurrentAudio !== audio) {
+        ttsCurrentAudio.pause();
+        ttsCurrentAudio.currentTime = 0;
+        if (ttsCurrentBtn) {
+            ttsCurrentBtn.classList.remove('playing');
+            ttsCurrentBtn.querySelector('.tts-label').textContent = '朗读';
+        }
+    }
+
+    audio.play();
+    ttsCurrentAudio = audio;
+    ttsCurrentBtn = btn;
+    btn.classList.add('playing');
+    btn.querySelector('.tts-label').textContent = '暂停';
+    player.classList.add('open');
+
+    audio.onended = () => {
+        btn.classList.remove('playing');
+        btn.querySelector('.tts-label').textContent = '朗读';
+        player.classList.remove('open');
+        ttsCurrentAudio = null;
+        ttsCurrentBtn = null;
+    };
+    audio.onerror = () => {
+        btn.classList.remove('playing');
+        btn.querySelector('.tts-label').textContent = '朗读';
+        ttsCurrentAudio = null;
+        ttsCurrentBtn = null;
+    };
+}
+
+document.addEventListener('click', (e) => {
+    const ttsBtn = e.target.closest('.chapter-tts-btn');
+    if (ttsBtn) {
+        e.preventDefault();
+        toggleTts(ttsBtn);
+    }
+});
+
 function refreshReadPctUI() {
     document.querySelectorAll('.ch-read-pct').forEach(el => {
         const id = el.dataset.chapter;
@@ -8354,8 +8491,12 @@ def build_html():
                 f'{chap_progress_html}'
                 f'<div class="chapter-meta-row">'
                 f'<div class="chapter-meta">约 {minutes} 分钟 · {chars} 字 · {level_badge}</div>'
+                f'<div class="chapter-actions">'
+                f'<button class="chapter-tts-btn" data-tts-anchor="{anchor}" title="朗读本章（Edge TTS）" style="display:none">{svg_icon("volume", size=14)} <span class="tts-label">朗读</span></button>'
                 f'<button class="chapter-share-btn" data-share-anchor="{anchor}" title="分享本章链接">{svg_icon("share", size=14)} 分享</button>'
                 f'</div>'
+                f'</div>'
+                f'<div class="chapter-tts-player" data-tts-player="{anchor}"></div>'
                 f'{series_intro_html}'
                 f'<div class="chapter-body">'
                 f'<div class="chapter-content">'
