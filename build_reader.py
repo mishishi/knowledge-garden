@@ -6982,14 +6982,14 @@ function buildAnkiCsv(notesArr) {
         const tags = ['kg', bookSlug, note.chapterId.split('__')[1] || ''].filter(Boolean).join(' ');
         lines.push([front, back, tags].map(csvEscape).join('\t'));
     }
-    return lines.join('\n');
+    return lines.join('\\n');
 }
 
 // 转义 Anki CSV 字段：去掉换行（替换为空格）、tab 转空格
 function csvEscape(s) {
     return String(s)
-        .replace(/\r?\n/g, ' ')   // 多行折叠成单行（Anki 闪卡一般单行更易复习）
-        .replace(/\t/g, ' ')
+        .replace(/\\r?\\n/g, ' ')   // 多行折叠成单行（Anki 闪卡一般单行更易复习）
+        .replace(/\\t/g, ' ')
         .replace(/  +/g, ' ')    // 合并多余空格
         .trim();
 }
