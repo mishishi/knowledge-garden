@@ -4,7 +4,7 @@
 
 A personal knowledge garden. Multiple Markdown book series compiled into a single-file immersive HTML reader with notes, highlights, ambient music, and PWA offline support.
 
-我自己的个人知识库。写了 15 个 AI/Agent 工程系列的笔记（Multi-Agent / LLM Prompt / CrewAI / RAG / Harness / 成本工程 / Indie 产品 / Context Engineering / Agent Skills / Claude Code / Vibe Coding / A2A 多 Agent 互操作 / 长期记忆 / 具身智能 / AI 内容创作经济），每一本都能做笔记、画高亮、配背景音乐。手机可加到主屏幕离线阅读。整套部署在 GitHub Pages，访问 [mishishi.github.io/knowledge-garden](https://mishishi.github.io/knowledge-garden/)。
+我自己的个人知识库。写了 17 个 AI/Agent 工程系列的笔记（Multi-Agent / LLM Prompt / CrewAI / Context Engineering / RAG / Harness / Agent Skills / Agent Cost / Claude Code / Vibe Coding / A2A 多 Agent 互操作 / 长期记忆 / 具身智能 / AI 内容创作经济 / Indie + AI / Codex 实战案例 / 中国版 Codex 大乱斗），每一本都能做笔记、画高亮、配背景音乐。手机可加到主屏幕离线阅读。整套部署在 GitHub Pages，访问 [mishishi.github.io/knowledge-garden](https://mishishi.github.io/knowledge-garden/)。
 
 ## 为什么做这个
 
@@ -143,9 +143,11 @@ D 切换暗色模式，S 收起展开书架，M 背景音面板，N 笔记列表
 
 ## 技术实现
 
-单 HTML 文件，3.0 MB（包含 17 系列 22.4 万字 + mermaid.js 3.3MB 懒加载 + SVG icon + PWA manifest + Service Worker）。CSS / JS / SVG icon 全部内嵌，没有外部依赖（除了 Google Fonts 的思源宋体）。
+主页 `index.html` 1.25 MB raw / 157 KB gzipped（结构 + CSS + JS + 顶部 TOC + 17 个 book cover），章节正文 lazy load 到 `assets/books/{slug}.json`（每书 60-300 KB），Q&A 索引 lazy load 到 `assets/knowledge_index.json`（1.75 MB） + `assets/knowledge_dense.json`（4 MB，仅启用 AI 语义搜索时）。
 
-Markdown 解析用 Python `markdown` 库 + `pygments` 做代码高亮。音频用 Web Audio API 实时合成（白噪音 / 雨声 / 暖调 / 火焰），零音频文件。笔记 / 高亮 / 进度 / 偏好 / 背景音设置全部 `localStorage`。
+CSS / JS / SVG icon / PWA manifest 全部内嵌，没有运行时依赖（除了 Google Fonts 的思源宋体）。Mermaid 渲染按需引入。
+
+Markdown 解析用 Python `markdown` 库 + `pygments` 做代码高亮。音频用 Web Audio API 实时合成（白噪音 / 雨声 / 暖调 / 火焰），零音频文件。笔记 / 高亮 / 进度 / 偏好 / 背景音设置 / 搜索历史全部 `localStorage`。
 
 PWA：内嵌 manifest + 通过 blob URL 注册的 Service Worker，桌面浏览器支持"安装为应用"，iOS Safari 支持"添加到主屏幕"。
 
@@ -166,6 +168,36 @@ GitHub Pages 用 `actions/deploy-pages@v4`，权限 `pages: write` + `id-token: 
 ## 浏览器要求
 
 Chrome / Edge / Safari / Firefox 最新版。iOS Safari 13+，Android Chrome 80+。IE 不支持。
+
+## 2026-06-27 这一波 UX 改进
+
+一口气推了 9 项, 主要是把"内容站"打磨成"个人学习环境". 都已部署到 Pages.
+
+**上手就感受到的 (Tier 一)**
+- 首次访问引导, 12 标签选 3 个推 5 章
+- 章节内进度条 + 滚到底自动算百分比
+- 长章节右侧 sticky TOC (≥ 1200px 才出现)
+- 读完底部弹"下一章" CTA
+- Cmd+K 状态过滤 (未读 / 有笔记 / 有书签 / 已读完)
+- Q&A 跳到章节后 query term 黄闪 2.5s
+
+**用着用着才察觉的 (Tier 二)**
+- 章节底部"相关章节"卡片 (复用 dense index)
+- Q&A 搜索历史 (localStorage, 最多 8 条)
+- 16 周阅读 Streak 热度图 (GitHub-style)
+- 继续阅读 carousel (主续 + 同系列 + 主题相关, 横滑)
+- 章节顶部面包屑 + 系列色 ribbon
+- 读完祝贺 toast (累计 N 章 + 下一章快捷链)
+- Q&A 输入时下拉 top-5 章节建议
+
+**性能 (Lazy load)**
+- 章节正文 build 时拆到 17 个 `assets/books/{slug}.json` (60-300 KB)
+- 主页只剩结构 + 顶部 TOC, IntersectionObserver 600px 距离触发 fetch
+- 同本书只拉一次, in-flight 去重
+- 初始 gzipped: 843 KB → **157 KB** (5.4x ↓)
+- Q&A jump / hash 直跳 / 滚动预加载 全覆盖
+
+主要 commit: `1275ab3` / `f0be3eb` / `a762c84` / `0b7b07d` / `a6efc87` / `bf00e71` / `6f27eed` / `a1797bc` / `43ffa5e`.
 
 ## License
 
