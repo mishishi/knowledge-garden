@@ -5290,8 +5290,15 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
 }
 .command-chip.active {
     background: var(--accent);
-    color: white;
+    color: var(--bg);
     border-color: var(--accent);
+}
+.command-chip-status {
+    border-style: dashed;
+    opacity: 0.85;
+}
+.command-chip-status.active {
+    opacity: 1;
 }
 
 .command-results {
@@ -9620,12 +9627,33 @@ function performSearch(query) {
     const q = query.toLowerCase();
     const results = [];
 
+    // 状态 filter 预计算
+    const completed = new Set(Object.keys(progress.completed || {}));
+    const bookmarks = new Set(Object.keys(progress.bookmarks || {}));
+    const notesChapters = new Set((Array.isArray(notes) ? notes : []).map(n => n && n.chapterId).filter(Boolean));
+    function statusPass(id) {
+        switch (activeFilter) {
+            case '__status_read': return completed.has(id);
+            case '__status_unread': return !completed.has(id) && !bookmarks.has(id);
+            case '__status_with_notes': return notesChapters.has(id);
+            case '__status_with_bookmarks': return bookmarks.has(id);
+            default: return true;
+        }
+    }
+
     for (const item of searchIndex) {
-        if (activeFilter !== 'all' && item.book !== activeFilter) continue;
+        if (activeFilter.startsWith('__status_')) {
+            if (!statusPass(item.id)) continue;
+        } else if (activeFilter !== 'all' && item.book !== activeFilter) {
+            continue;
+        }
         if (item.lower.includes(q)) {
             // 算分数：标题命中 > 内容命中
             const titleIdx = item.title.toLowerCase().indexOf(q);
-            const score = titleIdx >= 0 ? (100 - titleIdx) : 1;
+            let score = titleIdx >= 0 ? (100 - titleIdx) : 1;
+            // 状态 filter 时给状态轻微加权
+            if (activeFilter === '__status_with_bookmarks' && bookmarks.has(item.id)) score += 5;
+            if (activeFilter === '__status_with_notes' && notesChapters.has(item.id)) score += 5;
             results.push({ ...item, score });
         }
     }
@@ -10531,6 +10559,10 @@ def build_html():
             <input type="text" class="command-input" placeholder="搜索章节标题或内容...">
             <div class="command-filters" id="command-filters">
                 <button class="command-chip active" data-filter="all">全部</button>
+                <button class="command-chip command-chip-status" data-filter="__status_unread">未读</button>
+                <button class="command-chip command-chip-status" data-filter="__status_with_notes">有笔记</button>
+                <button class="command-chip command-chip-status" data-filter="__status_with_bookmarks">有书签</button>
+                <button class="command-chip command-chip-status" data-filter="__status_read">已读完</button>
                 {''.join(f'<button class="command-chip" data-filter="{slug}">{title}</button>' for slug, title, _ in books)}
             </div>
             <div class="command-hint">

@@ -4358,8 +4358,15 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
 }
 .command-chip.active {
     background: var(--accent);
-    color: white;
+    color: var(--bg);
     border-color: var(--accent);
+}
+.command-chip-status {
+    border-style: dashed;
+    opacity: 0.85;
+}
+.command-chip-status.active {
+    opacity: 1;
 }
 
 .command-results {
@@ -4793,6 +4800,10 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
             <input type="text" class="command-input" placeholder="搜索章节标题或内容...">
             <div class="command-filters" id="command-filters">
                 <button class="command-chip active" data-filter="all">全部</button>
+                <button class="command-chip command-chip-status" data-filter="__status_unread">未读</button>
+                <button class="command-chip command-chip-status" data-filter="__status_with_notes">有笔记</button>
+                <button class="command-chip command-chip-status" data-filter="__status_with_bookmarks">有书签</button>
+                <button class="command-chip command-chip-status" data-filter="__status_read">已读完</button>
                 <button class="command-chip" data-filter="multi-agent">{'title': 'Multi-Agent in Practice', 'description': '从零到生产：手把手教你构建 Multi-Agent 系统', 'icon': 'agents', 'color': '#5b8c85', 'priority': 1, 'order': ['01-your-first-agent', '02-why-multi-agent', '03-five-abstractions', '04-orchestration-patterns', '05-state-and-communication', '06-failure-handling', '07-framework-comparison', '08-observability-and-cost', '09-code-review-project', '10-production-checklist'], 'level': 3, 'level_name': '进阶'}</button><button class="command-chip" data-filter="llm-prompt">{'title': 'LLM Prompt 实战', 'description': '从基础到 2026 深度：4 元素 / Few-shot / CoT / Role / Structured / Tool / Cache / Injection / Eval', 'icon': 'sparkles', 'color': '#b08968', 'priority': 2, 'order': ['01-prompt-basics', '02-few-shot', '03-advanced-patterns', '04-role-system-prompt', '05-structured-output', '06-tool-use', '07-prompt-caching', '08-prompt-injection', '09-eval-driven', '10-real-cases'], 'level': 2, 'level_name': '入门'}</button><button class="command-chip" data-filter="crewai">{'title': 'CrewAI 入门到实战', 'description': '用 CrewAI v1.14 搭建生产级 Multi-Agent 系统：核心 API + 实战项目 + 公司落地案例', 'icon': 'bot', 'color': '#6c63ff', 'priority': 3, 'order': ['01-getting-started', '02-crew-orchestration', '03-agent-tuning', '04-tools-and-mcp', '05-memory-and-knowledge', '06-structured-output', '07-flows', '08-skills-and-prod', '09-side-projects', '10-prod-cases'], 'level': 3, 'level_name': '进阶'}</button><button class="command-chip" data-filter="rag">{'title': 'RAG 实战', 'description': '检索增强生成：从 embedding 到向量数据库，从 chunking 到 reranking，从评测到生产化', 'icon': 'database', 'color': '#0d9488', 'priority': 4, 'order': ['01-why-rag', '02-embedding-models', '03-vector-databases', '04-chunking-strategies', '05-retrieval-and-reranking', '06-prompt-design', '07-hybrid-search', '08-evaluation', '09-advanced-patterns', '10-prod-checklist'], 'level': 2, 'level_name': '入门'}</button><button class="command-chip" data-filter="harness-engineering">{'title': 'Harness Engineering', 'description': '包裹 LLM 的整套工程基座：agent loop、tools、context、permissions、observability、memory、failure recovery、eval — 写给需要自己造 / 选 harness 的人', 'icon': 'layers', 'color': '#c2410c', 'priority': 5, 'order': ['01-what-is-harness', '02-agent-loop', '03-tool-design', '04-context-management', '05-permissions-sandbox', '06-observability', '07-memory-layers', '08-failure-recovery', '09-eval-driven', '10-build-from-scratch'], 'level': 4, 'level_name': '深水'}</button><button class="command-chip" data-filter="agent-cost">{'title': 'Agent Cost Engineering', 'description': '让你的 agent side project 活过 100 个用户：unit economics、model routing、caching、压缩、quota、熔断、cost dashboard', 'icon': 'coin', 'color': '#4f46e5', 'priority': 6, 'order': ['01-cost-economics', '02-where-tokens-go', '03-model-routing', '04-caching-layers', '05-prompt-compression', '06-batch-vs-stream', '07-user-quota', '08-budget-circuit-breaker', '09-tool-cost', '10-cost-dashboard'], 'level': 3, 'level_name': '进阶'}</button><button class="command-chip" data-filter="indie-ai-product">{'title': 'Indie + AI：一个人做产品的产品方法论', 'description': '写给非技术背景或不想写代码的个人开发者：用 AI 工具从 0 到 1 做出可实施 MVP 的产品方法论（idea 验证 / 设计 / 文案 / PMF / 渠道 / 定价 / 留存）', 'icon': 'rocket', 'color': '#d97706', 'priority': 7, 'order': ['01-indie-math', '02-idea-to-scope', '03-validate-without-code', '04-design-with-ai', '05-write-with-ai', '06-pmf-signals', '07-distribution', '08-pricing', '09-first-paying-users', '10-retention-vs-growth'], 'level': 2, 'level_name': '入门'}</button><button class="command-chip" data-filter="context-engineering">{'title': 'Context Engineering 实战', 'description': '10 章从 prompt 跨进上下文工程体系：Write / Select / Compress / Isolate 四大原则 + RAG / 记忆 / MCP / Agent 生产线实战', 'icon': 'stack', 'color': '#7c3aed', 'priority': 8, 'order': ['01-why-context-engineering', '02-context-window-tokens', '03-write-storage-memory', '04-select-rag-retrieval', '05-compress-strategies', '06-isolate-structure', '07-tools-and-mcp', '08-multi-agent-context', '09-agentic-rag', '10-production-antipatterns'], 'level': 4, 'level_name': '深水'}</button><button class="command-chip" data-filter="agent-skills">{'title': 'Agent Skills 实战', 'description': '10 章从 0 到 1 学会写 Claude Agent Skills：SKILL.md 结构 + 触发机制 + CLAUDE.md 分工 + 8 大实用 Skill 拆解 + 性能优化与生态', 'icon': 'sparkles', 'color': '#ec4899', 'priority': 9, 'order': ['01-what-is-skill', '02-skill-md-structure', '03-trigger-mechanism', '04-claudemd-vs-skills', '05-eight-essential-skills', '06-write-your-first-skill', '07-test-and-evaluate', '08-token-cost-optimization', '09-marketplace-and-sharing', '10-ecosystem-and-future'], 'level': 3, 'level_name': '进阶'}</button><button class="command-chip" data-filter="claude-code">{'title': 'Claude Code 实战', 'description': '10 章从 0 到上手 Claude Code：安装配置 + CLAUDE.md 项目记忆 + Skills/Hooks/SubAgent + MCP 集成 + 10 个实战场景 + 成本优化 + 与 Cursor/Codex/TRAE 的对比', 'icon': 'terminal', 'color': '#059669', 'priority': 10, 'order': ['01-what-is-claude-code', '02-install-and-config', '03-claudemd-deep-dive', '04-skills-and-hooks', '05-subagent-and-worktree', '06-mcp-integration', '07-slash-commands', '08-ten-real-scenarios', '09-cost-and-performance', '10-limits-and-future'], 'level': 4, 'level_name': '深水'}</button><button class="command-chip" data-filter="vibe-coding">{'title': 'Vibe Coding 实战', 'description': '10 章讲透 vibe coding：Karpathy 定义 + 工具全景 + 三段式口述 + 三个真坑（N+1 / 字段割裂 / 安全）+ 多文件重构 + 中文本地化 + 边界 + 个人工作流', 'icon': 'wind', 'color': '#7c3aed', 'priority': 11, 'order': ['01-what-is-vibe-coding', '02-tools-landscape', '03-three-stage-method', '04-pitfall-n-plus-one', '05-pitfall-naming', '06-pitfall-security', '07-multi-file-refactor', '08-chinese-localized', '09-boundaries', '10-my-workflow'], 'level': 3, 'level_name': '进阶'}</button><button class="command-chip" data-filter="a2a-multi-agent">{'title': 'A2A + 多 Agent 互操作', 'description': '10 章讲透 agent 间通信：A2A 协议 + Agent Card + 4 种协作范式（管道/辩论/分层/市场）+ 安全边界 + 真实落地架构', 'icon': 'network', 'color': '#0ea5e9', 'priority': 12, 'order': ['01-what-is-a2a', '02-a2a-vs-mcp', '03-agent-card', '04-four-collaboration-patterns', '05-pipeline-mode', '06-debate-mode', '07-hierarchical-mode', '08-market-mode', '09-security-boundary', '10-real-architecture'], 'level': 4, 'level_name': '深水'}</button><button class="command-chip" data-filter="memory-architecture">{'title': '长期记忆系统', 'description': '10 章讲透 agent 长期记忆：三层架构（工作/情景/语义）+ 向量数据库 + 知识图谱 + 混合检索 + 写入策略 + 真实生产系统', 'icon': 'brain', 'color': '#f59e0b', 'priority': 13, 'order': ['01-why-memory-matters', '02-three-layer-memory', '03-working-memory', '04-episodic-memory', '05-semantic-memory', '06-vector-db', '07-knowledge-graph', '08-hybrid-retrieval', '09-memory-write-strategy', '10-real-system'], 'level': 4, 'level_name': '深水'}</button><button class="command-chip" data-filter="embodied-agent">{'title': '具身智能实战', 'description': '10 章讲透 embodied agent：世界模型 + 仿真训练 + 真实机器人 + 机械臂 + 导航 + 家庭服务 + 未来 2-3 年趋势', 'icon': 'bot', 'color': '#dc2626', 'priority': 14, 'order': ['01-what-is-embodied', '02-three-pillars', '03-world-models', '04-simulation-train', '05-simulation-platforms', '06-real-robot', '07-manipulation', '08-navigation', '09-home-service', '10-future-outlook'], 'level': 4, 'level_name': '深水'}</button><button class="command-chip" data-filter="ai-content-economy">{'title': 'AI 内容创作经济', 'description': '10 章讲透 AI 重塑内容产业：AIGC 工具 + 工作流改造 + Newsletter 经济 + Substack / Beehiiv + 内容平台对比 + 变现路径 + AI 协作 + 版权问题 + 未来创作者', 'icon': 'pen-tool', 'color': '#ec4899', 'priority': 15, 'order': ['01-industry-reshuffle', '02-aigc-tools', '03-workflow-rebuild', '04-newsletter-economy', '05-substack-beehiiv', '06-content-platform-comparison', '07-monetization-paths', '08-ai-co-creation', '09-copyright-and-rights', '10-future-creator'], 'level': 3, 'level_name': '进阶'}</button><button class="command-chip" data-filter="codex-cases">{'title': 'Codex 实战案例', 'description': '15 章深挖 2026 最值得学的 Codex 实战案例：Codex 整合 ChatGPT 大爆发 + AGENTS.md 工程化 + CodexLoop 不偷懒 + spawn_agent 多 Agent 并行 + Windows Computer Use + CI/CD 自动化 + 飞书 CLI 接入办公 + AIGrader 半天全栈 + 未来 6 个月趋势 + 4 条官方线 3 个平替 + 个人 ECC 系统 + MCP 完整实战 + Codex vs Claude Code vs Cursor 横评 + 5 套可复制工作流', 'icon': 'terminal', 'color': '#0891b2', 'priority': 16, 'order': ['01-paradigm-shift', '02-codex-explosion', '03-agents-md', '04-codex-loop', '05-multi-agent', '06-computer-use', '07-cicd-git', '08-office-flow', '09-aigrader', '10-future-pick', '11-tools-ecosystem', '12-skills-best-practices', '13-mcp-playbook', '14-vs-cc-cursor', '15-indie-workflow'], 'level': 3, 'level_name': '进阶'}</button><button class="command-chip" data-filter="cn-codex">{'title': '中国版 Codex 大乱斗', 'description': '10 章拆解 2026 上半年 15 款国产 AI 编程 / 桌面 Agent 集体入场：字节 TRAE Work + 豆包、阿里 QoderWork + Qoder CN + 通义灵码、腾讯 WorkBuddy + Marvis + CodeBuddy、月之暗面 Kimi Work、百度文心快码、智谱 CodeGeeX、华为 CodeArts。从独立开发者视角真实使用 + 选型决策 + GEO 引流打法。', 'icon': 'zap', 'color': '#dc2626', 'priority': 17, 'order': ['01-battlefield', '02-bytedance', '03-alibaba', '04-tencent', '05-kimi', '06-baidu-zhipu-huawei', '07-common-patterns', '08-cn-api', '09-account-billing', '10-pick-geo'], 'level': 3, 'level_name': '进阶'}</button>
             </div>
             <div class="command-hint">
@@ -47581,12 +47592,33 @@ function performSearch(query) {
     const q = query.toLowerCase();
     const results = [];
 
+    // 状态 filter 预计算
+    const completed = new Set(Object.keys(progress.completed || {}));
+    const bookmarks = new Set(Object.keys(progress.bookmarks || {}));
+    const notesChapters = new Set((Array.isArray(notes) ? notes : []).map(n => n && n.chapterId).filter(Boolean));
+    function statusPass(id) {
+        switch (activeFilter) {
+            case '__status_read': return completed.has(id);
+            case '__status_unread': return !completed.has(id) && !bookmarks.has(id);
+            case '__status_with_notes': return notesChapters.has(id);
+            case '__status_with_bookmarks': return bookmarks.has(id);
+            default: return true;
+        }
+    }
+
     for (const item of searchIndex) {
-        if (activeFilter !== 'all' && item.book !== activeFilter) continue;
+        if (activeFilter.startsWith('__status_')) {
+            if (!statusPass(item.id)) continue;
+        } else if (activeFilter !== 'all' && item.book !== activeFilter) {
+            continue;
+        }
         if (item.lower.includes(q)) {
             // 算分数：标题命中 > 内容命中
             const titleIdx = item.title.toLowerCase().indexOf(q);
-            const score = titleIdx >= 0 ? (100 - titleIdx) : 1;
+            let score = titleIdx >= 0 ? (100 - titleIdx) : 1;
+            // 状态 filter 时给状态轻微加权
+            if (activeFilter === '__status_with_bookmarks' && bookmarks.has(item.id)) score += 5;
+            if (activeFilter === '__status_with_notes' && notesChapters.has(item.id)) score += 5;
             results.push({ ...item, score });
         }
     }
