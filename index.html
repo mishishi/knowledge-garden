@@ -573,6 +573,41 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     padding: 1px 2px;
     border-radius: 2px;
 }
+/* Q&A 搜索历史 */
+.kb-history-label {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 12px 22px 6px;
+}
+.kb-history-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 22px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+}
+.kb-history-row:hover { background: var(--bg-soft); }
+.kb-history-row:last-child { border-bottom: none; }
+.kb-history-q {
+    font-size: 13px;
+    color: var(--text);
+}
+.kb-history-x {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    color: var(--text-faint);
+    font-size: 14px;
+    line-height: 1;
+}
+.kb-history-x:hover { background: var(--bg); color: var(--text); }
 /* Q&A 跳章节时的黄色闪高亮 (2.5s 后自动拆掉) */
 @keyframes kb-flash {
     0% { background: rgba(255, 215, 0, 0.85); }
@@ -45818,6 +45853,7 @@ async function kbRunSearch() {
         results.innerHTML = '<div class="kb-empty">先在上面输入问题吧。</div>';
         return;
     }
+    saveKbQuery(query);
     const aiToggle = document.getElementById('kb-ai-toggle');
     const useDense = aiToggle && aiToggle.checked;
     results.innerHTML = '<div class="kb-loading">加载索引中（首次约 1.7 MB）…</div>';
@@ -45882,12 +45918,57 @@ function kbOpen() {
     modal.classList.add('visible');
     // 预加载索引（不阻塞打开）
     if (!_kbIndex && !_kbIndexLoading) loadKnowledgeIndex();
+    renderKbHistory();
     setTimeout(() => document.getElementById('kb-input')?.focus(), 50);
 }
 function kbClose() {
     const modal = document.getElementById('kb-modal');
     if (modal) modal.classList.remove('visible');
 }
+
+// Q&A 搜索历史 (localStorage 最近 8 条)
+function getKbHistory() {
+    try { return JSON.parse(localStorage.getItem('kg_kb_history') || '[]'); } catch (e) { return []; }
+}
+function saveKbQuery(query) {
+    if (!query || query.length < 2) return;
+    let h = getKbHistory().filter(q => q !== query);
+    h.unshift(query);
+    if (h.length > 8) h = h.slice(0, 8);
+    try { localStorage.setItem('kg_kb_history', JSON.stringify(h)); } catch (e) {}
+}
+function renderKbHistory() {
+    const results = document.getElementById('kb-results');
+    if (!results) return;
+    const h = getKbHistory();
+    if (!h.length) {
+        results.innerHTML = '<div class="kb-empty kb-hint">键入问题后回车。默认走 TF-IDF + 同义词扩展 + 标题加权,勾选 AI 语义搜索可加载 BGE 中文模型做 dense embedding 混合检索。</div>';
+        return;
+    }
+    const html = h.map((q, i) => '<div class="kb-history-row" data-query="' + escapeAttr(q) + '">' +
+        '<span class="kb-history-q">' + q + '</span>' +
+        '<span class="kb-history-x" data-remove="' + escapeAttr(q) + '">×</span>' +
+        '</div>').join('');
+    results.innerHTML = '<div class="kb-history-label">最近搜索</div>' + html;
+}
+// 委托: 点击历史行 → 回填 + 搜索; 点 × → 删除
+document.addEventListener('click', (e) => {
+    const x = e.target.closest('.kb-history-x');
+    if (x) {
+        e.preventDefault(); e.stopPropagation();
+        const q = x.dataset.remove;
+        let h = getKbHistory().filter(item => item !== q);
+        try { localStorage.setItem('kg_kb_history', JSON.stringify(h)); } catch (e) {}
+        renderKbHistory();
+        return;
+    }
+    const row = e.target.closest('.kb-history-row');
+    if (row) {
+        e.preventDefault();
+        document.getElementById('kb-input').value = row.dataset.query;
+        kbRunSearch();
+    }
+});
 
 // 事件绑定
 const kbLauncher = document.getElementById('kb-launcher');
