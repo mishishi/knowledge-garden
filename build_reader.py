@@ -1506,6 +1506,171 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     padding: 1px 2px;
     border-radius: 2px;
 }
+
+/* 首次访问引导 */
+.welcome-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.welcome-inner {
+    background: var(--bg);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 32px 36px 24px;
+    max-width: 640px;
+    width: 92vw;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+.welcome-hero h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 600;
+}
+.welcome-desc {
+    margin: 0 0 24px;
+    font-size: 14px;
+    color: var(--text-soft);
+    line-height: 1.6;
+}
+.welcome-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.welcome-tag {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--bg-soft);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    font-family: inherit;
+}
+.welcome-tag:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.welcome-tag.selected {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+}
+.welcome-hint {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin: 0 0 20px;
+}
+.welcome-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+.welcome-skip {
+    background: none;
+    border: none;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 8px 12px;
+    font-family: inherit;
+}
+.welcome-skip:hover { color: var(--text); }
+.welcome-go {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+}
+.welcome-go:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.welcome-go:hover:not(:disabled) { opacity: 0.9; }
+.welcome-results {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.welcome-results-inner {
+    background: var(--bg);
+    border-radius: 16px;
+    padding: 28px 32px;
+    max-width: 600px;
+    width: 92vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+}
+.welcome-results-inner h3 {
+    margin: 0 0 16px;
+    font-size: 16px;
+    font-weight: 600;
+}
+.welcome-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.welcome-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color .15s;
+}
+.welcome-result-item:hover { border-color: var(--accent); }
+.welcome-result-step {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.welcome-result-body { flex: 1; }
+.welcome-result-title { font-size: 14px; font-weight: 500; }
+.welcome-result-book { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+.welcome-close {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+}
+.welcome-close:hover { opacity: 0.9; }
 .sidebar-bookmarks .sb-title {
     font-size: 11px;
     color: var(--text-soft);
@@ -7674,7 +7839,101 @@ if (sidebarH1) {
     sidebarH1.addEventListener('click', showOverview);
 }
 
+// ============================================================
+// 首次访问引导
+// - localStorage kg_welcomed 标记是否已引导
+// - 选 3+ 标签 → 标签对应 series 优先级 → 取首章 → 推 5 章
+// ============================================================
+const WELCOME_TAG_TO_BOOKS = {
+    'rag': ['rag'],
+    'agent': ['multi-agent', 'crewai', 'a2a-multi-agent'],
+    'claude-code': ['claude-code'],
+    'codex': ['codex-cases'],
+    'vibe-coding': ['vibe-coding'],
+    'harness': ['harness-engineering', 'agent-skills'],
+    'memory': ['memory-architecture', 'context-engineering'],
+    'llm-prompt': ['llm-prompt', 'context-engineering'],
+    'cn-codex': ['cn-codex'],
+    'indie': ['indie-ai-product'],
+    'content': ['ai-content-economy'],
+    'embodied': ['embodied-agent'],
+};
+
+function showWelcomeModal() {
+    if (localStorage.getItem('kg_welcomed')) return;
+    const modal = document.getElementById('welcome-modal');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    const selected = new Set();
+    const countEl = document.getElementById('welcome-count');
+    const goBtn = document.getElementById('welcome-go');
+    document.querySelectorAll('.welcome-tag').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tag = btn.dataset.tag;
+            if (selected.has(tag)) {
+                selected.delete(tag);
+                btn.classList.remove('selected');
+            } else {
+                selected.add(tag);
+                btn.classList.add('selected');
+            }
+            countEl.textContent = selected.size;
+            goBtn.disabled = selected.size < 3;
+        });
+    });
+    goBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        showWelcomeResults([...selected]);
+    });
+    document.getElementById('welcome-skip').addEventListener('click', () => {
+        modal.style.display = 'none';
+        localStorage.setItem('kg_welcomed', '1');
+    });
+    document.getElementById('welcome-close').addEventListener('click', () => {
+        document.getElementById('welcome-results').style.display = 'none';
+        localStorage.setItem('kg_welcomed', '1');
+    });
+}
+
+function showWelcomeResults(tags) {
+    const container = document.getElementById('welcome-results');
+    const list = document.getElementById('welcome-results-list');
+    // 收集 tag → 对应 books → 排序去重 → 取首章
+    const seenBooks = new Set();
+    const candidates = [];
+    for (const tag of tags) {
+        for (const slug of (WELCOME_TAG_TO_BOOKS[tag] || [])) {
+            if (seenBooks.has(slug)) continue;
+            seenBooks.add(slug);
+            const meta = BOOKS_META[slug];
+            if (meta && meta.firstChapter) {
+                candidates.push({ slug, ...meta });
+            }
+        }
+    }
+    candidates.sort((a, b) => (a.priority || 999) - (b.priority || 999));
+    const picks = candidates.slice(0, 5);
+    list.innerHTML = picks.map((c, i) => (
+        '<a class="welcome-result-item" href="#' + c.firstChapter.anchor + '">' +
+        '<span class="welcome-result-step">' + (i + 1) + '</span>' +
+        '<div class="welcome-result-body">' +
+        '<div class="welcome-result-title">' + c.firstChapter.title + '</div>' +
+        '<div class="welcome-result-book">' + c.title + '</div>' +
+        '</div></a>'
+    )).join('');
+    container.style.display = 'flex';
+    // 点击结果也关闭 modal
+    list.querySelectorAll('.welcome-result-item').forEach(a => {
+        a.addEventListener('click', () => {
+            container.style.display = 'none';
+            localStorage.setItem('kg_welcomed', '1');
+        });
+    });
+}
+
 renderOverview();
+// 首次访问才弹引导 (老用户直接跳过)
+showWelcomeModal();
 initOverviewMode();
 
 document.querySelectorAll('.completion-toggle').forEach(btn => {
@@ -10028,6 +10287,42 @@ def build_html():
                 <div class="help-row"><span>显示本帮助</span><span><kbd>?</kbd></span></div>
                 <div class="help-row"><span>关闭任何面板</span><span><kbd>Esc</kbd></span></div>
             </div>
+        </div>
+    </div>
+
+    <!-- 首次访问引导 -->
+    <div class="welcome-modal" id="welcome-modal" role="dialog" aria-label="欢迎" aria-modal="true" style="display:none">
+        <div class="welcome-inner">
+            <div class="welcome-hero">
+                <h2>欢迎来到个人知识库</h2>
+                <p class="welcome-desc">{len(books)} 个系列 · {total_chapters} 章 · 约 {total_minutes} 分钟。选 3 个你感兴趣的方向,我会推荐 5 章让你开始。</p>
+            </div>
+            <div class="welcome-tags" id="welcome-tags">
+                <button class="welcome-tag" data-tag="rag">RAG / 检索增强</button>
+                <button class="welcome-tag" data-tag="agent">Agent / 多智能体</button>
+                <button class="welcome-tag" data-tag="claude-code">Claude Code 实战</button>
+                <button class="welcome-tag" data-tag="codex">Codex / 编程工具</button>
+                <button class="welcome-tag" data-tag="vibe-coding">Vibe Coding</button>
+                <button class="welcome-tag" data-tag="harness">Harness 工程</button>
+                <button class="welcome-tag" data-tag="memory">记忆 / 上下文</button>
+                <button class="welcome-tag" data-tag="llm-prompt">Prompt / LLM</button>
+                <button class="welcome-tag" data-tag="cn-codex">国产 AI 工具</button>
+                <button class="welcome-tag" data-tag="indie">独立开发者</button>
+                <button class="welcome-tag" data-tag="content">AI 内容创作</button>
+                <button class="welcome-tag" data-tag="embodied">具身智能 / 机器人</button>
+            </div>
+            <p class="welcome-hint" id="welcome-hint">选 3 个标签 (已选 <span id="welcome-count">0</span>/3)</p>
+            <div class="welcome-actions">
+                <button class="welcome-skip" id="welcome-skip">跳过,我自己逛逛</button>
+                <button class="welcome-go" id="welcome-go" disabled>推荐 5 章 →</button>
+            </div>
+        </div>
+    </div>
+    <div class="welcome-results" id="welcome-results" style="display:none">
+        <div class="welcome-results-inner">
+            <h3>为你挑了这 5 章</h3>
+            <div class="welcome-results-list" id="welcome-results-list"></div>
+            <button class="welcome-close" id="welcome-close">开始阅读</button>
         </div>
     </div>
 
