@@ -4517,6 +4517,47 @@ body.dark .calendar-day.level-3 { background: rgba(196, 168, 124, 0.8); }
 
 .command-palette.visible { display: flex; }
 
+/* 章节完成祝贺 */
+.celebration-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.18);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s, transform .3s;
+    max-width: 420px;
+}
+.celebration-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+.celebration-toast .icon { color: var(--accent); flex-shrink: 0; }
+.celebration-toast .text { display: flex; flex-direction: column; gap: 2px; }
+.celebration-toast .title { font-size: 14px; font-weight: 600; }
+.celebration-toast .sub { font-size: 12px; opacity: 0.7; }
+.celebration-toast .next-link {
+    font-size: 12px;
+    color: var(--accent);
+    background: var(--bg);
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    white-space: nowrap;
+    margin-left: 6px;
+    font-weight: 500;
+}
+
 .command-modal {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -44879,6 +44920,30 @@ function toggleChapter(chapterId) {
     refreshCompletionUI();
 }
 
+// 章节完成祝贺 — 底部 toast, 含下一章链接
+function showCompletionCelebration(chapterId) {
+    let toast = document.getElementById('celebration-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'celebration-toast';
+        toast.className = 'celebration-toast';
+        document.body.appendChild(toast);
+    }
+    const article = document.getElementById(chapterId);
+    const title = article?.querySelector('.chapter-title')?.textContent || chapterId;
+    const all = CHAPTERS || [];
+    const idx = all.indexOf(chapterId);
+    let nextId = null;
+    if (idx >= 0 && idx + 1 < all.length) nextId = all[idx + 1];
+    const checkSvg = '<svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    toast.innerHTML = checkSvg +
+        '<div class="text"><div class="title">已读完《' + title + '》</div>' +
+        '<div class="sub">累计 ' + Object.keys(progress.completed).length + ' 章</div></div>' +
+        (nextId ? '<a class="next-link" href="#' + nextId + '">下一章 →</a>' : '');
+    toast.classList.add('visible');
+    setTimeout(() => toast.classList.remove('visible'), 5000);
+}
+
 function refreshCompletionUI() {
     // 每章 toggle button 状态
     document.querySelectorAll('.completion-toggle').forEach(btn => {
@@ -46619,6 +46684,7 @@ function setupAutoMark() {
                             progress.completed[chapterId] = Date.now();
                             saveProgress();
                             refreshCompletionUI();
+                            showCompletionCelebration(chapterId);
                         }
                         endEl.textContent = originalText;
                         autoMarkTimers.delete(endEl);
