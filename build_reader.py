@@ -5689,11 +5689,38 @@ function playPageFlip() {
     noise.stop(now + 0.15);
 }
 
-window.addEventListener('scroll', () => {
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = docHeight > 0 ? window.scrollY / docHeight : 0;
-    document.querySelector('.progress').style.transform = 'scaleX(' + progress + ')';
-});
+// 章节内进度条: 跟随当前可见 article 计算, 切章节自动重置
+function updateChapterProgress() {
+    const bar = document.querySelector('.progress');
+    if (!bar) return;
+    // 找当前最靠近视口中心的 chapter
+    const chapters = document.querySelectorAll('article.chapter');
+    if (!chapters.length) {
+        bar.style.opacity = '0';
+        return;
+    }
+    const center = window.scrollY + window.innerHeight / 2;
+    let active = null;
+    chapters.forEach(art => {
+        const top = art.offsetTop;
+        const bot = top + art.offsetHeight;
+        if (center >= top && center < bot) active = art;
+    });
+    if (!active) {
+        // 在 overview 模式时
+        bar.style.opacity = '0';
+        return;
+    }
+    bar.style.opacity = '1';
+    const rect = active.getBoundingClientRect();
+    const total = active.offsetHeight - window.innerHeight;
+    const scrolled = -rect.top;
+    const progress = total > 0 ? Math.max(0, Math.min(1, scrolled / total)) : 0;
+    bar.style.transform = 'scaleX(' + progress + ')';
+}
+window.addEventListener('scroll', updateChapterProgress, { passive: true });
+window.addEventListener('resize', updateChapterProgress, { passive: true });
+setTimeout(updateChapterProgress, 100);
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
