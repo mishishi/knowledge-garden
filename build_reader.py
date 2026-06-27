@@ -3264,6 +3264,38 @@ body.overview-mode .content {
     color: var(--text);
 }
 
+/* 面包屑导航 */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-faint);
+    margin: 0 0 18px 0;
+    flex-wrap: wrap;
+}
+.breadcrumb a {
+    color: var(--text-soft);
+    text-decoration: none;
+    padding: 3px 8px;
+    border-radius: 4px;
+    transition: all .15s;
+}
+.breadcrumb a:hover {
+    color: var(--accent);
+    background: var(--bg-soft);
+}
+.breadcrumb .bc-sep {
+    color: var(--text-faint);
+    font-size: 11px;
+    opacity: 0.5;
+}
+.breadcrumb .bc-current {
+    color: var(--text);
+    font-weight: 500;
+}
+
 .chapter-meta {
     text-align: center;
     color: var(--text-faint);
@@ -10577,6 +10609,13 @@ def build_html():
             )
             book_chapters_html_parts.append(
                 f'<article id="{anchor}" class="chapter" data-book="{book_slug}" data-chap="{chap_slug}">'
+                f'<nav class="breadcrumb" aria-label="位置导航">'
+                f'<a href="#overview">首页</a>'
+                f'<span class="bc-sep">›</span>'
+                f'<a href="#book-{book_slug}">{meta.get("title", book_slug)}</a>'
+                f'<span class="bc-sep">›</span>'
+                f'<span class="bc-current">第 {chap_idx} 章</span>'
+                f'</nav>'
                 f'<div class="chapter-num">CHAPTER {chap_idx:02d}</div>'
                 f'<h1 class="chapter-title">{display_title}</h1>'
                 f'{chap_progress_html}'
@@ -10642,7 +10681,8 @@ def build_html():
             f'</div>'
         )
 
-        content_parts.append(book_cover + "".join(book_chapters_html_parts))
+        # 包一层 <section id="book-{slug}"> 让 breadcrumb 锚点生效
+        content_parts.append(f'<section id="book-{book_slug}" class="book-section">' + book_cover + "".join(book_chapters_html_parts) + '</section>')
 
     total_minutes = max(1, total_chars // 400)
 
