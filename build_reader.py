@@ -3281,6 +3281,29 @@ body.overview-mode .content {
     align-items: flex-start;
     gap: 0;
 }
+/* Lazy-load 占位: 章节未加载时显示 */
+.chapter-loading {
+    flex: 1;
+    padding: 80px 20px;
+    text-align: center;
+    color: var(--text-faint);
+    font-size: 13px;
+}
+.chapter-loading::before {
+    content: "";
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin: 0 auto 12px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: chapter-spin 0.8s linear infinite;
+}
+@keyframes chapter-spin {
+    to { transform: rotate(360deg); }
+}
+.chapter-body.lazy-loaded .chapter-loading { display: none; }
 
 .chapter:last-of-type { border-bottom: none; }
 
@@ -7054,6 +7077,88 @@ function linkifyChapterRefs(root) {
 }
 document.querySelectorAll('.chapter-content').forEach(c => linkifyChapterRefs(c));
 
+// ============================================================
+// 章节内容 lazy loader — 按需加载 /assets/books/{slug}.json
+// - IntersectionObserver: 视口 1.5x 距离触发
+// - 缓存 Map, 同本书只 fetch 一次
+// - 注入后: linkify chapter refs + 重新跑 mermaid/code 高亮 (如有)
+// ============================================================
+const _lazyBookCache = new Map();
+const _lazyBookInFlight = new Map();
+const _lazyLoaded = new WeakSet();
+async function lazyLoadChapter(bookSlug, chapterId) {
+    const body = document.querySelector('.chapter-body[data-load-book="' + bookSlug + '"][data-load-chapter="' + chapterId + '"]');
+    if (!body || _lazyLoaded.has(body)) return;
+    _lazyLoaded.add(body);
+    // 取 book JSON (缓存 / in-flight 复用)
+    let data = _lazyBookCache.get(bookSlug);
+    if (!data) {
+        if (_lazyBookInFlight.has(bookSlug)) {
+            data = await _lazyBookInFlight.get(bookSlug);
+        } else {
+            const p = fetch('assets/books/' + bookSlug + '.json').then(r => {
+                if (!r.ok) throw new Error('fetch ' + bookSlug + ' failed: ' + r.status);
+                return r.json();
+            });
+            _lazyBookInFlight.set(bookSlug, p);
+            try {
+                data = await p;
+                _lazyBookCache.set(bookSlug, data);
+            } finally {
+                _lazyBookInFlight.delete(bookSlug);
+            }
+        }
+    }
+    if (!data) return;
+    const ch = (data.chapters || []).find(c => c.anchor === chapterId);
+    if (!ch) { body.innerHTML = '<div class="chapter-loading">章节内容未找到。</div>'; return; }
+    body.innerHTML = ch.body;
+    body.classList.add('lazy-loaded');
+    // 注入后再 linkify + 处理 mermaid/code (如果有)
+    const content = body.querySelector('.chapter-content');
+    if (content) linkifyChapterRefs(content);
+    // 触发后处理 (mermaid / code highlight) — 派发事件, 由其它监听者接
+    body.dispatchEvent(new CustomEvent('chapter-loaded', { bubbles: true }));
+}
+function setupLazyLoad() {
+    if (!('IntersectionObserver' in window)) {
+        // 回退: 立即加载所有
+        document.querySelectorAll('.chapter-body[data-load-book]').forEach(b => {
+            lazyLoadChapter(b.dataset.loadBook, b.dataset.loadChapter);
+        });
+        return;
+    }
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const b = entry.target;
+            const bookSlug = b.dataset.loadBook;
+            const chapterId = b.dataset.loadChapter;
+            if (bookSlug && chapterId) lazyLoadChapter(bookSlug, chapterId);
+            obs.unobserve(b);
+        });
+    }, { rootMargin: '600px 0px' });
+    document.querySelectorAll('.chapter-body[data-load-book]').forEach(b => obs.observe(b));
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        setupLazyLoad();
+        bootHashTarget();
+    });
+} else {
+    setupLazyLoad();
+    bootHashTarget();
+}
+// 初始 hash 直跳 (刷新到 #chapter-xxx): 加载目标章节
+function bootHashTarget() {
+    if (!window.location.hash) return;
+    const id = window.location.hash.replace('#', '');
+    const article = document.getElementById(id);
+    if (!article) return;
+    const body = article.querySelector('.chapter-body[data-load-book]');
+    if (body) lazyLoadChapter(body.dataset.loadBook, id);
+}
+
 
 // ============================================================
 // 进度统计
@@ -8573,9 +8678,17 @@ function escapeAttr(s) {
 }
 function kbJumpToMatch(chapterId, query) {
     kbClose();
-    const doScroll = () => {
-        const article = document.getElementById(chapterId);
-        if (!article) return;
+    const article = document.getElementById(chapterId);
+    if (!article) return;
+    // Lazy load body first (Q&A jump 进入未加载章节)
+    const body = article.querySelector('.chapter-body[data-load-book]');
+    if (body) {
+        const bookSlug = body.dataset.loadBook;
+        lazyLoadChapter(bookSlug, chapterId).then(() => doScroll());
+        return;
+    }
+    doScroll();
+    function doScroll() {
         // 找 query term 首次出现位置
         const cjk = (query || '').match(/[\u4e00-\u9fff]+/g) || [];
         const ascii = (query || '').match(/[A-Za-z0-9]+/g) || [];
@@ -8615,7 +8728,7 @@ function kbJumpToMatch(chapterId, query) {
             while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
             parent.removeChild(mark);
         }, 2500);
-    };
+    }
     if (window.location.hash === '#' + chapterId) {
         doScroll();
     } else {
@@ -8715,6 +8828,13 @@ function initOverviewMode() {
 window.addEventListener('hashchange', () => {
     if (window.location.hash) {
         hideOverview();
+        // 确保目标章节内容已加载 (深链 / 书签直跳)
+        const id = window.location.hash.replace('#', '');
+        const article = document.getElementById(id);
+        if (article) {
+            const body = article.querySelector('.chapter-body[data-load-book]');
+            if (body) lazyLoadChapter(body.dataset.loadBook, id);
+        }
     } else {
         showOverview();
     }
@@ -10647,6 +10767,7 @@ def build_html():
         # 书架章节列表
         chapter_items = []
         book_chapters_html_parts = []
+        book_chapter_bodies = []  # [{anchor, body_html}, ...] — 供 lazy load JSON 用
 
         # 预计算所有章节展示标题（用于底部 prev/next 导航）
         chap_titles = []
@@ -10853,12 +10974,8 @@ def build_html():
                 f'</div>'
                 f'{tts_player_html}'
                 f'{series_intro_html}'
-                f'<div class="chapter-body">'
-                f'<div class="chapter-content">'
-                f'{tldr_html}'
-                f'{content_html}'
-                f'</div>'
-                f'{toc_html}'
+                f'<div class="chapter-body" data-load-book="{book_slug}" data-load-chapter="{anchor}">'
+                f'<div class="chapter-loading">加载章节内容…</div>'
                 f'</div>'
                 f'<div class="chapter-end">本章完</div>'
                 f'{chap_nav_html}'
@@ -10872,6 +10989,15 @@ def build_html():
             total_chapters += 1
             chapter_anchors.append(anchor)
             chapter_book_map[anchor] = book_slug
+            # 收集章节 body HTML — 供 lazy load JSON 用
+            body_inner = (
+                f'<div class="chapter-content">'
+                f'{tldr_html}'
+                f'{content_html}'
+                f'</div>'
+                f'{toc_html}'
+            )
+            book_chapter_bodies.append({"anchor": anchor, "body": body_inner})
 
         # 书的章节数
         chap_count = len(chapters)
@@ -10908,6 +11034,14 @@ def build_html():
 
         # 包一层 <section id="book-{slug}"> 让 breadcrumb 锚点生效
         content_parts.append(f'<section id="book-{book_slug}" class="book-section">' + book_cover + "".join(book_chapters_html_parts) + '</section>')
+
+        # 写 per-book JSON 供 lazy load
+        if book_chapter_bodies:
+            import json as __json
+            books_dir = ROOT / "assets" / "books"
+            books_dir.mkdir(parents=True, exist_ok=True)
+            with open(books_dir / f"{book_slug}.json", "w", encoding="utf-8") as bf:
+                __json.dump({"chapters": book_chapter_bodies}, bf, ensure_ascii=False)
 
     total_minutes = max(1, total_chars // 400)
 
