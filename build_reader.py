@@ -918,6 +918,7 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     parts.append('<button class="recap-tab active" data-range="week">本周</button>')
     parts.append('<button class="recap-tab" data-range="month">本月</button>')
     parts.append('<button class="recap-tab" data-range="year">今年</button>')
+    parts.append('<button class="recap-export" id="recap-export" title="复制 Markdown 摘要">复制</button>')
     parts.append('</div>')
     parts.append('<div class="recap-summary" id="recap-summary"></div>')
     parts.append('<div class="weekly-grid" id="weekly-grid"></div>')
@@ -2258,8 +2259,28 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 .recap-tabs {
     display: flex;
     gap: 4px;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--border);
+    justify-content: center;
+    margin-bottom: 14px;
+}
+.recap-tabs .recap-export {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all .12s;
+}
+.recap-tabs .recap-export:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.recap-tabs .recap-export.copied {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
 }
 .recap-tab {
     background: transparent;
@@ -7975,6 +7996,40 @@ document.addEventListener('click', (e) => {
             document.querySelectorAll('.recap-tab').forEach(t => t.classList.toggle('active', t === tab));
             renderRecap();
         }
+    }
+});
+
+// 复制 weekly recap 为 Markdown (发邮件 / 笔记用)
+function buildRecapMarkdown() {
+    const rangeLabel = _recapRange === 'week' ? '本周' : _recapRange === 'month' ? '本月' : '今年';
+    const summaryEl = document.getElementById('recap-summary');
+    const summaryText = summaryEl ? summaryEl.innerText.trim() : '';
+    const rangeDays = _recapRange === 'week' ? 7 : _recapRange === 'month' ? 30 : 365;
+    const lines = [`# 知识花园 · ${rangeLabel}阅读摘要`, ''];
+    if (summaryText) lines.push(summaryText, '');
+    lines.push(`> 自动生成于 ${new Date().toISOString().slice(0, 10)}`);
+    return lines.join('\\n');
+}
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('#recap-export');
+    if (!btn) return;
+    e.preventDefault();
+    const md = buildRecapMarkdown();
+    try {
+        await navigator.clipboard.writeText(md);
+        btn.classList.add('copied');
+        const orig = btn.textContent;
+        btn.textContent = '已复制';
+        setTimeout(() => { btn.classList.remove('copied'); btn.textContent = orig; }, 1500);
+    } catch (err) {
+        // 回退: 用临时 textarea
+        const ta = document.createElement('textarea');
+        ta.value = md;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); btn.textContent = '已复制'; } catch (e2) { btn.textContent = '复制失败'; }
+        document.body.removeChild(ta);
+        setTimeout(() => { btn.textContent = '复制'; }, 1500);
     }
 });
 

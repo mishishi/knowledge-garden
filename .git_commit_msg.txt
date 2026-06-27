@@ -1,24 +1,14 @@
-fix(SW): PWA Service Worker 改用独立 sw.js (修原版 blob URL 永远注册不了)
+feat(recap): weekly digest 复制为 Markdown (发邮件 / 笔记用)
 
-**这是真 bug — 之前 `knowledge-book-v2` SW 一直没注册成功**
-原因: blob URL 在主流浏览器不能用作 Service Worker script
-影响: PWA "添加到主屏幕" / 离线阅读从来没真正工作过
+原 Tier 三 #2 每周回顾邮件需要后端 (SendGrid + auth), side project 不划算.
+替代: in-app 复制为 Markdown, 用户可手动贴到邮件 / 笔记 / 微信.
 
-修法:
-- Build 阶段 `build_sw()` 写 sw.js 到 ROOT
-- index.html 注册 `./sw.js` (同源)
-- SW cache 策略:
-  - install: 缓存根 index
-  - fetch: 同源 + assets/ + .html + / 才走 cache, 否则直接走网络
-  - cache-on-demand: 首次 fetch 的 response 写 cache, 二次访问秒开
-  - 离线 fallback: 回根 index (PWA app shell)
-- Bump CACHE 到 `knowledge-book-v3` 清理旧 cache
+实现:
+- weekly-recap 加 "复制" 按钮 (recap-tabs 右侧)
+- buildRecapMarkdown() 生成 # 知识花园 · 本周阅读摘要 + summary + 日期
+- navigator.clipboard.writeText (主路径) + textarea fallback (旧浏览器)
+- 反馈: 复制成功变绿色 "已复制" 1.5s
 
-新增 test (tools/test_sw_cache.py):
-- 首次访问, codex-cases.json 进 cache ✓
-- 阻断网络后 reload, chapter 01 body 仍加载 (2081 字符) ✓
-- 同书切到 chapter 02 也从 cache 取 (2963 字符) ✓
-- 切到不同书 (rag) 正确返回空 (网络阻断了) ✓
-- SW 跳过 cross-origin (字体 CDN) 不污染 cache
-
-性能: 用户访问一次后, 22.4 万字全本地 cache, 二次访问秒开. PWA 离线模式真正可用.
+涉及 commit:
+- extract.js 重新入仓 (从 trash 恢复, build 验证 JS 用)
+- knowledge_index.json / rss.xml / sitemap.xml auto-regen
