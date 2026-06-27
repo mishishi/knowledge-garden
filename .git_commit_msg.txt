@@ -1,0 +1,20 @@
+ranking v2：标题加权提至 5x/8x + 章节去重 + 同义词精简
+
+旧版 chapterHit=1 → ×1.5，新版：
+  chapterHit ≥ 2 → ×8.0
+  chapterHit ≥ 1 → ×5.0
+  bookHit ≥ 1    → ×2.0
+  否则           → ×1.0
+
+效果：
+  上下文窗口 token     → ★ 上下文窗口与 token 基础 (从 #3 升 #1)
+  embedding 模型选型   → ★ Embedding 模型选型 (×8)
+  claude code 实战    → ★ Claude Code 是什么
+  harness 是什么      → ★ 什么是 Harness
+  vibe coding         → ★ vibe coding 的边界
+
+章节去重 (kbChapterDiverse)：top-5 同章节最多 2 chunk。
+
+同义词字典精简：删除 embedding↔向量 / llm↔大模型 / agent↔智能体 / prompt↔提示词 (这些会污染 cn-codex)，保留 cot↔思维链 / 微调↔fine-tuning / 知识截止↔knowledge cutoff 等窄义词。
+
+AI mode 测试：claude code / harness 全部命中正确系列；智能体 TF-IDF 仍弱，dense 模式能找到相关概念。

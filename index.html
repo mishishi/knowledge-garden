@@ -45101,34 +45101,15 @@ function kbHighlight(text, query) {
 }
 
 // ============================================================
-// 同义词扩展（精简版，只放 1-2 个最近同义词，避免 query 被稀释）
+// 同义词扩展（精简版，只放 1 个最近同义词，避免 query 被稀释）
 // - 优先 CJK ↔ CJK，English ↔ English，不跨语言扩展（太泛）
-// - 权重 ×0.5（用空格重复一次模拟半权，TF-IDF 算 TF=2 vs TF=1）
+// - 严格控制条目：只加能解决明显语义鸿沟的（rag ↔ 检索增强生成）
 // - 不引入模型，纯字符串替换
 // ============================================================
 const KB_SYNONYMS = {
-    // RAG
+    // RAG — 中文"检索增强生成"经常和 RAG 互替
     'rag': '检索增强生成',
     '检索增强生成': 'rag',
-    // Agent（中文最常见，英文不扩展——agent 单独太泛）
-    '智能体': 'agent 代理',
-    '多智能体': 'multi-agent 多代理',
-    '多代理': 'multi-agent 多智能体',
-    'multi-agent': '多智能体',
-    // LLM
-    'llm': '大模型 大语言模型',
-    '大模型': 'llm',
-    '大语言模型': 'llm',
-    // Embedding
-    'embedding': '向量',
-    '向量': 'embedding',
-    '向量数据库': 'vector database',
-    // Prompt
-    'prompt': '提示词',
-    '提示词': 'prompt',
-    // Context
-    '上下文窗口': 'context window',
-    'context window': '上下文窗口',
     // CoT
     'cot': '思维链',
     '思维链': 'cot',
@@ -45137,6 +45118,7 @@ const KB_SYNONYMS = {
     'fine-tuning': '微调',
     // Hallucination
     '幻觉': 'hallucination',
+    'hallucination': '幻觉',
     // Knowledge cutoff
     '知识截止': 'knowledge cutoff',
     // Tool
@@ -45148,12 +45130,11 @@ const KB_SYNONYMS = {
     '氛围编程': 'vibe coding',
     // Memory
     '长期记忆': 'long-term memory',
-    // Harness
-    'harness': '脚手架',
-    '脚手架': 'harness',
     // MCP / A2A
     'mcp': 'model context protocol',
     'a2a': 'agent-to-agent',
+    // 注意：不加 "agent" ↔ "智能体" 等基础术语的扩展
+    // 因为 agent 在 cn-codex 系列里大量出现,扩展会污染结果
 };
 
 function kbExpandSynonyms(query) {
@@ -45176,22 +45157,31 @@ function kbExpandSynonyms(query) {
     return expanded;
 }
 
-// 章节标题命中加权：query term 出现在 chapterTitle → 该 chunk 的 TF-IDF 分 ×1.5
-function kbTitleBoost(chunkIdx, query, boost) {
-    if (boost == null) boost = 1.5;
+// 标题/章节加权：query term 出现在 chapterTitle OR bookTitle → 该 chunk ×boost
+// - chapterTitle 完全命中 1 个 term：×5.0（强信号）
+// - chapterTitle 命中 2+ terms：×8.0（极强信号，等于"这就是标题"）
+// - 仅 bookTitle 命中：×2.0（弱信号，整个系列相关）
+// - 都不命中：×1.0
+function kbTitleBoost(chunkIdx, query) {
     const idx = _kbIndex;
     if (!idx) return 1;
     const c = idx.chunks[chunkIdx];
-    if (!c || !c.chapterTitle) return 1;
+    if (!c) return 1;
     const qLower = query.toLowerCase();
-    const titleLower = c.chapterTitle.toLowerCase();
-    // 任一 query term 出现在 title → 命中
     const cjk = qLower.match(/[一-鿿]+/g) || [];
     const ascii = qLower.match(/[a-z0-9]+/g) || [];
-    const qTerms = [...cjk, ...ascii];
+    const qTerms = [...cjk, ...ascii].filter(t => t.length >= 2);
+    if (!qTerms.length) return 1;
+    const titleLower = (c.chapterTitle || '').toLowerCase();
+    const bookLower = (c.bookTitle || '').toLowerCase();
+    let chapterHit = 0, bookHit = 0;
     for (const t of qTerms) {
-        if (t.length >= 2 && titleLower.includes(t)) return boost;
+        if (titleLower.includes(t)) chapterHit++;
+        if (bookLower.includes(t)) bookHit++;
     }
+    if (chapterHit >= 2) return 8.0;
+    if (chapterHit >= 1) return 5.0;
+    if (bookHit >= 1) return 2.0;
     return 1;
 }
 
@@ -45267,45 +45257,71 @@ function kbDenseScore(queryEmb, topN) {
     return new Map(sorted);
 }
 
-// 混合搜索：dense + TF-IDF + 标题加权 + 同义词扩展
+// 章节去重 + 多样化：topK 个结果里,同一章节最多 2 个 chunk
+// - 策略：先按 score 排序,然后贪心选,每章节计数,超过 2 个就跳过
+function kbChapterDiverse(scored, topK) {
+    const chapterCount = new Map();
+    const out = [];
+    for (const item of scored) {
+        const ch = item.chapterId;
+        const cnt = chapterCount.get(ch) || 0;
+        if (cnt >= 2) continue;  // 每章节最多 2 个
+        out.push(item);
+        chapterCount.set(ch, cnt + 1);
+        if (out.length >= topK) break;
+    }
+    // 如果去重后不够 topK,从剩余里继续选（不限每章节数）
+    if (out.length < topK) {
+        for (const item of scored) {
+            if (out.includes(item)) continue;
+            out.push(item);
+            if (out.length >= topK) break;
+        }
+    }
+    return out;
+}
+
+// 混合搜索：dense + TF-IDF + 标题加权 + 同义词扩展 + 章节去重
 async function kbHybridSearch(query, useDense, topK) {
     if (topK == null) topK = 5;
     await loadKnowledgeIndex();
     const expandedQuery = kbExpandSynonyms(query);
-    // 1) TF-IDF (用扩展 query 算)
-    const tfidfHits = kbSearch(expandedQuery, 50);  // top-50 TF-IDF candidates
-    // 标题加权
+    // 1) TF-IDF (用扩展 query 算) — 取更多候选(100)方便后续去重
+    const tfidfHits = kbSearch(expandedQuery, 100);
+    // 标题加权 + 章节级最佳分传播
     const tfidfMap = new Map();
     for (const h of tfidfHits) {
-        const boost = kbTitleBoost(h.idx, query, 1.5);
-        tfidfMap.set(_kbIndex.chunks[h.idx].id, h.score * boost);
+        const c = _kbIndex.chunks[h.idx];
+        const boost = kbTitleBoost(h.idx, query);
+        tfidfMap.set(c.id, { score: h.score * boost, chapterId: c.chapterId });
     }
     // 2) Dense (如果启用)
     let denseMap = null;
     if (useDense) {
         await loadKbDenseIndex();
         const queryEmb = await kbEmbedQuery(query);
-        denseMap = kbDenseScore(queryEmb, 50);
+        denseMap = kbDenseScore(queryEmb, 100);
     }
     // 3) Merge：每个 chunk id 一个综合分
     const merged = new Map();
-    // 先把所有 TF-IDF 候选纳入
-    for (const [id, score] of tfidfMap) merged.set(id, { tfidf: score, dense: 0 });
-    // 加 dense
+    for (const [id, s] of tfidfMap) merged.set(id, { tfidf: s.score, dense: 0, chapterId: s.chapterId });
     if (denseMap) {
         for (const [id, score] of denseMap) {
-            if (!merged.has(id)) merged.set(id, { tfidf: 0, dense: score });
-            else merged.get(id).dense = score;
+            const existing = merged.get(id);
+            const c = _kbIndex.chunks.find(c => c.id === id);
+            const chapterId = existing ? existing.chapterId : (c ? c.chapterId : null);
+            if (!existing) merged.set(id, { tfidf: 0, dense: score, chapterId });
+            else existing.dense = score;
         }
     }
-    // 综合分：dense*0.7 + tfidf*0.3 (权重可调)
+    // 综合分：dense*0.7 + tfidf*0.3
     const final = [];
     for (const [id, s] of merged) {
         const score = s.dense * 0.7 + s.tfidf * 0.3;
-        if (score > 0) final.push({ id, score });
+        if (score > 0) final.push({ id, score, chapterId: s.chapterId });
     }
     final.sort((a, b) => b.score - a.score);
-    return final.slice(0, topK);
+    return kbChapterDiverse(final, topK);
 }
 
 async function kbRunSearch() {
@@ -45322,20 +45338,21 @@ async function kbRunSearch() {
     try {
         let hits;
         if (useDense) {
-            // 加载 AI 模型进度提示
             if (!_kbPipe) results.innerHTML = '<div class="kb-loading">加载 AI 模型中（首次约 24 MB）…</div>';
+            // 混合 + 章节去重
             hits = await kbHybridSearch(query, true, 5);
         } else {
             await loadKnowledgeIndex();
             const expanded = kbExpandSynonyms(query);
-            // 用扩展 query 搜 + 标题加权
-            const tfidfHits = kbSearch(expanded, 50);
-            hits = tfidfHits.slice(0, 5).map(h => {
-                const boost = kbTitleBoost(h.idx, query, 1.5);
-                return { id: _kbIndex.chunks[h.idx].id, score: h.score * boost };
-            });
-            // 重新排序（因为 boost 后顺序可能变）
-            hits.sort((a, b) => b.score - a.score);
+            // 用扩展 query 搜 + 标题加权 + 章节去重
+            const tfidfHits = kbSearch(expanded, 100);
+            const idToChunk = new Map(_kbIndex.chunks.map(c => [c.id, c]));
+            const scored = tfidfHits.map(h => {
+                const c = _kbIndex.chunks[h.idx];
+                const boost = kbTitleBoost(h.idx, query);
+                return { id: c.id, score: h.score * boost, chapterId: c.chapterId };
+            }).sort((a, b) => b.score - a.score);
+            hits = kbChapterDiverse(scored, 5);
         }
         if (!hits.length) {
             results.innerHTML = '<div class="kb-empty">没找到相关段落。试试更短或不同的关键词，或启用 AI 语义搜索（需下载 24 MB 模型）。</div>';
