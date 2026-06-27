@@ -848,6 +848,8 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     parts.append('</div>')
     # Streak 热度图 (GitHub-style) — 过去 16 周
     parts.append('<div class="streak-heatmap" id="streak-heatmap"></div>')
+    # 里程碑 / 成就
+    parts.append('<div class="achievements" id="achievements"></div>')
     parts.append('</div>')
 
     # ---- 5 个 series 卡片 ----
@@ -2618,6 +2620,67 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
     width: 10px;
     height: 10px;
     border-radius: 2px;
+}
+/* 里程碑 / 成就 */
+.achievements {
+    margin: 8px auto 32px;
+    max-width: 720px;
+    padding: 14px 18px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+.achievements-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 12px;
+}
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+}
+.achievement {
+    padding: 12px 10px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    text-align: center;
+    transition: all .12s;
+}
+.achievement.locked { opacity: 0.45; }
+.achievement:not(.locked):hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.achievement .ac-icon {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--bg-soft);
+    color: var(--text-faint);
+}
+.achievement:not(.locked) .ac-icon {
+    background: var(--accent);
+    color: var(--bg);
+}
+.achievement .ac-icon svg { width: 22px; height: 22px; }
+.achievement .ac-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+.achievement.locked .ac-name { color: var(--text-faint); }
+.achievement .ac-desc {
+    font-size: 10px;
+    color: var(--text-faint);
+    line-height: 1.3;
 }
 
 /* 周阅读目标进度条 */
@@ -7517,6 +7580,83 @@ function renderStreakHeatmap(daily) {
     wrap.innerHTML = html.join('');
 }
 
+// 里程碑 / 成就系统
+const ACHIEVEMENTS = [
+    { id: 'first-read', name: '初读者', desc: '完成第 1 章', icon: 'book', test: () => Object.keys(progress.completed).length >= 1 },
+    { id: 'ten-read', name: '10 章达成', desc: '累计读完 10 章', icon: 'flame', test: () => Object.keys(progress.completed).length >= 10 },
+    { id: 'fifty-read', name: '50 章达成', desc: '累计读完 50 章', icon: 'sparkles', test: () => Object.keys(progress.completed).length >= 50 },
+    { id: 'hundred-read', name: '百章里程碑', desc: '累计读完 100 章', icon: 'rocket', test: () => Object.keys(progress.completed).length >= 100 },
+    { id: 'streak-3', name: '连续 3 天', desc: '3 天连续阅读', icon: 'flame', test: () => longestStreakDays() >= 3 },
+    { id: 'streak-7', name: '连续 7 天', desc: '一周连续阅读', icon: 'zap', test: () => longestStreakDays() >= 7 },
+    { id: 'streak-30', name: '连续 30 天', desc: '一个月连续阅读', icon: 'rocket', test: () => longestStreakDays() >= 30 },
+    { id: 'notes-10', name: '10 条笔记', desc: '累计记 10 条笔记', icon: 'notes', test: () => notes.length >= 10 },
+    { id: 'notes-50', name: '50 条笔记', desc: '累计记 50 条笔记', icon: 'brain', test: () => notes.length >= 50 },
+    { id: 'bookmarks-5', name: '5 个书签', desc: '收藏 5 个段落', icon: 'bookmark', test: () => (progress.bookmarks ? Object.keys(progress.bookmarks).length : 0) >= 5 },
+    { id: 'all-books', name: '博学家', desc: '访问过全部 17 系列', icon: 'layers', test: () => {
+        const visited = new Set();
+        Object.values(progress.lastRead || {}).forEach(r => {
+            if (r && r.bookSlug) visited.add(r.bookSlug);
+        });
+        return visited.size >= 17;
+    }},
+    { id: 'half-pct', name: '半程英雄', desc: '已读 50% 章节', icon: 'star', test: () => {
+        const total = document.querySelectorAll('.chapter[data-book]').length;
+        if (!total) return false;
+        return Object.keys(progress.completed).length / total >= 0.5;
+    }},
+];
+function longestStreakDays() {
+    const dates = new Set(Object.values(progress.completed || {}).map(ts => new Date(ts).toISOString().slice(0, 10)));
+    if (dates.size === 0) return 0;
+    const sorted = Array.from(dates).sort();
+    let longest = 1, current = 1;
+    for (let i = 1; i < sorted.length; i++) {
+        const prev = new Date(sorted[i - 1]);
+        const cur = new Date(sorted[i]);
+        const diffDays = Math.round((cur - prev) / 86400000);
+        if (diffDays === 1) { current++; if (current > longest) longest = current; }
+        else current = 1;
+    }
+    return longest;
+}
+function renderAchievements() {
+    const wrap = document.getElementById('achievements');
+    if (!wrap) return;
+    const unlockedAt = JSON.parse(localStorage.getItem('kg_achievements') || '{}');
+    const newlyUnlocked = [];
+    ACHIEVEMENTS.forEach(a => {
+        try {
+            if (a.test() && !unlockedAt[a.id]) {
+                unlockedAt[a.id] = Date.now();
+                newlyUnlocked.push(a);
+            }
+        } catch (e) { /* 测试函数可能依赖未初始化状态, 静默忽略 */ }
+    });
+    if (newlyUnlocked.length > 0) {
+        localStorage.setItem('kg_achievements', JSON.stringify(unlockedAt));
+    }
+    const html = ['<div class="achievements-title">里程碑 (' + ACHIEVEMENTS.filter(a => unlockedAt[a.id]).length + '/' + ACHIEVEMENTS.length + ')</div>'];
+    html.push('<div class="achievements-grid">');
+    ACHIEVEMENTS.forEach(a => {
+        const unlocked = !!unlockedAt[a.id];
+        const cls = unlocked ? 'achievement' : 'achievement locked';
+        const icon = (typeof ICONS_LIB !== 'undefined' && ICONS_LIB[a.icon]) ? ICONS_LIB[a.icon] : ICONS_LIB.book;
+        html.push('<div class="' + cls + '" title="' + a.desc + '">');
+        html.push('<div class="ac-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + icon + '</svg></div>');
+        html.push('<div class="ac-name">' + a.name + '</div>');
+        html.push('<div class="ac-desc">' + a.desc + '</div>');
+        html.push('</div>');
+    });
+    html.push('</div>');
+    wrap.innerHTML = html.join('');
+    // 新解锁的弹个 toast
+    if (newlyUnlocked.length > 0) {
+        newlyUnlocked.forEach(a => {
+            setTimeout(() => showCompletionCelebration = showCompletionCelebration, 0); // noop
+        });
+    }
+}
+
 function refreshWeeklyGoal(daily) {
     const fill = document.getElementById('weekly-goal-fill');
     const current = document.getElementById('weekly-goal-current');
@@ -8009,6 +8149,8 @@ function renderOverview() {
     }
     // GitHub-style 16 周阅读热度图
     renderStreakHeatmap(daily);
+    // 里程碑 / 成就
+    renderAchievements();
 
     // 6. 周阅读目标进度（基于本周 dailyTime 总和）
     refreshWeeklyGoal(daily);

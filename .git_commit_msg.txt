@@ -1,15 +1,20 @@
-feat(notes): 笔记全文搜索 + Cmd+Shift+F 快捷键
+feat(achievements): 12 个里程碑 (章节/连续/笔记/书签/系列覆盖)
 
-Tier 三 #3: 笔记面板加搜索 input
-- input 时实时过滤 quote + text (80ms debounce)
-- 匹配高亮黄色 mark
-- 无结果时显示 "没有包含 X 的笔记"
-- Cmd+Shift+F 焦点到搜索 (并自动打开笔记 panel)
-- 按 X 删笔记 (existing) 不受搜索影响
+Tier 三 #5: 长期激励机制
+
+12 个成就 badge:
+- first-read / ten / fifty / hundred-read (累计读完章数)
+- streak-3 / 7 / 30 (连续天数, 用 completed 时间戳算)
+- notes-10 / 50 (笔记数)
+- bookmarks-5 (书签数)
+- all-books (访问过 17 系列)
+- half-pct (50% 章节)
 
 实现:
-- .notes-search input 在 .notes-panel-header 下面
-- renderNotesList() 接受 query, 过滤 + highlight
-- per-char escape 函数 (避 Python source 里 \\ 双重转义坑)
+- ACHIEVEMENTS 数组 (id, name, desc, icon, test fn)
+- longestStreakDays() 用 completed 时间戳排序算连续天数
+- renderAchievements() 在 Overview 末尾渲染 grid, lock/unlock 状态切换
+- 持久化: localStorage kg_achievements (id → unlock timestamp)
+- 每次 render 检查新解锁, 写 localStorage
 
-UX 价值: 175 章散落笔记, 用户搜 "agent" 一秒定位, 比翻页 10x.
+UI: grid auto-fill 140px, unlocked 彩色 icon, locked 灰. 加在 streak-heatmap 下面.
