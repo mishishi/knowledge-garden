@@ -3284,6 +3284,52 @@ body.overview-mode .content {
 
 .chapter:last-of-type { border-bottom: none; }
 
+/* 章节顶部 ribbon (系列色 + icon + book 标题 + 章节号) */
+.chapter-ribbon {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    max-width: 600px;
+    margin: 0 auto 24px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--book-color, var(--accent)) 12%, var(--bg-soft)), color-mix(in srgb, var(--book-color, var(--accent)) 4%, transparent));
+    border-left: 3px solid var(--book-color, var(--accent));
+    border-radius: 0 8px 8px 0;
+}
+.chapter-ribbon .ribbon-icon {
+    color: var(--book-color, var(--accent));
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+}
+.chapter-ribbon .ribbon-icon svg {
+    width: 32px;
+    height: 32px;
+}
+.chapter-ribbon .ribbon-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.chapter-ribbon .ribbon-book {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.chapter-ribbon .ribbon-num {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 2px;
+}
+
 .chapter-num {
     text-align: center;
     margin: 0 0 30px 0;
@@ -10789,7 +10835,13 @@ def build_html():
                 f'<span class="bc-sep">›</span>'
                 f'<span class="bc-current">第 {chap_idx} 章</span>'
                 f'</nav>'
-                f'<div class="chapter-num">CHAPTER {chap_idx:02d}</div>'
+                f'<div class="chapter-ribbon" style="--book-color: {book_color}">'
+                f'<div class="ribbon-icon">{book_icons_big.get(book_slug, "")}</div>'
+                f'<div class="ribbon-meta">'
+                f'<div class="ribbon-book">{meta.get("title", book_slug)}</div>'
+                f'<div class="ribbon-num">CHAPTER {chap_idx:02d} / {len(chapters):02d}</div>'
+                f'</div>'
+                f'</div>'
                 f'<h1 class="chapter-title">{display_title}</h1>'
                 f'{chap_progress_html}'
                 f'<div class="chapter-meta-row">'
