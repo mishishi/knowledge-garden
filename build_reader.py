@@ -756,19 +756,11 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     parts.append(f'    <div class="overview-stat"><span class="num">{total_chars:,}</span><span class="lbl">字</span></div>')
     parts.append('    <div class="overview-stat"><span class="num" id="overview-read-pct">0</span><span class="lbl">已读</span></div>')
     parts.append('  </div>')
-    # 继续阅读卡片（运行时由 JS 填，没数据就隐藏）
+    # 继续阅读 carousel（运行时由 JS 填，没数据就隐藏整个 wrap）
     parts.append(
-        '  <a class="overview-resume" id="overview-resume" href="#" style="display:none">'
-        '<div class="resume-icon">'
-        + svg_icon('progress', size=20)
-        + '</div>'
-        '<div class="resume-body">'
-        '<div class="resume-eyebrow">继续阅读</div>'
-        '<div class="resume-title" id="overview-resume-title"></div>'
-        '<div class="resume-meta" id="overview-resume-meta"></div>'
+        '  <div class="resume-carousel" id="resume-carousel" style="display:none">'
+        '<div class="resume-carousel-track" id="resume-carousel-track"></div>'
         '</div>'
-        + svg_icon('plus', size=18, classes='resume-arrow')
-        + '</a>'
     )
     parts.append('</div>')
 
@@ -2947,78 +2939,112 @@ body.dark .review-grade-btn { background: #1f1f24; }
     text-transform: uppercase;
 }
 
-.overview-resume {
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
-    padding: 14px 24px;
+.resume-carousel {
+    margin: 18px auto 24px;
+    max-width: 760px;
+    padding: 0 4px;
+}
+.resume-carousel-track {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 2px 10px;
+    scrollbar-width: thin;
+}
+.resume-carousel-track::-webkit-scrollbar { height: 4px; }
+.resume-carousel-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.resume-card {
+    flex: 0 0 auto;
+    width: 260px;
+    min-width: 260px;
+    padding: 14px 18px;
     background: var(--accent-soft);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
+    border-radius: 10px;
     text-decoration: none;
-    text-indent: 0;
-    transition: all 0.15s;
-    max-width: 560px;
-    margin: 0 auto;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    scroll-snap-align: start;
+    transition: all .18s;
+    position: relative;
 }
-
-.overview-resume:hover {
+.resume-card:hover {
     background: var(--accent);
     color: var(--bg);
     border-color: var(--accent);
     transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
-
-.overview-resume .resume-icon {
-    color: var(--accent);
-    flex-shrink: 0;
+.resume-card.primary { width: 300px; min-width: 300px; border-color: var(--accent); }
+.resume-card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-faint);
+    font-weight: 600;
 }
-
-.overview-resume:hover .resume-icon { color: var(--bg); }
-
-.overview-resume .resume-body {
-    flex: 1;
-    text-align: left;
-    min-width: 0;
+.resume-card:hover .resume-card-head { color: var(--bg); opacity: 0.85; }
+.resume-card-head .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
 }
-
-.overview-resume .resume-eyebrow {
+.resume-card.primary .resume-card-head .dot { animation: resume-pulse 2s ease-in-out infinite; }
+@keyframes resume-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.resume-card-book {
     font-size: 11px;
     color: var(--text-faint);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 4px;
 }
-
-.overview-resume:hover .resume-eyebrow { color: var(--bg); opacity: 0.8; }
-
-.overview-resume .resume-title {
-    font-size: 15px;
+.resume-card:hover .resume-card-book { color: var(--bg); opacity: 0.7; }
+.resume-card-title {
+    font-size: 14px;
     font-weight: 600;
+    line-height: 1.4;
     color: var(--text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
-
-.overview-resume:hover .resume-title { color: var(--bg); }
-
-.overview-resume .resume-meta {
-    font-size: 12px;
-    color: var(--text-soft);
+.resume-card:hover .resume-card-title { color: var(--bg); }
+.resume-card-progress {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
     margin-top: 2px;
 }
-
-.overview-resume:hover .resume-meta { color: var(--bg); opacity: 0.8; }
-
-.overview-resume .resume-arrow {
+.resume-card:hover .resume-card-progress { background: rgba(255,255,255,0.25); }
+.resume-card-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+}
+.resume-card:hover .resume-card-progress-fill { background: var(--bg); }
+.resume-card-meta {
+    font-size: 11px;
     color: var(--text-faint);
-    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.resume-card:hover .resume-card-meta { color: var(--bg); opacity: 0.8; }
+.resume-card .resume-arrow {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    color: var(--text-faint);
     transform: rotate(45deg);
 }
-
-.overview-resume:hover .resume-arrow { color: var(--bg); }
+.resume-card:hover .resume-arrow { color: var(--bg); }
 
 .overview-card {
     margin-bottom: 48px;
@@ -6810,6 +6836,10 @@ const CHAPTERS = __CHAPTERS_JSON__;
 const CHAPTER_REFS = __CHAPTER_REFS__;
 const BOOKS_META = __BOOKS_META__;
 
+// 章节 → 所属系列 (build 阶段计算 — 供"同系列下一章"用)
+const CHAPTERS_BY_BOOK = {};
+__CHAPTERS_BY_BOOK_INIT__;
+
 // ============================================================
 // 交叉引用：「第 N 章」自动转链接（同书内）
 // ============================================================
@@ -7254,6 +7284,108 @@ function refreshBookProgressUI() {
 const CHECK_SVG = '<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
 const DOT_SVG = '<svg class="icon" width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>';
 
+// 继续阅读 carousel: 1 个 primary (lastRead) + 2-3 个 "next" (同系列下一章 / RELATED / 7 天书签)
+function renderResumeCarousel() {
+    const wrap = document.getElementById('resume-carousel');
+    const track = document.getElementById('resume-carousel-track');
+    if (!wrap || !track) return;
+    const prog = JSON.parse(localStorage.getItem('progress') || '{}');
+    const cards = [];
+    // 1) Primary: lastRead
+    const last = prog.lastRead;
+    if (last && last.chapterId) {
+        const article = document.getElementById(last.chapterId);
+        if (article) {
+            const title = article.querySelector('.chapter-title')?.textContent || last.chapterId;
+            const book = CHAPTER_BOOK_MAP[last.chapterId] || '';
+            const bookTitle = (BOOKS_META[book] && BOOKS_META[book].title) || book;
+            const ago = formatRelativeTime(last.timestamp);
+            // 进度: 从 progress.readPct[chapterId] 取
+            const progAll = JSON.parse(localStorage.getItem('progress') || '{}');
+            const readPctMap = (progAll && progAll.readPct) || {};
+            const pct = Math.min(99, readPctMap[last.chapterId] || 0);
+            cards.push({
+                chapterId: last.chapterId,
+                title: title,
+                book: book,
+                bookTitle: bookTitle,
+                eyebrow: '继续阅读',
+                meta: '上次 ' + ago,
+                pct: pct,
+                primary: true
+            });
+            // 2) 同系列下一章 (同书 + 索引 + 1)
+            const allInBook = (CHAPTERS_BY_BOOK && CHAPTERS_BY_BOOK[book]) || [];
+            const idx = allInBook.indexOf(last.chapterId);
+            if (idx >= 0 && idx + 1 < allInBook.length) {
+                const nextId = allInBook[idx + 1];
+                const nArticle = document.getElementById(nextId);
+                if (nArticle) {
+                    const nTitle = nArticle.querySelector('.chapter-title')?.textContent || nextId;
+                    cards.push({
+                        chapterId: nextId,
+                        title: nTitle,
+                        book: book,
+                        bookTitle: bookTitle,
+                        eyebrow: '同系列下一章',
+                        meta: '',
+                        pct: 0,
+                        primary: false
+                    });
+                }
+            }
+        }
+    }
+    // 3) 主题 RELATED (复用 dense index) — 找 primary 章节的 top-1 related
+    if (cards.length > 0 && cards.length < 4 && _kbDenseIndex && _kbDenseIndex.chapters) {
+        const primaryId = cards[0].chapterId;
+        const chIdx = _kbDenseIndex.chapters.findIndex(c => c.id === primaryId);
+        if (chIdx >= 0) {
+            const emb = kbDecodeEmbedding(_kbDenseIndex.chapters[chIdx].embedding);
+            const cands = _kbDenseIndex.chapters
+                .map((c, i) => ({ id: c.id, bookSlug: c.bookSlug, bookTitle: c.bookTitle, chapterTitle: c.chapterTitle, score: cosineSim(emb, kbDecodeEmbedding(c.embedding)) }))
+                .filter(c => c.id !== primaryId && !cards.some(cc => cc.chapterId === c.id))
+                .sort((a, b) => b.score - a.score)
+                .slice(0, 4 - cards.length);
+            cands.forEach(c => {
+                const article = document.getElementById(c.id);
+                if (!article) return;
+                const cTitle = article.querySelector('.chapter-title')?.textContent || c.chapterTitle;
+                const cBook = CHAPTER_BOOK_MAP[c.id] || c.bookSlug;
+                const cBookTitle = (BOOKS_META[cBook] && BOOKS_META[cBook].title) || c.bookTitle;
+                cards.push({
+                    chapterId: c.id,
+                    title: cTitle,
+                    book: cBook,
+                    bookTitle: cBookTitle,
+                    eyebrow: '主题相关',
+                    meta: '',
+                    pct: 0,
+                    primary: false
+                });
+            });
+        }
+    }
+    if (cards.length === 0) {
+        wrap.style.display = 'none';
+        return;
+    }
+    // 渲染
+    const arrowSvg = '<svg class="icon resume-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>';
+    track.innerHTML = cards.map(c => {
+        const cls = c.primary ? 'resume-card primary' : 'resume-card';
+        return '<a class="' + cls + '" href="#' + c.chapterId + '">' +
+            (c.primary ? arrowSvg : '') +
+            '<div class="resume-card-head"><span class="dot"></span><span>' + c.eyebrow + '</span></div>' +
+            '<div class="resume-card-book">' + c.bookTitle + '</div>' +
+            '<div class="resume-card-title">' + c.title + '</div>' +
+            (c.pct > 0 ? '<div class="resume-card-progress"><div class="resume-card-progress-fill" style="width:' + c.pct + '%"></div></div>' : '') +
+            '<div class="resume-card-meta">' + (c.meta || '<span>未开始</span>') + (c.pct > 0 ? '<span>' + c.pct + '%</span>' : '') + '</div>' +
+            '</a>';
+    }).join('');
+    wrap.style.display = '';
+}
+
 function renderOverview() {
     // 1. 章节 marker (✓ / ◐ / ○)
     document.querySelectorAll('.ov-ch-marker').forEach(el => {
@@ -7350,20 +7482,8 @@ function renderOverview() {
     // 5. 每周回顾（基于 dailyTime + completed 时间戳）— 支持 本周/本月/今年 三档
     renderRecap();
 
-    // 4. 继续阅读卡 (有 lastRead 才显示)
-    const resume = document.getElementById('overview-resume');
-    const last = progress.lastRead;
-    if (resume && last && last.chapterId) {
-        const article = document.getElementById(last.chapterId);
-        if (article) {
-            const title = article.querySelector('.chapter-title')?.textContent || last.chapterId;
-            const ago = formatRelativeTime(last.timestamp);
-            document.getElementById('overview-resume-title').textContent = title;
-            document.getElementById('overview-resume-meta').textContent = '上次阅读 ' + ago;
-            resume.href = '#' + last.chapterId;
-            resume.style.display = '';
-        }
-    }
+    // 4. 继续阅读 carousel (1 个 primary + 2-3 个 pick up next)
+    renderResumeCarousel();
 
     // 5. 学习路径 (基于 reading history / RELATED / 7 天书签 / 7 天笔记 / priority)
     renderLearningPath();
@@ -7949,6 +8069,13 @@ async function loadKbPipe(onProgress) {
 function kbDecodeEmbedding(b64) {
     const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     return new Float32Array(bytes.buffer);
+}
+
+// cosine 相似度 (L2 normalized embeddings = dot product)
+function cosineSim(a, b) {
+    let dot = 0;
+    for (let i = 0; i < a.length; i++) dot += a[i] * b[i];
+    return dot;
 }
 
 async function kbEmbedQuery(query) {
@@ -10545,6 +10672,11 @@ def build_html():
             _md = _cp.read_text(encoding="utf-8")
             chapter_titles_map[_anchor] = chapter_display_title(_md, _cs)
     chapter_titles_map_json = _json.dumps(chapter_titles_map, ensure_ascii=False)
+    # CHAPTERS_BY_BOOK — 供"同系列下一章"用 (按书分组, 保持原顺序)
+    chapters_by_book = {}
+    for _slug, _meta, _chs in books:
+        chapters_by_book[_slug] = [f"{_slug}__{_cs}" for _cs, _cp in _chs]
+    chapters_by_book_init = "Object.assign(CHAPTERS_BY_BOOK, " + _json.dumps(chapters_by_book, ensure_ascii=False) + ")"
     # 学习路径 fallback 用：每本书的 priority + 首章 anchor/title
     books_meta = {}
     for _slug, _meta, _chs in books:
@@ -10565,6 +10697,7 @@ def build_html():
     books_meta_json = _json.dumps(books_meta, ensure_ascii=False)
     # JS 不是 f-string, 用占位符后替换
     JS = JS.replace("__CHAPTERS_JSON__", chapter_anchors_json)
+    JS = JS.replace("__CHAPTERS_BY_BOOK_INIT__", chapters_by_book_init)
     JS = JS.replace("__CHAPTER_REFS__", chapter_refs_json)
     JS = JS.replace("__CHAPTER_BOOK_MAP__", chapter_book_map_json)
     JS = JS.replace("__CHAPTER_TITLES_MAP__", chapter_titles_map_json)
