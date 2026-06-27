@@ -7217,8 +7217,31 @@ const KB_SYNONYMS = {
     // MCP / A2A
     'mcp': 'model context protocol',
     'a2a': 'agent-to-agent',
+    // 通用 IT 术语 (双向，避免 query 单边卡死)
+    // 钱 → cost，调试 → debug，性能 → perf，等等
+    '省钱': '成本 费用 开销 cost',
+    '成本': 'cost 费用 省钱 开销',
+    '费用': 'cost 成本 省钱',
+    '性能': 'performance 性能优化 perf',
+    '调试': 'debug debugging 排错',
+    '排错': 'debug 调试',
+    '测试': 'test testing',
+    '部署': 'deploy deployment',
+    '监控': 'monitor monitoring observability',
+    '安全': 'security 安全防护',
+    '并发': 'concurrency parallel 并行',
+    '并行': 'parallel 并发',
+    '缓存': 'cache caching 缓存策略',
+    '日志': 'log logging 日志系统',
+    '优化': 'optimize optimization',
+    '升级': 'upgrade update',
+    '回滚': 'rollback revert',
+'压测': 'stress test 压力测试',
+    '限流': 'rate limit throttling',
+    '熔断': 'circuit breaker 熔断器',
     // 注意：不加 "agent" ↔ "智能体" 等基础术语的扩展
     // 因为 agent 在 cn-codex 系列里大量出现,扩展会污染结果
+    // 'agent': '', // 占位（不扩展，避免污染）
 };
 
 function kbExpandSynonyms(query) {
@@ -7246,6 +7269,12 @@ function kbExpandSynonyms(query) {
 // - chapterTitle 命中 2+ terms：×8.0（极强信号，等于"这就是标题"）
 // - 仅 bookTitle 命中：×2.0（弱信号，整个系列相关）
 // - 都不命中：×1.0
+// 上下文加权：query term 出现在 chapterTitle / bookTitle / bookDescription → chunk ×boost
+// - chapterTitle 命中 2+ terms：×8.0 （"上下文窗口与 token 基础" 完美匹配）
+// - chapterTitle 命中 1 term：×5.0
+// - bookTitle 命中：×2.0 （整个系列相关）
+// - bookDesc 命中（query 在系列描述里出现）：×1.5 （弱信号,避免抢主导）
+// - 都不命中：×1.0
 function kbTitleBoost(chunkIdx, query) {
     const idx = _kbIndex;
     if (!idx) return 1;
@@ -7258,14 +7287,20 @@ function kbTitleBoost(chunkIdx, query) {
     if (!qTerms.length) return 1;
     const titleLower = (c.chapterTitle || '').toLowerCase();
     const bookLower = (c.bookTitle || '').toLowerCase();
-    let chapterHit = 0, bookHit = 0;
+    // bookDesc 从 BOOKS_META 拿
+    const bookMeta = (typeof BOOKS_META !== 'undefined' && BOOKS_META[c.bookSlug]) || {};
+    const descLower = (bookMeta.desc || '').toLowerCase();
+    let chapterHit = 0, bookHit = 0, descHit = 0;
     for (const t of qTerms) {
         if (titleLower.includes(t)) chapterHit++;
         if (bookLower.includes(t)) bookHit++;
+        if (descLower.includes(t)) descHit++;
     }
     if (chapterHit >= 2) return 8.0;
     if (chapterHit >= 1) return 5.0;
     if (bookHit >= 1) return 2.0;
+    if (descHit >= 2) return 1.8;
+    if (descHit >= 1) return 1.5;
     return 1;
 }
 
