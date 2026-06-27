@@ -197,7 +197,40 @@ Chrome / Edge / Safari / Firefox 最新版。iOS Safari 13+，Android Chrome 80+
 - 初始 gzipped: 843 KB → **157 KB** (5.4x ↓)
 - Q&A jump / hash 直跳 / 滚动预加载 全覆盖
 
-主要 commit: `1275ab3` / `f0be3eb` / `a762c84` / `0b7b07d` / `a6efc87` / `bf00e71` / `6f27eed` / `a1797bc` / `43ffa5e`.
+## 2026-06-28 这一波: Tier 三 / 四 / 五 (16 项)
+
+第二晚继续推: tier 三 9 项 + tier 四 2 项 (5 后端跳过) + tier 五 7 项小 bug.
+
+**Tier 三 (medium 改进)**
+- Weekly recap 加 "复制为 Markdown" 按钮 (发邮件 / 笔记用)
+- 笔记全文搜索 (Cmd+Shift+F) + 黄色 mark 高亮匹配
+- 高亮颜色映射语义标签 (yellow=重要 / green=todo / blue=问题 / pink=想法), 顶部 chip filter
+- 12 个里程碑 / 成就 badge (章节数 / 连续天数 / 笔记数 / 书签数 / 系列覆盖 / 50% 章节)
+- 章节底部关联章节 图谱视图 (SVG 网络图, 边粗细=相似度, 卡片/图谱切换)
+- 系列对比表 17 系列展开看每章难度 / 时间 (+ 按钮折叠)
+- 暗色模式 transition 平滑过渡 (0.35s ease)
+- 打印模式 CSS (隐藏 chrome, 章节 page-break-before, 代码块高亮保留, 外链 URL 后缀)
+
+**Tier 四 (长期架构, 纯前端部分)**
+- Jekyll / Hugo 导出 — `_jekyll_export/_books/<slug>/<chapter>.md`, 每章带 frontmatter (title / book / chapter_num / tags / date). `_index.md` 列章节, 根 README 写用法. SKIP_JEKYLL=1 跳过
+- PWA 增强 — manifest 加 3 个 shortcuts (Q&A / 笔记 / Overview), 加 share_target 接其他 app 分享, handlePwaLaunch() 解析 `?action=xxx` 自动触发
+- (#2 多用户 / #3 AI 总结 / #4 公开分享页 需后端, side project 不做)
+
+**Tier 五 (7 项小 bug 集合)**
+- 暗色 mark 对比度 — 暖 tan (rgba(196,168,124)) 替纯黄, 浅字色
+- TTS 切章节自动停 (hashchange pause 旧 audio)
+- Cmd+K 键盘导航增强 (active 加 3px accent 边, Enter fallback 第一项)
+- sidebar 默认展开 (去掉 body 默认 collapsed class)
+- sidebar 滚动性能 (`content-visibility: auto`, 屏幕外跳过渲染)
+- Empty state 引导文案 (icon + 步骤 hint: 选中文字 → 工具栏 → 收藏)
+- SW 更新 toast (右下"新版本已就绪 + 刷新", `SKIP_WAITING` message 协议)
+
+**PWA 真 bug 修 (发现部署 1 年多没人发现)**
+- 原版用 `URL.createObjectURL(blob)` 注册 SW — blob URL 主流浏览器都拒绝作 SW script
+- 修: build 阶段 `build_sw()` 写 sw.js 到 ROOT, 注册 `./sw.js` (同源)
+- 加 cache-on-demand 策略 (assets/ 首次 fetch 自动缓存, 二次访问秒开)
+
+**累计 33 commit, tier 一/二/三/五 全 100%, tier 四 2/6**. PWA 真正可装.
 
 ## License
 
