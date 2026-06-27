@@ -1534,6 +1534,47 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     padding: 1px 2px;
     border-radius: 2px;
 }
+/* Q&A 搜索建议下拉 */
+.kb-suggestions {
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    margin: 0 0 12px 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+.kb-sug-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+}
+.kb-sug-row:last-child { border-bottom: none; }
+.kb-sug-row:hover { background: var(--bg-soft); }
+.kb-sug-book {
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--bg-soft);
+    padding: 2px 8px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.kb-sug-title {
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 /* Q&A 搜索历史 */
 .kb-history-label {
     font-size: 11px;
@@ -8414,6 +8455,72 @@ if (kbModalEl) kbModalEl.addEventListener('click', (e) => {
     if (e.target === kbModalEl) kbClose();
 });
 
+// 搜索建议 (input 时下拉 top-3 匹配章节标题)
+let kbSugTimer = null;
+let kbSugItems = [];
+function kbRenderSuggestions() {
+    const sugEl = document.getElementById('kb-suggestions');
+    if (!sugEl) return;
+    if (kbSugItems.length === 0) { sugEl.style.display = 'none'; return; }
+    sugEl.innerHTML = kbSugItems.map((it, i) =>
+        '<div class="kb-sug-row" data-i="' + i + '">' +
+        '<span class="kb-sug-book">' + escapeAttr(it.bookTitle) + '</span>' +
+        '<span class="kb-sug-title">' + escapeAttr(it.chapterTitle) + '</span>' +
+        '</div>'
+    ).join('');
+    sugEl.style.display = '';
+    sugEl.querySelectorAll('.kb-sug-row').forEach(row => {
+        row.addEventListener('click', () => {
+            const it = kbSugItems[parseInt(row.dataset.i)];
+            document.getElementById('kb-input').value = it.chapterTitle;
+            sugEl.style.display = 'none';
+            kbRunSearch();
+        });
+    });
+}
+async function kbSuggest(query) {
+    if (!query || query.length < 2) { kbSugItems = []; kbRenderSuggestions(); return; }
+    // 优先用轻量 title 索引 (不查 chunk)
+    const titles = (typeof CHAPTER_TITLES_MAP !== 'undefined') ? CHAPTER_TITLES_MAP : {};
+    const bookMap = (typeof CHAPTER_BOOK_MAP !== 'undefined') ? CHAPTER_BOOK_MAP : {};
+    const q = query.toLowerCase();
+    const hits = [];
+    for (const [cid, title] of Object.entries(titles)) {
+        const t = title.toLowerCase();
+        let score = 0;
+        if (t === q) score = 100;
+        else if (t.includes(q)) score = 50 - (t.length - q.length);
+        else {
+            // 单字符匹配
+            let i = 0, j = 0, contig = 0, maxContig = 0;
+            while (i < q.length && j < t.length) {
+                if (q[i] === t[j]) { i++; contig++; if (contig > maxContig) maxContig = contig; }
+                else contig = 0;
+                j++;
+            }
+            if (i === q.length) score = 10 + maxContig;
+        }
+        if (score > 0) hits.push({ cid, title, score });
+    }
+    hits.sort((a, b) => b.score - a.score);
+    kbSugItems = hits.slice(0, 5).map(h => {
+        const bookSlug = bookMap[h.cid] || '';
+        const bookTitle = (BOOKS_META[bookSlug] && BOOKS_META[bookSlug].title) || bookSlug;
+        return { chapterId: h.cid, chapterTitle: h.title, bookTitle };
+    });
+    kbRenderSuggestions();
+}
+if (kbInput) kbInput.addEventListener('input', () => {
+    clearTimeout(kbSugTimer);
+    const q = kbInput.value.trim();
+    if (q.length < 2) { kbSugItems = []; kbRenderSuggestions(); return; }
+    kbSugTimer = setTimeout(() => kbSuggest(q), 150);
+});
+// 输入框聚焦时如果已有 query, 重新显示建议
+if (kbInput) kbInput.addEventListener('focus', () => {
+    if (kbInput.value.trim().length >= 2) kbSuggest(kbInput.value.trim());
+});
+
 // Q&A 结果点击: 关 modal → 跳章节 → 找 query term → scroll + 黄色闪 2 秒
 function escapeAttr(s) {
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -10883,6 +10990,7 @@ def build_html():
                     <span class="kb-toggle-hint">(首次 ~24 MB BGE 中文模型)</span>
                 </label>
             </div>
+            <div class="kb-suggestions" id="kb-suggestions" style="display:none"></div>
             <div class="kb-results" id="kb-results">
                 <div class="kb-empty kb-hint">键入问题后回车。默认走 TF-IDF + 同义词扩展 + 标题加权，勾选 AI 语义搜索可加载 BGE 中文模型做 dense embedding 混合检索。</div>
             </div>
