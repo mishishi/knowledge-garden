@@ -475,6 +475,48 @@ def _kb_tokenize(text: str) -> list:
     return terms
 
 
+# ============================================================
+# 章节标题跨语言别名映射
+# - 章节标题常含英文术语（Agent / Claude Code / Harness ...）
+# - 用户用中文搜（"智能体 怎么写"）时，TF-IDF 算不出英文 title 的相关性
+# - 这里把英文术语在 title 里命中时，对应中文别名 term 加权注入 chunk TF
+# - 效果：'智能体 怎么写' 的 chunk 能命中 '你的第一个 Agent' 章节
+# ============================================================
+_TITLE_EN_TO_ZH = {
+    'agent': '智能体',
+    'agents': '智能体',
+    'agentic': '智能体',
+    'multi-agent': '多智能体',
+    'multi agent': '多智能体',
+    'claude code': 'claude code 实战',
+    'harness': '脚手架',
+    'a2a': 'a2a 协议',
+    'mcp': 'mcp 协议',
+    'vibe coding': '氛围编程',
+    'cot': '思维链',
+    'rag': '检索增强生成',
+    'embedding': '向量',
+    'prompt': '提示词',
+    'llm': '大模型',
+    'scaffold': '脚手架',
+}
+
+
+def _kb_title_aliases(chapter_title: str) -> list:
+    """从章节标题抽取中文别名 term."""
+    if not chapter_title:
+        return []
+    title_lower = chapter_title.lower()
+    out = []
+    for en, zh in _TITLE_EN_TO_ZH.items():
+        # word-boundary 匹配，避免 'a2a' 误匹配 'a2aa'
+        if _re_kb.search(r'(^|[^a-z0-9])' + _re_kb.escape(en) + r'($|[^a-z0-9])', title_lower):
+            out.append(zh)
+    # 去重保序
+    seen = set()
+    return [x for x in out if not (x in seen or seen.add(x))]
+
+
 def build_knowledge_index(books) -> None:
     """生成 assets/knowledge_index.json — 浏览器 cosine 搜索用."""
     chunks = []
@@ -486,11 +528,19 @@ def build_knowledge_index(books) -> None:
                 continue
             chap_chunks = _kb_chunk_text(text, size=500, overlap=80)
             chapter_title = chapter_display_title(raw, chap_slug)
+            # 章节标题里的英文术语 → 中文别名（注入到 chunk TF，让 TF-IDF 跨语言命中）
+            aliases = _kb_title_aliases(chapter_title)
+            alias_tokens = []
+            for a in aliases:
+                alias_tokens.extend(_kb_tokenize(a))
             for i, ct in enumerate(chap_chunks):
                 tokens = _kb_tokenize(ct)
                 if not tokens:
                     continue
                 tf = _Counter_kb(tokens)
+                # 别名 term 注入 TF，权重 +3（模拟 title 命中，跨语言 TF-IDF 命中）
+                for term in alias_tokens:
+                    tf[term] = tf.get(term, 0) + 3
                 chunks.append({
                     "id": f"{slug}__{chap_slug}__{i}",
                     "chapterId": f"{slug}__{chap_slug}",
