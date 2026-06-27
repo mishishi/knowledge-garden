@@ -1,15 +1,18 @@
-TTS 锁屏控制 (MediaSession API, cn-codex 10 章)
+chore: 部署 fix + 清理 + smoke test
 
-点击 TTS 朗读按钮时, 浏览器锁屏 / 系统通知显示:
-- title: 章节名
-- artist: 所属系列
-- album: 知识花园
-- 动作: play / pause / nexttrack / previoustrack
-
-实现: setupMediaSession(btn, audio) 函数, 复用 CHAPTERS 全局数组找 prev/next chapter, 复用 CHAPTER_BOOK_MAP + BOOKS_META 取书名. 锁屏/系统媒体控制点上一首/下一首 = 调用 toggleTts 切到对应章节.
-
-测试: Playwright 拦截 navigator.mediaSession, 验证 metadata + handlers + state 正确设置. cn-codex__01 没有 prevtrack (第一章), 其它章有. play failed 是 Playwright autoplay 限制, 不影响 MediaSession 注册.
-
-UX 价值: 用户手机锁屏也能切章节 / 暂停, 不必打开浏览器. car play / Bluetooth 耳机按钮也可控. 165 章批 TTS 后这功能覆盖大部分内容.
-
-已知限制: 锁屏 artwork 没设 (没封面图), 用户体验上 chapter 标题文字就是封面. 后续若有系列封面图可加 artwork 字段.
+- **GitHub Actions 修**: pip install 加 numpy (dense embedding 需要, 之前漏)
+  - 没这个 build 步骤会 ImportError, deploy 失败
+- **清理**: tools/extract.js (临时 dev helper, 用完)
+- **smoke test**: tools/test_smoke.py — Playwright 端到端验证 11 项功能
+  1. overview 0 book fetch (lazy)
+  2. 直跳章节触发 1 fetch
+  3. Q&A modal 可开
+  4. 10 个 TTS 按钮 (cn-codex)
+  5. 章节 body lazy 加载
+  6. localStorage search history
+  7. 相关章节卡片
+  8. Streak 热度图
+  9. Resume carousel (无 lastRead 隐藏)
+  10. 面包屑
+  11. 章节 ribbon
+- **rss.xml / knowledge_index.json** auto-regen (时间戳 / chunk 权重)
