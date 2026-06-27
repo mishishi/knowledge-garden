@@ -3663,7 +3663,7 @@ body.dark .mermaid { background: #18181b; }
     margin-top: 60px;
     margin-left: 40px;
 }
-@media (min-width: 1400px) {
+@media (min-width: 1200px) {
     .content { max-width: 1080px; }
     .chapter-toc { display: block; }
 }
