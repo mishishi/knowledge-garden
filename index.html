@@ -2731,7 +2731,7 @@ body.dark .mermaid { background: #18181b; }
     margin-top: 60px;
     margin-left: 40px;
 }
-@media (min-width: 1400px) {
+@media (min-width: 1200px) {
     .content { max-width: 1080px; }
     .chapter-toc { display: block; }
 }
@@ -2777,6 +2777,52 @@ body.dark .chapter-toc .toc-list a { color: #b0b0b4; }
 body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
 
 .chapter-end::before { content: "———"; color: var(--accent); letter-spacing: 8px; }
+
+/* 读完 CTA: 滚到章节末尾时底部弹 "继续读下一章" */
+.next-chapter-cta {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--bg);
+    padding: 12px 20px;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    z-index: 100;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 90vw;
+    user-select: none;
+    transition: transform 0.2s, opacity 0.2s;
+    opacity: 0.95;
+}
+.next-chapter-cta:hover {
+    transform: translateX(-50%) translateY(-2px);
+    opacity: 1;
+}
+.next-cta-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7;
+}
+.next-cta-title {
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.next-cta-arrow {
+    font-size: 18px;
+    line-height: 1;
+}
 
 /* ============================================================
    章节底部 prev/next 导航
@@ -45808,6 +45854,49 @@ document.addEventListener('keydown', (e) => {
         else kbOpen();
     }
 });
+
+// ============================================================
+// 读完 CTA: 滚到章节末尾 → 底部弹出 "继续读下一章" sticky bar
+// - 找当前 active chapter, 距离底部 < 300px → 显示
+// - 离开 (scroll up) → 隐藏
+// ============================================================
+(function() {
+    let cta = document.createElement('div');
+    cta.className = 'next-chapter-cta';
+    cta.innerHTML = '<span class="next-cta-label">继续读下一章</span><span class="next-cta-title"></span><span class="next-cta-arrow">→</span>';
+    cta.style.display = 'none';
+    document.body.appendChild(cta);
+    let currentActive = null;
+    function update() {
+        const chapters = document.querySelectorAll('article.chapter');
+        const center = window.scrollY + window.innerHeight * 0.7;
+        let active = null;
+        for (const art of chapters) {
+            const top = art.offsetTop;
+            const bot = top + art.offsetHeight;
+            if (center >= top && center < bot) { active = art; break; }
+        }
+        if (!active) { cta.style.display = 'none'; return; }
+        // 距离章节底部 < 300px 才显示
+        const distToEnd = (active.offsetTop + active.offsetHeight) - (window.scrollY + window.innerHeight);
+        if (distToEnd > 300) { cta.style.display = 'none'; return; }
+        // 找下一章
+        const nextLink = active.querySelector('.chap-nav-next');
+        if (!nextLink) { cta.style.display = 'none'; return; }
+        const title = nextLink.querySelector('.chap-nav-title')?.textContent || '下一章';
+        if (active === currentActive) return;  // 同一章不更新
+        currentActive = active;
+        cta.querySelector('.next-cta-title').textContent = title;
+        cta.style.display = 'flex';
+        cta.onclick = (e) => {
+            e.preventDefault();
+            nextLink.click();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    setTimeout(update, 200);
+})();
 
 // overview-mode 切换：只看首页 TOC
 function showOverview() {
