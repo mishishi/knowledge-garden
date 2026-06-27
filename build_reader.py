@@ -4802,6 +4802,25 @@ body.dark .resume-toast { background: #2a2a2e; border-color: #444; }
     color: var(--text-soft);
 }
 
+.notes-search {
+    width: 100%;
+    padding: 8px 12px;
+    margin: 0 0 10px 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+}
+.notes-search:focus { outline: none; border-color: var(--accent); }
+.notes-list mark {
+    background: rgba(180, 130, 50, 0.25);
+    color: var(--text);
+    padding: 0 1px;
+    border-radius: 2px;
+}
+
 .notes-list {
     flex: 1;
     overflow-y: auto;
@@ -6851,18 +6870,42 @@ document.querySelector('.notes-panel-header .close').addEventListener('click', (
 
 function renderNotesList() {
     const list = document.querySelector('.notes-list');
-    if (notes.length === 0) {
-        list.innerHTML = '<div class="notes-empty">还没有笔记<br><br>选中正文中的文字后<br>点击弹出的浮动工具栏添加</div>';
+    const searchInput = document.getElementById('notes-search');
+    const query = (searchInput && searchInput.value || '').trim().toLowerCase();
+    let filtered = notes;
+    if (query) {
+        filtered = notes.filter(n =>
+            (n.quote || '').toLowerCase().includes(query) ||
+            (n.text || '').toLowerCase().includes(query)
+        );
+    }
+    if (filtered.length === 0) {
+        const msg = query ? `没有包含 "${query}" 的笔记` : '还没有笔记<br><br>选中正文中的文字后<br>点击弹出的浮动工具栏添加';
+        list.innerHTML = `<div class="notes-empty">${msg}</div>`;
         return;
     }
 
     // 按书 + 章节分组
     const byBookChapter = {};
-    notes.forEach((note, idx) => {
+    filtered.forEach((note, idx) => {
         const key = (note.bookSlug || 'unknown') + '|' + (note.chapterId || '');
         if (!byBookChapter[key]) byBookChapter[key] = [];
-        byBookChapter[key].push({ ...note, idx });
+        // 找原始 idx (用于删除)
+        const origIdx = notes.indexOf(note);
+        byBookChapter[key].push({ ...note, idx: origIdx });
     });
+
+    function escapeHtml(s) {
+        return String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function highlight(s) {
+        const esc = escapeHtml(s);
+        if (!query) return esc;
+        // JS regex char class 双重转义坑 (Python source 里 \\ 处理): 用 per-char escape 函数避开
+        const escQ = query.split('').map(c => '.*+?^${}()|[]'.indexOf(c) >= 0 ? String.fromCharCode(92) + c : c).join('');
+        const re = new RegExp('(' + escQ + ')', 'gi');
+        return esc.replace(re, '<mark>$1</mark>');
+    }
 
     let html = '';
     Object.entries(byBookChapter).forEach(([key, items]) => {
@@ -6872,14 +6915,14 @@ function renderNotesList() {
         const bookHeader = document.querySelector(`[data-book="${bookSlug}"] .book-title-text`);
         const bookTitle = bookHeader?.textContent || bookSlug;
 
-        html += `<div style="margin-bottom: 8px; font-size: 10px; color: var(--text-faint); letter-spacing: 1px;">${bookTitle} · ${chapterTitle}</div>`;
+        html += `<div style="margin-bottom: 8px; font-size: 10px; color: var(--text-faint); letter-spacing: 1px;">${escapeHtml(bookTitle)} · ${escapeHtml(chapterTitle)}</div>`;
 
         items.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
             html += `
                 <div class="note-item" data-chapter="${chapterId}" data-idx="${note.idx}">
                     <button class="note-delete">×</button>
-                    <div class="note-quote">${note.quote || note.text || ''}</div>
-                    ${note.type === 'note' ? `<div class="note-text">${note.text}</div>` : ''}
+                    <div class="note-quote">${highlight(note.quote || note.text || '')}</div>
+                    ${note.type === 'note' ? `<div class="note-text">${highlight(note.text)}</div>` : ''}
                     <div class="note-meta">${new Date(note.timestamp).toLocaleString('zh-CN')}</div>
                 </div>
             `;
@@ -6899,7 +6942,29 @@ function renderNotesList() {
         item.querySelector('.note-delete').addEventListener('click', (e) => {
             notes.splice(idx, 1);
             saveNotes();
-            renderNotesList();
+renderNotesList();
+// 笔记搜索: input 时实时过滤
+const notesSearchInput = document.getElementById('notes-search');
+if (notesSearchInput) {
+    let searchTimer = null;
+    notesSearchInput.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(renderNotesList, 80);
+    });
+}
+// Cmd+Shift+F: 焦点到笔记搜索
+document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
+        e.preventDefault();
+        // 确保 notes panel 已打开
+        const notesBtn = document.getElementById('notes-btn');
+        if (notesBtn && !notesBtn.classList.contains('active')) notesBtn.click();
+        setTimeout(() => {
+            const si = document.getElementById('notes-search');
+            if (si) { si.focus(); si.select(); }
+        }, 100);
+    }
+});
             e.stopPropagation();
         });
     });
@@ -11420,6 +11485,7 @@ def build_html():
             <h2>{svg_icon('notes')} 我的笔记</h2>
             <button class="close">×</button>
         </div>
+        <input type="text" class="notes-search" id="notes-search" placeholder="搜索笔记 (Cmd+Shift+F)" autocomplete="off">
         <div class="notes-list"></div>
     </aside>
 

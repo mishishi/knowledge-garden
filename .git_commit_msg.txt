@@ -1,14 +1,15 @@
-feat(recap): weekly digest 复制为 Markdown (发邮件 / 笔记用)
+feat(notes): 笔记全文搜索 + Cmd+Shift+F 快捷键
 
-原 Tier 三 #2 每周回顾邮件需要后端 (SendGrid + auth), side project 不划算.
-替代: in-app 复制为 Markdown, 用户可手动贴到邮件 / 笔记 / 微信.
+Tier 三 #3: 笔记面板加搜索 input
+- input 时实时过滤 quote + text (80ms debounce)
+- 匹配高亮黄色 mark
+- 无结果时显示 "没有包含 X 的笔记"
+- Cmd+Shift+F 焦点到搜索 (并自动打开笔记 panel)
+- 按 X 删笔记 (existing) 不受搜索影响
 
 实现:
-- weekly-recap 加 "复制" 按钮 (recap-tabs 右侧)
-- buildRecapMarkdown() 生成 # 知识花园 · 本周阅读摘要 + summary + 日期
-- navigator.clipboard.writeText (主路径) + textarea fallback (旧浏览器)
-- 反馈: 复制成功变绿色 "已复制" 1.5s
+- .notes-search input 在 .notes-panel-header 下面
+- renderNotesList() 接受 query, 过滤 + highlight
+- per-char escape 函数 (避 Python source 里 \\ 双重转义坑)
 
-涉及 commit:
-- extract.js 重新入仓 (从 trash 恢复, build 验证 JS 用)
-- knowledge_index.json / rss.xml / sitemap.xml auto-regen
+UX 价值: 175 章散落笔记, 用户搜 "agent" 一秒定位, 比翻页 10x.
