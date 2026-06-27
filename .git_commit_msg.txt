@@ -1,0 +1,15 @@
+TTS 锁屏控制 (MediaSession API, cn-codex 10 章)
+
+点击 TTS 朗读按钮时, 浏览器锁屏 / 系统通知显示:
+- title: 章节名
+- artist: 所属系列
+- album: 知识花园
+- 动作: play / pause / nexttrack / previoustrack
+
+实现: setupMediaSession(btn, audio) 函数, 复用 CHAPTERS 全局数组找 prev/next chapter, 复用 CHAPTER_BOOK_MAP + BOOKS_META 取书名. 锁屏/系统媒体控制点上一首/下一首 = 调用 toggleTts 切到对应章节.
+
+测试: Playwright 拦截 navigator.mediaSession, 验证 metadata + handlers + state 正确设置. cn-codex__01 没有 prevtrack (第一章), 其它章有. play failed 是 Playwright autoplay 限制, 不影响 MediaSession 注册.
+
+UX 价值: 用户手机锁屏也能切章节 / 暂停, 不必打开浏览器. car play / Bluetooth 耳机按钮也可控. 165 章批 TTS 后这功能覆盖大部分内容.
+
+已知限制: 锁屏 artwork 没设 (没封面图), 用户体验上 chapter 标题文字就是封面. 后续若有系列封面图可加 artwork 字段.

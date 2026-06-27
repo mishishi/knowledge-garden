@@ -7356,6 +7356,8 @@ function toggleTts(btn) {
     btn.classList.add('playing');
     btn.querySelector('.tts-label').textContent = '暂停';
     player.classList.add('open');
+    // MediaSession 锁屏控制: 设置 metadata + 动作 handler
+    setupMediaSession(btn, audio);
 
     audio.onended = () => {
         btn.classList.remove('playing');
@@ -7379,6 +7381,54 @@ document.addEventListener('click', (e) => {
         toggleTts(ttsBtn);
     }
 });
+
+// MediaSession 锁屏 / 系统通知控制: chapter title + book + 上一章 / 下一章 / 播放暂停
+function setupMediaSession(btn, audio) {
+    if (!('mediaSession' in navigator)) return;
+    const chapterId = btn.dataset.ttsAnchor;
+    const article = document.getElementById(chapterId);
+    const chapterTitle = (article && article.querySelector('.chapter-title')?.textContent) || chapterId;
+    const bookSlug = (typeof CHAPTER_BOOK_MAP !== 'undefined') ? CHAPTER_BOOK_MAP[chapterId] : '';
+    const bookTitle = (BOOKS_META[bookSlug] && BOOKS_META[bookSlug].title) || '知识花园';
+    // 找相邻章节 (供 nexttrack / previoustrack)
+    const all = (typeof CHAPTERS !== 'undefined') ? CHAPTERS : [];
+    const idx = all.indexOf(chapterId);
+    const prevId = (idx > 0) ? all[idx - 1] : null;
+    const nextId = (idx >= 0 && idx + 1 < all.length) ? all[idx + 1] : null;
+    // metadata
+    try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: chapterTitle,
+            artist: bookTitle,
+            album: '知识花园',
+        });
+    } catch (e) { /* 旧浏览器 / 不支持 metadata, 跳过 */ }
+    // 动作 handler
+    navigator.mediaSession.setActionHandler('play', () => audio.play());
+    navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+    if (prevId) {
+        const prevBtn = document.querySelector(`.chapter-tts-btn[data-tts-anchor="${prevId}"]`);
+        if (prevBtn && prevBtn.dataset.audioUrl) {
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                audio.pause();
+                toggleTts(prevBtn);
+            });
+        }
+    }
+    if (nextId) {
+        const nextBtn = document.querySelector(`.chapter-tts-btn[data-tts-anchor="${nextId}"]`);
+        if (nextBtn && nextBtn.dataset.audioUrl) {
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                audio.pause();
+                toggleTts(nextBtn);
+            });
+        }
+    }
+    // 同步状态
+    audio.addEventListener('play', () => navigator.mediaSession.playbackState = 'playing');
+    audio.addEventListener('pause', () => navigator.mediaSession.playbackState = 'paused');
+    audio.addEventListener('ended', () => navigator.mediaSession.playbackState = 'none');
+}
 
 function refreshReadPctUI() {
     document.querySelectorAll('.ch-read-pct').forEach(el => {
