@@ -7184,6 +7184,37 @@ function kbHighlight(text, query) {
     return text.replace(re, '<mark>$1</mark>');
 }
 
+// 围绕 query term 截取 snippet: 找到首个匹配位置,前后各 ±window 字符
+// - 比固定 chunk[0:200] 更精准, 用户直接看到 query 命中上下文
+function kbSnippet(text, query, winBefore, winAfter) {
+    if (winBefore == null) winBefore = 60;
+    if (winAfter == null) winAfter = 140;
+    if (!text) return '';
+    if (!query) return text.slice(0, winBefore + winAfter) + (text.length > winBefore + winAfter ? '…' : '');
+    const lower = text.toLowerCase();
+    const cjk = query.match(/[\u4e00-\u9fff]+/g) || [];
+    const ascii = query.match(/[a-z0-9]+/g) || [];
+    const terms = [...cjk, ...ascii.map(w => w.toLowerCase())].filter(t => t.length >= 1);
+    if (!terms.length) return text.slice(0, winBefore + winAfter) + (text.length > winBefore + winAfter ? '…' : '');
+    // 找首个 query term 出现位置 (CJK 单字可能太短, 优先 2-gram)
+    let firstIdx = -1;
+    const sortedTerms = terms.sort((a, b) => b.length - a.length);
+    for (const t of sortedTerms) {
+        const idx = lower.indexOf(t.toLowerCase());
+        if (idx >= 0 && (firstIdx < 0 || idx < firstIdx)) firstIdx = idx;
+    }
+    if (firstIdx < 0) {
+        // 没匹配, 用 chunk 前 200 字
+        return text.slice(0, 200) + (text.length > 200 ? '…' : '');
+    }
+    const start = Math.max(0, firstIdx - winBefore);
+    const end = Math.min(text.length, firstIdx + winAfter);
+    let snippet = text.slice(start, end);
+    if (start > 0) snippet = '…' + snippet;
+    if (end < text.length) snippet = snippet + '…';
+    return snippet;
+}
+
 // ============================================================
 // 同义词扩展（精简版，只放 1 个最近同义词，避免 query 被稀释）
 // - 优先 CJK ↔ CJK，English ↔ English，不跨语言扩展（太泛）
@@ -7407,11 +7438,13 @@ async function kbHybridSearch(query, useDense, topK) {
     const expandedQuery = kbExpandSynonyms(query);
     // 1) TF-IDF (用扩展 query 算) — 取更多候选(100)方便后续去重
     const tfidfHits = kbSearch(expandedQuery, 100);
-    // 标题加权 + 章节级最佳分传播
+    // 标题加权 + 章节首段加权 (chunk 0 通常是章节概述/引言, 概念查询更相关)
     const tfidfMap = new Map();
     for (const h of tfidfHits) {
         const c = _kbIndex.chunks[h.idx];
-        const boost = kbTitleBoost(h.idx, query);
+        let boost = kbTitleBoost(h.idx, query);
+        // chunk id 格式 'book__chap__i', i==0 表示章节首段
+        if (c.id.endsWith('__0')) boost *= 1.3;
         tfidfMap.set(c.id, { score: h.score * boost, chapterId: c.chapterId });
     }
     // 2) Dense (如果启用)
@@ -7468,7 +7501,9 @@ async function kbRunSearch() {
             const idToChunk = new Map(_kbIndex.chunks.map(c => [c.id, c]));
             const scored = tfidfHits.map(h => {
                 const c = _kbIndex.chunks[h.idx];
-                const boost = kbTitleBoost(h.idx, query);
+                let boost = kbTitleBoost(h.idx, query);
+                // chunk 0 (章节首段) ×1.3 额外加权
+                if (c.id.endsWith('__0')) boost *= 1.3;
                 return { id: c.id, score: h.score * boost, chapterId: c.chapterId };
             }).sort((a, b) => b.score - a.score);
             hits = kbChapterDiverse(scored, 5);
@@ -7498,7 +7533,7 @@ async function kbRunSearch() {
                 '<span class="kb-result-chapter">' + c.chapterTitle + '</span>' +
                 '<span class="kb-result-score">' + tag + '</span>' +
                 '</div>' +
-                '<div class="kb-result-text">' + kbHighlight(c.text, query) + '</div>' +
+                '<div class="kb-result-text">' + kbHighlight(kbSnippet(c.text, query), query) + '</div>' +
                 '</a>'
             );
         }).join('');
