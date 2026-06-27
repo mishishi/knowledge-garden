@@ -573,6 +573,18 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     padding: 1px 2px;
     border-radius: 2px;
 }
+/* Q&A 跳章节时的黄色闪高亮 (2.5s 后自动拆掉) */
+@keyframes kb-flash {
+    0% { background: rgba(255, 215, 0, 0.85); }
+    100% { background: rgba(255, 215, 0, 0); }
+}
+mark.kb-jump-flash {
+    background: rgba(255, 215, 0, 0.85);
+    color: inherit;
+    padding: 2px 4px;
+    border-radius: 3px;
+    animation: kb-flash 2.5s ease-out forwards;
+}
 
 /* 首次访问引导 */
 .welcome-modal {
@@ -45644,7 +45656,7 @@ async function kbRunSearch() {
                 ? (i === 0 ? '★ AI 最相关' : '相关度 ' + rel + '%')
                 : (i === 0 ? '★ 最相关' : '相关度 ' + rel + '%');
             return (
-                '<a class="kb-result" href="#' + c.chapterId + '">' +
+                '<a class="kb-result" href="#' + c.chapterId + '" data-chapter="' + c.chapterId + '" data-query="' + escapeAttr(query) + '">' +
                 '<div class="kb-result-meta">' +
                 '<span class="kb-result-book" style="color:' + color + '">' + c.bookTitle + '</span>' +
                 '<span class="kb-result-chapter">' + c.chapterTitle + '</span>' +
@@ -45689,6 +45701,77 @@ const kbModalEl = document.getElementById('kb-modal');
 if (kbModalEl) kbModalEl.addEventListener('click', (e) => {
     if (e.target === kbModalEl) kbClose();
 });
+
+// Q&A 结果点击: 关 modal → 跳章节 → 找 query term → scroll + 黄色闪 2 秒
+function escapeAttr(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function kbJumpToMatch(chapterId, query) {
+    kbClose();
+    const doScroll = () => {
+        const article = document.getElementById(chapterId);
+        if (!article) return;
+        // 找 query term 首次出现位置
+        const cjk = (query || '').match(/[一-鿿]+/g) || [];
+        const ascii = (query || '').match(/[A-Za-z0-9]+/g) || [];
+        const terms = [...cjk, ...ascii].filter(t => t.length >= 2);
+        if (!terms.length) return;
+        // 在 article 文本节点里找首个匹配 term
+        const walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, null);
+        let firstNode = null, firstIdx = -1;
+        while (walker.nextNode()) {
+            const node = walker.currentNode;
+            const lower = node.nodeValue.toLowerCase();
+            for (const t of terms.sort((a, b) => b.length - a.length)) {
+                const idx = lower.indexOf(t.toLowerCase());
+                if (idx >= 0 && (firstIdx < 0 || idx < firstIdx)) {
+                    firstNode = node;
+                    firstIdx = idx;
+                    break;
+                }
+            }
+            if (firstNode) break;
+        }
+        if (!firstNode) return;
+        // 包一层 <mark class="kb-jump-flash">  闪 2s 后移除
+        const range = document.createRange();
+        range.setStart(firstNode, firstIdx);
+        // 取到 term 末尾
+        const matchedTerm = terms.sort((a, b) => b.length - a.length).find(t => firstNode.nodeValue.substring(firstIdx, firstIdx + t.length).toLowerCase() === t.toLowerCase());
+        range.setEnd(firstNode, firstIdx + (matchedTerm ? matchedTerm.length : 2));
+        const mark = document.createElement('mark');
+        mark.className = 'kb-jump-flash';
+        try { range.surroundContents(mark); } catch (e) { /* 跨节点 fallback: 滚动 + 用 selection */ }
+        // 滚动到 mark
+        mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+            // 拆开 mark 恢复原文本
+            const parent = mark.parentNode;
+            while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+            parent.removeChild(mark);
+        }, 2500);
+    };
+    if (window.location.hash === '#' + chapterId) {
+        doScroll();
+    } else {
+        // 切到目标章节
+        window.location.hash = chapterId;
+        setTimeout(doScroll, 100);
+    }
+}
+
+// 委托点击: 任何 .kb-result 触发 jump
+document.addEventListener('click', (e) => {
+    const a = e.target.closest('.kb-result');
+    if (!a) return;
+    const chapterId = a.dataset.chapter;
+    const query = a.dataset.query;
+    if (chapterId && query) {
+        e.preventDefault();
+        kbJumpToMatch(chapterId, query);
+    }
+});
+
 // 全局快捷键 Ctrl+/
 document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.key === '/') {
