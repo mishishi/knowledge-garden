@@ -3798,6 +3798,45 @@ body.dark .resume-toast { background: #2a2a2e; border-color: #444; }
     padding: 0 1px;
     border-radius: 2px;
 }
+.notes-filter {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.notes-filter .nf-chip {
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-soft);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all .12s;
+}
+.notes-filter .nf-chip:hover { border-color: var(--accent); color: var(--text); }
+.notes-filter .nf-chip.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+}
+.notes-filter .nf-chip[data-tag="重要"]::before { content: "●"; color: var(--hl-yellow); margin-right: 4px; }
+.notes-filter .nf-chip[data-tag="todo"]::before { content: "●"; color: var(--hl-green); margin-right: 4px; }
+.notes-filter .nf-chip[data-tag="问题"]::before { content: "●"; color: var(--hl-blue); margin-right: 4px; }
+.notes-filter .nf-chip[data-tag="想法"]::before { content: "●"; color: var(--hl-pink); margin-right: 4px; }
+.notes-filter .nf-chip.active::before { color: var(--bg); }
+.note-item .note-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    margin-right: 6px;
+    font-weight: 500;
+}
+.note-tag[data-tag="重要"] { background: var(--hl-yellow); color: #6b5a00; }
+.note-tag[data-tag="todo"] { background: var(--hl-green); color: #2c5a2c; }
+.note-tag[data-tag="问题"] { background: var(--hl-blue); color: #1e4d80; }
+.note-tag[data-tag="想法"] { background: var(--hl-pink); color: #802a5e; }
 
 .notes-list {
     flex: 1;
@@ -5023,6 +5062,13 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
             <button class="close">×</button>
         </div>
         <input type="text" class="notes-search" id="notes-search" placeholder="搜索笔记 (Cmd+Shift+F)" autocomplete="off">
+        <div class="notes-filter" id="notes-filter">
+            <button class="nf-chip active" data-tag="all">全部</button>
+            <button class="nf-chip" data-tag="重要">重要</button>
+            <button class="nf-chip" data-tag="todo">todo</button>
+            <button class="nf-chip" data-tag="问题">问题</button>
+            <button class="nf-chip" data-tag="想法">想法</button>
+        </div>
         <div class="notes-list"></div>
     </aside>
 
@@ -6666,16 +6712,29 @@ document.querySelector('.notes-panel-header .close').addEventListener('click', (
     document.querySelector('.notes-panel').classList.remove('visible');
 });
 
+// 高亮颜色 → 语义标签映射 (yellow=重要 / green=todo / blue=问题 / pink=想法)
+function noteColorToTag(color) {
+    if (!color) return null;
+    if (color.endsWith('-yellow')) return '重要';
+    if (color.endsWith('-green')) return 'todo';
+    if (color.endsWith('-blue')) return '问题';
+    if (color.endsWith('-pink')) return '想法';
+    return null;
+}
+let _notesTagFilter = 'all';
 function renderNotesList() {
     const list = document.querySelector('.notes-list');
     const searchInput = document.getElementById('notes-search');
     const query = (searchInput && searchInput.value || '').trim().toLowerCase();
     let filtered = notes;
     if (query) {
-        filtered = notes.filter(n =>
+        filtered = filtered.filter(n =>
             (n.quote || '').toLowerCase().includes(query) ||
             (n.text || '').toLowerCase().includes(query)
         );
+    }
+    if (_notesTagFilter !== 'all') {
+        filtered = filtered.filter(n => noteColorToTag(n.color) === _notesTagFilter);
     }
     if (filtered.length === 0) {
         const msg = query ? `没有包含 "${query}" 的笔记` : '还没有笔记<br><br>选中正文中的文字后<br>点击弹出的浮动工具栏添加';
@@ -6716,9 +6775,12 @@ function renderNotesList() {
         html += `<div style="margin-bottom: 8px; font-size: 10px; color: var(--text-faint); letter-spacing: 1px;">${escapeHtml(bookTitle)} · ${escapeHtml(chapterTitle)}</div>`;
 
         items.sort((a, b) => b.timestamp - a.timestamp).forEach(note => {
+            const tag = noteColorToTag(note.color);
+            const tagHtml = tag ? `<span class="note-tag" data-tag="${tag}">${tag}</span>` : '';
             html += `
                 <div class="note-item" data-chapter="${chapterId}" data-idx="${note.idx}">
                     <button class="note-delete">×</button>
+                    ${tagHtml}
                     <div class="note-quote">${highlight(note.quote || note.text || '')}</div>
                     ${note.type === 'note' ? `<div class="note-text">${highlight(note.text)}</div>` : ''}
                     <div class="note-meta">${new Date(note.timestamp).toLocaleString('zh-CN')}</div>
@@ -6750,6 +6812,15 @@ if (notesSearchInput) {
         searchTimer = setTimeout(renderNotesList, 80);
     });
 }
+// 笔记 tag filter chip 点击切换
+document.querySelectorAll('#notes-filter .nf-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        document.querySelectorAll('#notes-filter .nf-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        _notesTagFilter = chip.dataset.tag;
+        renderNotesList();
+    });
+});
 // Cmd+Shift+F: 焦点到笔记搜索
 document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
