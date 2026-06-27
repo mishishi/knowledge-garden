@@ -1112,6 +1112,7 @@ body {
     font-size: var(--font-base);
     line-height: 1.85;
     -webkit-font-smoothing: antialiased;
+    transition: background-color .35s ease, color .35s ease;
     -moz-osx-font-smoothing: grayscale;
     transition: background 0.3s, color 0.3s;
 }
@@ -1425,6 +1426,7 @@ body.dark .toolbar-actions button kbd { background: rgba(255, 255, 255, 0.05); }
     background: var(--bg-soft);
     border-right: 1px solid var(--border);
     z-index: 50;
+    transition: background-color .35s ease, border-color .35s ease;
     transition: transform 0.3s ease;
 }
 
@@ -4481,6 +4483,33 @@ a:focus-visible {
         scroll-behavior: auto !important;
     }
     html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   打印模式 — 用户打印单章节成书, 保留代码块高亮
+   ============================================================ */
+@media print {
+    body { background: #fff !important; color: #000 !important; transition: none !important; font-size: 12pt; }
+    .sidebar, .toolbar, .bookshelf-sidebar, .command-palette, .kb-modal,
+    .selection-toolbar, .chapter-toc, .related-chapters, .completion-toggle,
+    .chap-nav, .chapter-end, .chapter-share-btn, .chapter-tts-btn,
+    .chapter-ribbon, .breadcrumb, .resume-carousel, .streak-heatmap,
+    .weekly-recap, .series-compare, .achievements, .kb-launcher,
+    .reading-progress, .navbar, .toast, .modal-backdrop {
+        display: none !important;
+    }
+    .chapter { break-inside: avoid; page-break-before: always; padding: 0; max-width: 100%; }
+    .chapter:first-of-type { page-break-before: avoid; }
+    .chapter-content { max-width: 100% !important; }
+    .chapter-title { font-size: 22pt !important; color: #000 !important; letter-spacing: 0 !important; }
+    .tldr-card { border: 1px solid #999 !important; background: #f5f5f5 !important; padding: 8px !important; break-inside: avoid; }
+    pre, code { white-space: pre-wrap !important; word-break: break-word !important; background: #f5f5f5 !important; color: #000 !important; border: 1px solid #ccc !important; }
+    .chapter-content pre code { color: #000 !important; }
+    .chapter-content pre .code-lang, .chapter-content pre .code-copy { display: none !important; }
+    a { color: #000 !important; text-decoration: underline !important; }
+    a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 90%; color: #666; }
+    h1, h2, h3, h4 { break-after: avoid; page-break-after: avoid; color: #000 !important; }
+    pre, blockquote, table { break-inside: avoid; }
 }
 
 /* ============================================================
