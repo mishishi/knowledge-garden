@@ -32,3 +32,6 @@ assets/audio/*.ogg
 assets/audio/*.flac
 assets/audio/*_analysis.png
 assets/audio/*_analysis.*
+
+# Jekyll/Hugo 导出 (按需生成, 不入仓)
+_jekyll_export/

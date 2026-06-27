@@ -579,6 +579,113 @@ def _kb_title_aliases(chapter_title: str) -> list:
     return [x for x in out if not (x in seen or seen.add(x))]
 
 
+def build_jekyll_export(books) -> None:
+    """导出为 Jekyll / Hugo 兼容的 Markdown 文件夹.
+
+    每个系列一个子目录, 每章一个 .md 文件, 含 frontmatter:
+        ---
+        title: "章节标题"
+        book: "系列名"
+        book_slug: series-slug
+        chapter_num: 03
+        chapter_slug: claude-code
+        tags: [ai, agents, ...]
+        layout: post (Jekyll) / 直接 md (Hugo)
+        ---
+
+    输出: D:/workspaces/mcode/knowledge-garden/_jekyll_export/
+
+    用法:
+        Jekyll: cp -r _jekyll_export/* ~/my-blog/_posts/ (需调 frontmatter date)
+        Hugo:  cp -r _jekyll_export/content ~/my-blog/content/
+    """
+    import shutil as _shutil
+    out_dir = ROOT / "_jekyll_export"
+    if out_dir.exists():
+        _shutil.rmtree(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    total = 0
+    # 写 README
+    readme = """# Jekyll / Hugo Export
+
+每个系列一个子目录, 每章一个 .md 文件, 带 frontmatter (Jekyll/Hugo 通用).
+
+## Jekyll 用法
+```bash
+cp -r _jekyll_export/_books/* ~/my-blog/_collections/books/
+# 在 _config.yml 加 collections 配置
+# collections:
+#   books:
+#     output: true
+#     permalink: /books/:path/
+```
+
+## Hugo 用法
+```bash
+cp -r _jekyll_export/_books/* ~/my-blog/content/books/
+```
+
+## Frontmatter
+- title: 章节标题
+- book: 所属系列名
+- book_slug: 系列 slug
+- chapter_num: 章号 (零填充)
+- chapter_slug: 章 slug
+- tags: 标签 (从系列 meta 提取)
+- date: 生成日期
+"""
+    (out_dir / "README.md").write_text(readme, encoding="utf-8")
+    # 每本书一个子目录
+    books_root = out_dir / "_books"
+    books_root.mkdir(exist_ok=True)
+    from datetime import date as _date
+    today = _date.today().isoformat()
+    for book_slug, meta, chapters in books:
+        book_title = meta.get("title", book_slug)
+        book_dir = books_root / book_slug
+        book_dir.mkdir(parents=True, exist_ok=True)
+        # 系列 index.md
+        idx_md = f"""---
+title: "{book_title}"
+slug: {book_slug}
+layout: default
+---
+
+{meta.get("description", "")}
+
+## 章节列表
+"""
+        for i, (cs, cp) in enumerate(chapters, 1):
+            md = cp.read_text(encoding="utf-8")
+            ct = chapter_display_title(md, cs)
+            idx_md += f"{i:02d}. [{ct}](./{cs}.md)\n"
+        (book_dir / "_index.md").write_text(idx_md, encoding="utf-8")
+        # 每章 .md
+        tags = meta.get("tags", [book_slug])
+        if not tags:
+            tags = [book_slug]
+        for i, (cs, cp) in enumerate(chapters, 1):
+            md = cp.read_text(encoding="utf-8")
+            ct = chapter_display_title(md, cs)
+            # 第一行 # 标题 替换成 frontmatter title 字段
+            # 其它原样保留 (用户拿到后用 jekyll/hugo 自己 render)
+            fm = f"""---
+title: "{ct}"
+book: "{book_title}"
+book_slug: {book_slug}
+chapter_num: {i:02d}
+chapter_slug: {cs}
+tags: [{', '.join(tags)}]
+date: {today}
+layout: post
+---
+
+"""
+            (book_dir / f"{cs}.md").write_text(fm + md, encoding="utf-8")
+            total += 1
+    print(f"导出 {out_dir} ({total} 章)")
+
+
 def build_knowledge_index(books) -> None:
     """生成 assets/knowledge_index.json — 浏览器 cosine 搜索用."""
     chunks = []
@@ -7715,14 +7822,61 @@ function setupLazyLoad() {
     }, { rootMargin: '600px 0px' });
     document.querySelectorAll('.chapter-body[data-load-book]').forEach(b => obs.observe(b));
 }
+
+// 处理 PWA shortcuts (manifest `?action=xxx`) 和 share_target 入参
+function handlePwaLaunch() {
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get('action');
+    if (!action) return;
+    // 等 DOM + lazy load 就绪再触发
+    setTimeout(() => {
+        if (action === 'qna') {
+            const btn = document.getElementById('kb-launcher');
+            if (btn) btn.click();
+        } else if (action === 'notes') {
+            const btn = document.getElementById('notes-btn');
+            if (btn) btn.click();
+        } else if (action === 'overview') {
+            showOverview();
+        } else if (action === 'share') {
+            // share_target: 收到外部分享 (URL/title/text)
+            const text = params.get('text') || params.get('title') || '';
+            const url = params.get('url') || '';
+            const full = (text + ' ' + url).trim();
+            if (full) {
+                const input = document.getElementById('kb-input');
+                if (input) {
+                    input.value = full;
+                    const btn = document.getElementById('kb-launcher');
+                    if (btn) btn.click();
+                    setTimeout(() => {
+                        const sb = document.getElementById('kb-search-btn');
+                        if (sb) sb.click();
+                    }, 200);
+                }
+            }
+        }
+        // 清掉 ?action=xxx 避免污染 URL
+        if (history.replaceState) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('action');
+            url.searchParams.delete('title');
+            url.searchParams.delete('text');
+            url.searchParams.delete('url');
+            history.replaceState(null, '', url.toString());
+        }
+    }, 300);
+}
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         setupLazyLoad();
         bootHashTarget();
+        handlePwaLaunch();
     });
 } else {
     setupLazyLoad();
     bootHashTarget();
+    handlePwaLaunch();
 }
 // 初始 hash 直跳 (刷新到 #chapter-xxx): 加载目标章节
 function bootHashTarget() {
@@ -11881,7 +12035,7 @@ def build_html():
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人知识库 · 多书阅读</title>
 
-    <link rel="manifest" href='data:application/json,{{"name":"个人知识库","short_name":"KB","start_url":"./","display":"standalone","background_color":"%23faf9f5","theme_color":"%23b08968","icons":[{{"src":"{PWA_ICON_DATA_URI}","sizes":"any","type":"image/svg+xml","purpose":"any"}}]}}'>
+    <link rel="manifest" href='data:application/json,{{"name":"个人知识库","short_name":"KB","description":"17 系列 175 章 AI/Agent 工程笔记","start_url":"./","display":"standalone","background_color":"%23faf9f5","theme_color":"%23b08968","icons":[{{"src":"{PWA_ICON_DATA_URI}","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}}],"shortcuts":[{{"name":"Q&A 知识问答","short_name":"Q&A","url":"./?action=qna","description":"搜 175 章找答案"}},{{"name":"笔记列表","short_name":"笔记","url":"./?action=notes","description":"看之前的高亮和笔记"}},{{"name":"Overview","short_name":"首页","url":"./?action=overview","description":"17 系列进度总览"}}],"share_target":{{"action":"./?action=share","method":"GET","enctype":"application/x-www-form-urlencoded","params":{{"title":"title","text":"text","url":"url"}}}}}}'>
     <link rel="icon" type="image/svg+xml" href='{PWA_ICON_DATA_URI}'>
     <link rel="apple-touch-icon" href='{PWA_ICON_DATA_URI}'>
     <link rel="sitemap" type="application/xml" href="sitemap.xml">
@@ -12290,6 +12444,9 @@ def build_html():
     build_sw()
     # 生成 per-chapter 静态页 (100 个, 每章专属 OG + 跳转 index.html#anchor)
     build_per_chapter_pages(books)
+    # 导出 Jekyll/Hugo (按 SKIP_JEKYLL=1 跳过)
+    if os.environ.get("SKIP_JEKYLL") != "1":
+        build_jekyll_export(books)
     # 生成 knowledge index (RAG 知识问答用 — TF-IDF 向量 + 章节 chunk)
     build_knowledge_index(books)
     # 生成 dense embedding index (sentence-transformers BGE 中文,浏览器 transformers.js)
