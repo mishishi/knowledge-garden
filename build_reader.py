@@ -372,6 +372,67 @@ Sitemap: {SITE_URL}sitemap.xml
     print(f"生成 {output}")
 
 
+def build_sw() -> None:
+    """生成 sw.js (PWA Service Worker).
+
+    - 安装时缓存根 index.html
+    - 激活时清掉旧 cache
+    - fetch 时 cache-on-demand: assets/ 目录下的 book JSON 首次下载后缓存, 二次访问秒开
+    - 离线时回退到根 index (PWA app shell)
+    """
+    output = ROOT / "sw.js"
+    sw_code = """// Knowledge Garden Service Worker
+// Bump CACHE version on every release to invalidate stale entries.
+const CACHE = 'knowledge-book-v3';
+
+self.addEventListener('install', e => {
+    e.waitUntil(
+        caches.open(CACHE).then(c => c.addAll(['./']))
+    );
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+    e.waitUntil(
+        caches.keys()
+            .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+            .then(() => self.clients.claim())
+    );
+});
+
+self.addEventListener('fetch', e => {
+    const req = e.request;
+    if (req.method !== 'GET') return;
+    const url = new URL(req.url);
+    // Cache same-origin GET only (skip cross-origin like CDN fonts).
+    if (url.origin !== self.location.origin) return;
+    // 哪些路径值得缓存: assets/ (book JSONs + search index + Q&A dense) + index.html + root
+    const isCacheable =
+        url.pathname.includes('/assets/') ||
+        url.pathname.endsWith('.html') ||
+        url.pathname === '/' || url.pathname.endsWith('/');
+    if (!isCacheable) return; // 非 cacheable 请求走默认网络
+    e.respondWith(
+        caches.match(req).then(cached => {
+            if (cached) return cached;
+            return fetch(req).then(resp => {
+                if (resp && resp.ok) {
+                    const clone = resp.clone();
+                    caches.open(CACHE).then(c => c.put(req, clone)).catch(() => {});
+                }
+                return resp;
+            }).catch(() => {
+                // 离线 fallback: SPA app shell
+                return caches.match('./');
+            });
+        })
+    );
+});
+"""
+    output.write_text(sw_code, encoding="utf-8")
+    print(f"生成 {output}")
+
+
 def chapter_display_title(md_text: str, fallback_slug: str) -> str:
     """从 markdown 第一个 # 标题取展示名，剥掉序号前缀。复用 build_html 内的逻辑。"""
     display = fallback_slug
@@ -6827,22 +6888,12 @@ renderNotesList();
 
 // PWA
 if ('serviceWorker' in navigator) {
-    const swCode = `
-        const CACHE = 'knowledge-book-v2';
-        self.addEventListener('install', e => {
-            e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./'])));
-            self.skipWaiting();
-        });
-        self.addEventListener('activate', e => {
-            e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
-        });
-        self.addEventListener('fetch', e => {
-            e.respondWith(caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('./'))));
-        });
-    `;
-    const blob = new Blob([swCode], { type: 'application/javascript' });
-    const swUrl = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(swUrl).catch(() => {});
+    // 同源文件 (build 阶段生成), 不用 blob URL (blob URL 不能作 SW, 旧版坏过)
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+        console.log('[SW] registered, scope:', reg.scope);
+    }).catch(err => {
+        console.warn('[SW] registration failed:', err.message);
+    });
 }
 
 let deferredPrompt = null;
@@ -11558,6 +11609,8 @@ def build_html():
     build_rss(books)
     # 生成 robots.txt
     build_robots()
+    # 生成 sw.js (PWA Service Worker, 同源文件, 不再用 blob URL)
+    build_sw()
     # 生成 per-chapter 静态页 (100 个, 每章专属 OG + 跳转 index.html#anchor)
     build_per_chapter_pages(books)
     # 生成 knowledge index (RAG 知识问答用 — TF-IDF 向量 + 章节 chunk)

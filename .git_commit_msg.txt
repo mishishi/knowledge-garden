@@ -1,18 +1,24 @@
-chore: 部署 fix + 清理 + smoke test
+fix(SW): PWA Service Worker 改用独立 sw.js (修原版 blob URL 永远注册不了)
 
-- **GitHub Actions 修**: pip install 加 numpy (dense embedding 需要, 之前漏)
-  - 没这个 build 步骤会 ImportError, deploy 失败
-- **清理**: tools/extract.js (临时 dev helper, 用完)
-- **smoke test**: tools/test_smoke.py — Playwright 端到端验证 11 项功能
-  1. overview 0 book fetch (lazy)
-  2. 直跳章节触发 1 fetch
-  3. Q&A modal 可开
-  4. 10 个 TTS 按钮 (cn-codex)
-  5. 章节 body lazy 加载
-  6. localStorage search history
-  7. 相关章节卡片
-  8. Streak 热度图
-  9. Resume carousel (无 lastRead 隐藏)
-  10. 面包屑
-  11. 章节 ribbon
-- **rss.xml / knowledge_index.json** auto-regen (时间戳 / chunk 权重)
+**这是真 bug — 之前 `knowledge-book-v2` SW 一直没注册成功**
+原因: blob URL 在主流浏览器不能用作 Service Worker script
+影响: PWA "添加到主屏幕" / 离线阅读从来没真正工作过
+
+修法:
+- Build 阶段 `build_sw()` 写 sw.js 到 ROOT
+- index.html 注册 `./sw.js` (同源)
+- SW cache 策略:
+  - install: 缓存根 index
+  - fetch: 同源 + assets/ + .html + / 才走 cache, 否则直接走网络
+  - cache-on-demand: 首次 fetch 的 response 写 cache, 二次访问秒开
+  - 离线 fallback: 回根 index (PWA app shell)
+- Bump CACHE 到 `knowledge-book-v3` 清理旧 cache
+
+新增 test (tools/test_sw_cache.py):
+- 首次访问, codex-cases.json 进 cache ✓
+- 阻断网络后 reload, chapter 01 body 仍加载 (2081 字符) ✓
+- 同书切到 chapter 02 也从 cache 取 (2963 字符) ✓
+- 切到不同书 (rag) 正确返回空 (网络阻断了) ✓
+- SW 跳过 cross-origin (字体 CDN) 不污染 cache
+
+性能: 用户访问一次后, 22.4 万字全本地 cache, 二次访问秒开. PWA 离线模式真正可用.

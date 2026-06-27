@@ -10,7 +10,7 @@ async def main():
         page.on("console", lambda m: None if m.type == "log" else print(f"  [{m.type}] {m.text}"))
 
         # 1. Open page
-        await page.goto("http://127.0.0.1:8765/index.html#overview", wait_until="domcontentloaded")
+        await page.goto("http://localhost:8000/index.html#overview", wait_until="domcontentloaded")
         await page.wait_for_timeout(800)
 
         # 2. Lazy load check: no book JSON fetched on overview
@@ -20,7 +20,7 @@ async def main():
         print(f"1. Overview book fetches: {len(requests)} (expected 0)")
 
         # 3. Direct chapter link triggers lazy load
-        await page.goto("http://127.0.0.1:8765/index.html#codex-cases__01-paradigm-shift", wait_until="domcontentloaded")
+        await page.goto("http://localhost:8000/index.html#codex-cases__01-paradigm-shift", wait_until="domcontentloaded")
         await page.wait_for_timeout(1500)
         print(f"2. Direct chapter jump fetches: {len(requests)}")
         for r in requests:
