@@ -3197,6 +3197,33 @@ body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
     margin: 0 0 16px;
     font-weight: 600;
 }
+.related-tabs {
+    display: flex;
+    gap: 4px;
+    margin: 0 0 14px 0;
+}
+.related-tabs .related-tab {
+    padding: 4px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-soft);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .12s;
+}
+.related-tabs .related-tab.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+}
+.related-graph {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+.related-graph a:hover circle { stroke: var(--text); stroke-width: 3; }
+
 .related-chapters-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -6202,6 +6229,7 @@ function kbDecodeChapterEmb(b64) {
     return new Float32Array(bytes.buffer);
 }
 
+// 渲染相关章节 (卡片 / 图谱 切换)
 async function renderRelatedChapters(chapterId) {
     const container = document.getElementById('related-chapters-' + chapterId);
     if (!container) return;
@@ -6225,18 +6253,61 @@ async function renderRelatedChapters(chapterId) {
     }
     scored.sort((a, b) => b.score - a.score);
     const top = scored.slice(0, 5);
+    if (top.length === 0) { container.style.display = 'none'; return; }
     const topScore = top[0].score || 1;
-    container.innerHTML = '<h3>相关章节</h3><div class="related-chapters-grid">' +
-        top.map(({ c, score }) => {
-            const bm = (typeof BOOK_META !== 'undefined' && BOOK_META[c.bookSlug]) || BOOKS_META[c.bookSlug] || {};
+    const view = (container.dataset.view === 'graph') ? 'graph' : 'cards';
+    const tabs = '<div class="related-tabs">' +
+        '<button class="related-tab' + (view === 'cards' ? ' active' : '') + '" data-view="cards">卡片</button>' +
+        '<button class="related-tab' + (view === 'graph' ? ' active' : '') + '" data-view="graph">图谱</button>' +
+        '</div>';
+    let body;
+    if (view === 'graph') {
+        // SVG 图谱: 当前章节在中心, 5 个相关在外圈, 边粗细 = 相关度
+        const cx = 150, cy = 130, R = 95;
+        const nodes = top.map(({ c, score }, i) => {
+            const angle = (i / top.length) * Math.PI * 2 - Math.PI / 2;
+            const x = cx + Math.cos(angle) * R;
+            const y = cy + Math.sin(angle) * R;
+            const bm = (BOOKS_META[c.bookSlug]) || {};
             const color = bm.color || '#b08968';
-            const rel = (score / topScore * 100).toFixed(0);
-            return '<a class="related-card" href="#' + c.id + '">' +
-                '<span class="related-card-book" style="color:' + color + '">' + c.bookTitle + '</span>' +
-                '<span class="related-card-title">' + c.chapterTitle + '</span>' +
-                '<span class="related-card-score">相关度 ' + rel + '%</span>' +
+            return { x, y, c, score, color };
+        });
+        const meTitle = me.chapterTitle.length > 20 ? me.chapterTitle.slice(0, 18) + '…' : me.chapterTitle;
+        const edges = nodes.map(n => '<line x1="' + cx + '" y1="' + cy + '" x2="' + n.x.toFixed(0) + '" y2="' + n.y.toFixed(0) + '" stroke="var(--accent)" stroke-width="' + (1 + (n.score / topScore) * 3).toFixed(1) + '" opacity="' + (0.3 + (n.score / topScore) * 0.5).toFixed(2) + '"/>').join('');
+        const dots = nodes.map(n => {
+            const title = n.c.chapterTitle.length > 16 ? n.c.chapterTitle.slice(0, 14) + '…' : n.c.chapterTitle;
+            return '<a href="#' + n.c.id + '">' +
+                '<circle cx="' + n.x.toFixed(0) + '" cy="' + n.y.toFixed(0) + '" r="22" fill="' + n.color + '" stroke="var(--bg)" stroke-width="2"/>' +
+                '<text x="' + n.x.toFixed(0) + '" y="' + (n.y + 38).toFixed(0) + '" text-anchor="middle" font-size="10" fill="var(--text-soft)">' + escapeAttr(title) + '</text>' +
                 '</a>';
-        }).join('') +
+        }).join('');
+        body = '<svg class="related-graph" viewBox="0 0 300 280" width="300" height="280">' +
+            edges +
+            '<circle cx="' + cx + '" cy="' + cy + '" r="34" fill="var(--accent)" stroke="var(--bg)" stroke-width="3"/>' +
+            '<text x="' + cx + '" y="' + (cy + 4) + '" text-anchor="middle" font-size="11" font-weight="600" fill="var(--bg)">本章</text>' +
+            '<text x="' + cx + '" y="' + (cy + 50) + '" text-anchor="middle" font-size="9" fill="var(--text-faint)">' + escapeAttr(meTitle) + '</text>' +
+            dots +
+            '</svg>';
+    } else {
+        body = '<div class="related-chapters-grid">' +
+            top.map(({ c, score }) => {
+                const bm = (BOOKS_META[c.bookSlug]) || {};
+                const color = bm.color || '#b08968';
+                const rel = (score / topScore * 100).toFixed(0);
+                return '<a class="related-card" href="#' + c.id + '">' +
+                    '<span class="related-card-book" style="color:' + color + '">' + c.bookTitle + '</span>' +
+                    '<span class="related-card-title">' + c.chapterTitle + '</span>' +
+                    '<span class="related-card-score">相关度 ' + rel + '%</span>' +
+                    '</a>';
+            }).join('') + '</div>';
+    }
+    container.innerHTML = '<h3>相关章节</h3>' + tabs + body;
+    container.querySelectorAll('.related-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            container.dataset.view = tab.dataset.view;
+            renderRelatedChapters(chapterId);
+        });
+    });
         '</div>';
 }
 // 当前 hash 改变时, 渲染对应章节的相关
