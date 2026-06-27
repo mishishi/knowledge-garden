@@ -1,20 +1,19 @@
-feat(achievements): 12 个里程碑 (章节/连续/笔记/书签/系列覆盖)
+fix(tier5): 7 个小 bug 集合 (#1-#7)
 
-Tier 三 #5: 长期激励机制
+Tier 五全部 7 项打包发:
 
-12 个成就 badge:
-- first-read / ten / fifty / hundred-read (累计读完章数)
-- streak-3 / 7 / 30 (连续天数, 用 completed 时间戳算)
-- notes-10 / 50 (笔记数)
-- bookmarks-5 (书签数)
-- all-books (访问过 17 系列)
-- half-pct (50% 章节)
+#1 dark mode mark 对比度 — 黄闪/高亮/搜索 mark 在暗色背景用 warm tan (rgba(196,168,124)) 代替纯黄, 文字 #f5e6c8
 
-实现:
-- ACHIEVEMENTS 数组 (id, name, desc, icon, test fn)
-- longestStreakDays() 用 completed 时间戳排序算连续天数
-- renderAchievements() 在 Overview 末尾渲染 grid, lock/unlock 状态切换
-- 持久化: localStorage kg_achievements (id → unlock timestamp)
-- 每次 render 检查新解锁, 写 localStorage
+#2 TTS 切章节自动停 — hashchange 监听里加 pause 旧 audio + reset btn
 
-UI: grid auto-fill 140px, unlocked 彩色 icon, locked 灰. 加在 streak-heatmap 下面.
+#3 Cmd+K 键盘导航增强 — active 加左边 3px accent 边 + Enter fallback 到第一项 (没 active 也能跳)
+
+#4 sidebar 默认展开 — body class 去掉 sidebar-collapsed, 用户首屏就看见书签/章节
+
+#5 sidebar 滚动性能 — book-group 加 content-visibility: auto + contain-intrinsic-size, 屏幕外跳过渲染, 17 系列滚动不卡
+
+#6 Empty state 引导文案 — 书签 / 笔记 空态加 icon + 步骤式 hint (1. 选中文字 2. 工具栏点收藏)
+
+#7 SW 更新提示 toast — reg.updatefound 监听新 SW installed, 右下弹"新版本已就绪 + 刷新"按钮; 点刷新通过 postMessage(SKIP_WAITING) 让新 SW 接管后 reload. sw.js 加 message 监听. bump CACHE v3→v4 清旧
+
+UX: 这些都是用户摸到才注意到的细节, 一起发减少 commit 噪音
