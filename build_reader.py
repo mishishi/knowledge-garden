@@ -947,6 +947,13 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
         "context-engineering": "做长 context agent 的人",
         "agent-skills": "想给 LLM 装可复用能力的人",
         "claude-code": "用 Claude Code / CLI 的人",
+        "vibe-coding": "想用自然语言写代码的非程序员",
+        "a2a-multi-agent": "做多 agent 协作架构的人",
+        "memory-architecture": "做长期记忆 / RAG 的人",
+        "embodied-agent": "机器人 / 具身智能研究者",
+        "ai-content-economy": "创作者 / 内容运营",
+        "codex-cases": "用 Codex 写代码的人",
+        "cn-codex": "用国产 AI 编程工具的人",
     }
     for slug, meta, chapters in books:
         chars = sum(count_words(p.read_text(encoding="utf-8")) for _, p in chapters)
@@ -954,9 +961,23 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
         level = meta.get("level", 3)
         level_dots = "●" * level + "○" * (5 - level)
         audience = AUDIENCE.get(slug, "")
+        # 章节展开列表
+        chap_items = []
+        for ci, (cs, cp) in enumerate(chapters, 1):
+            md = cp.read_text(encoding="utf-8")
+            ctitle = chapter_display_title(md, cs)
+            cchars = count_words(md)
+            cmins = max(1, cchars // 400)
+            chap_items.append(
+                f'<li><a href="#{slug}__{cs}"><span class="compare-ch-num">{ci:02d}</span>'
+                f'<span class="compare-ch-title">{ctitle}</span>'
+                f'<span class="compare-ch-time">{cmins} 分钟</span></a></li>'
+            )
         parts.append(
-            f'<tr>'
-            f'<td data-label="系列"><a href="#{slug}__{chapters[0][0]}" class="compare-book">'
+            f'<tr class="compare-row" data-slug="{slug}">'
+            f'<td data-label="系列">'
+            f'<button class="compare-expand" data-target="ch-{slug}" aria-label="展开章节">+</button>'
+            f'<a href="#{slug}__{chapters[0][0]}" class="compare-book">'
             f'<span class="compare-icon" style="color:{meta.get("color","#b08968")}">{svg_icon(meta.get("icon","book"), size=16)}</span>'
             f'{meta["title"]}'
             f'</a></td>'
@@ -964,13 +985,13 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
             f'<td data-label="章节">{len(chapters)}</td>'
             f'<td data-label="字数">{chars:,}</td>'
             f'<td data-label="预计">{mins} 分钟</td>'
-            f'<td class="compare-audience" data-label="适合谁">{audience}</td>'
-            f'</tr>'
+f'<td data-label="适合谁">{audience}</td>'
+f'</tr>'
+            f'<tr class="compare-chapters" id="ch-{slug}" hidden><td colspan="6"><ul class="compare-ch-list">'
+            + ''.join(chap_items) + '</ul></td></tr>'
         )
     parts.append('</tbody></table>')
     parts.append('</div>')
-    parts.append('</div>')
-
     parts.append('</section>')
     return "\n".join(parts)
 
@@ -2379,6 +2400,46 @@ body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 }
 .compare-table tr:last-child td { border-bottom: none; }
 .compare-table tr:hover td { background: var(--bg); }
+.compare-table .compare-expand {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-soft);
+    cursor: pointer;
+    margin-right: 6px;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    transition: all .12s;
+}
+.compare-table .compare-expand:hover { border-color: var(--accent); color: var(--accent); }
+.compare-table .compare-expand.open { background: var(--accent); color: var(--bg); border-color: var(--accent); transform: rotate(45deg); }
+.compare-table tr.compare-chapters td { padding: 0 12px 12px 36px; background: var(--bg-soft); }
+.compare-table .compare-ch-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 4px;
+}
+.compare-table .compare-ch-list li a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 12px;
+    transition: background .12s;
+}
+.compare-table .compare-ch-list li a:hover { background: var(--bg); }
+.compare-ch-num { color: var(--text-faint); font-family: Georgia, serif; min-width: 24px; }
+.compare-ch-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.compare-ch-time { color: var(--text-faint); font-size: 11px; }
 
 /* 系列对比表 - mobile 转卡片布局 */
 @media (max-width: 640px) {
@@ -11208,6 +11269,21 @@ commandInput.addEventListener('input', (e) => performSearch(e.target.value.trim(
 // 工具栏搜索按钮 → 打开命令面板
 const searchTriggerBtn = document.getElementById('search-trigger-btn');
 if (searchTriggerBtn) searchTriggerBtn.addEventListener('click', openCommandPalette);
+
+// 系列对比表: + 按钮展开章节列表
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.compare-expand');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const targetId = btn.dataset.target;
+    const target = document.getElementById(targetId);
+    if (!target) return;
+    const open = !target.hidden;
+    target.hidden = open;
+    btn.classList.toggle('open', !open);
+    btn.textContent = !open ? '×' : '+';
+});
 
 // 点击背景关闭
 commandPalette.addEventListener('click', (e) => {
