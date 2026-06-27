@@ -29,6 +29,7 @@ import json
 import re
 import time
 import os
+import numpy as _np
 from io import BytesIO
 from pathlib import Path
 from datetime import datetime, timezone
@@ -677,8 +678,40 @@ def build_dense_index(books) -> None:
         chunks_array.append(c["id"])
         chunks_array.append(emb_b64)
 
+    # 章节级平均 embedding (for "相关章节" feature)
+    # 175 章 × 512-dim = 350KB extra，base64 后 ~470KB
+    chapter_groups = {}  # chapterId -> { bookSlug, bookTitle, chapterTitle, vecs: [numpy arrays] }
+    for i, c in enumerate(chunks):
+        cid = c["chapterId"]
+        if cid not in chapter_groups:
+            chapter_groups[cid] = {
+                "bookSlug": c["bookSlug"],
+                "bookTitle": c["bookTitle"],
+                "chapterTitle": c["chapterTitle"],
+                "vecs": [],
+            }
+        chapter_groups[cid]["vecs"].append(embeddings[i])
+    chapters_array = []
+    for cid, info in chapter_groups.items():
+        # mean-pool: 平均所有 chunk 向量 (已经 L2-normalize, mean 近似保留语义)
+        stacked = _np.vstack(info["vecs"])
+        avg = stacked.mean(axis=0)
+        # 重新 L2 normalize
+        norm = _np.linalg.norm(avg)
+        if norm > 0:
+            avg = avg / norm
+        avg_bytes = avg.astype("<f4").tobytes()
+        avg_b64 = _base64_dense.b64encode(avg_bytes).decode("ascii")
+        chapters_array.append({
+            "id": cid,
+            "bookSlug": info["bookSlug"],
+            "bookTitle": info["bookTitle"],
+            "chapterTitle": info["chapterTitle"],
+            "embedding": avg_b64,
+        })
+
     index = {
-        "version": 1,
+        "version": 2,
         "model": "BAAI/bge-small-zh-v1.5",
         "dim": model.get_sentence_embedding_dimension(),
         "encoding": "float32-base64",  # chunks 是 [id1, emb1, id2, emb2, ...] 紧凑数组
@@ -686,6 +719,7 @@ def build_dense_index(books) -> None:
         "chunkSize": 500,
         "overlap": 80,
         "chunks": chunks_array,
+        "chapters": chapters_array,  # 175 个章节级 mean-pooled embedding
     }
 
     out = ROOT / "assets" / "knowledge_dense.json"
@@ -3756,6 +3790,59 @@ body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
     line-height: 1;
 }
 
+/* 章节底部"相关章节" */
+.related-chapters {
+    margin: 32px auto 24px;
+    padding: 24px 0;
+    max-width: 760px;
+    border-top: 1px dashed var(--border);
+}
+.related-chapters h3 {
+    font-size: 13px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 16px;
+    font-weight: 600;
+}
+.related-chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+.related-card {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 14px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color .15s, transform .15s;
+}
+.related-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+.related-card-book {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.related-card-title {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 6px;
+}
+.related-card-score {
+    font-size: 10px;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+}
+
 /* ============================================================
    章节底部 prev/next 导航
    ============================================================ */
@@ -5774,6 +5861,74 @@ function updateChapterProgress() {
 window.addEventListener('scroll', updateChapterProgress, { passive: true });
 window.addEventListener('resize', updateChapterProgress, { passive: true });
 setTimeout(updateChapterProgress, 100);
+
+// ============================================================
+// 章节底部"相关章节" — 复用 dense index 的 chapters 数组
+// 每章 mean-pooled embedding + 其他章 cosine top-5
+// 章节内显示 (但 TF-IDF 模式就能用 — 不需 AI 模型)
+// ============================================================
+async function loadRelatedChapters() {
+    if (_kbDenseIndex && _kbDenseIndex.chapters) return _kbDenseIndex;
+    try {
+        const idx = await fetch('assets/knowledge_dense.json').then(r => r.json());
+        _kbDenseIndex = idx;
+        return idx;
+    } catch (e) {
+        return null;
+    }
+}
+
+function kbDecodeChapterEmb(b64) {
+    const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    return new Float32Array(bytes.buffer);
+}
+
+async function renderRelatedChapters(chapterId) {
+    const container = document.getElementById('related-chapters-' + chapterId);
+    if (!container) return;
+    const idx = await loadRelatedChapters();
+    if (!idx || !idx.chapters) {
+        container.style.display = 'none';
+        return;
+    }
+    // 找当前 chapter 的 vector
+    const me = idx.chapters.find(c => c.id === chapterId);
+    if (!me) { container.style.display = 'none'; return; }
+    const myEmb = kbDecodeChapterEmb(me.embedding);
+    // 计算 top 5 (排除自己)
+    const scored = [];
+    for (const c of idx.chapters) {
+        if (c.id === chapterId) continue;
+        const e = kbDecodeChapterEmb(c.embedding);
+        let dot = 0;
+        for (let i = 0; i < 512; i++) dot += myEmb[i] * e[i];
+        scored.push({ c, score: dot });
+    }
+    scored.sort((a, b) => b.score - a.score);
+    const top = scored.slice(0, 5);
+    const topScore = top[0].score || 1;
+    container.innerHTML = '<h3>相关章节</h3><div class="related-chapters-grid">' +
+        top.map(({ c, score }) => {
+            const bm = (typeof BOOK_META !== 'undefined' && BOOK_META[c.bookSlug]) || BOOKS_META[c.bookSlug] || {};
+            const color = bm.color || '#b08968';
+            const rel = (score / topScore * 100).toFixed(0);
+            return '<a class="related-card" href="#' + c.id + '">' +
+                '<span class="related-card-book" style="color:' + color + '">' + c.bookTitle + '</span>' +
+                '<span class="related-card-title">' + c.chapterTitle + '</span>' +
+                '<span class="related-card-score">相关度 ' + rel + '%</span>' +
+                '</a>';
+        }).join('') +
+        '</div>';
+}
+// 当前 hash 改变时, 渲染对应章节的相关
+function maybeRenderRelated() {
+    const hash = window.location.hash;
+    if (!hash) return;
+    const m = hash.match(/^#([\w-]+(?:__[\w-]+)?)$/);
+    if (m) renderRelatedChapters(m[1]);
+}
+setTimeout(maybeRenderRelated, 200);
+window.addEventListener('hashchange', maybeRenderRelated);
 
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -10111,6 +10266,7 @@ def build_html():
                 f'</div>'
                 f'<div class="chapter-end">本章完</div>'
                 f'{chap_nav_html}'
+                f'<div class="related-chapters" id="related-chapters-{anchor}" data-chapter="{anchor}"></div>'
                 f'<button class="completion-toggle" data-chapter="{anchor}">'
                 f'<svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>'
                 f'标记为已读</button>'
