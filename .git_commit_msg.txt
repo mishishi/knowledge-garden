@@ -1,13 +1,16 @@
-feat(kb-history): Q&A 历史回看 + 时间显示 + 缓存结果
+feat(next-cta): floating 浮窗常态 + 系列完成庆祝
 
-UX #2: Q&A 搜索历史从纯文字升级, 点行可回看上次结果
+UX #3: next-action 升级
 
-- 存 {query, html, ts} 对象 (老 string[] 格式兼容, 第一次访问自动迁移)
-- 搜索后自动存 results.innerHTML 到 history
-- 点历史行 → 直接渲染缓存 HTML, 顶部 banner 提示从历史恢复
-- banner 有 "重新搜索" 按钮 (输入变化或想更新结果时用)
-- 显示相对时间 (刚刚 / 5 分钟前 / 2 天前 / 日期)
-- 状态提示: 已存结果 vs 再次搜索 (缓存缺失时)
-- 老数据平滑迁移
+- 常态: 右下角 56px 圆按钮, hover 放大
+- 滚到章节末尾 (300px 内) → 展开成完整 sticky bar 显示下一章标题
+- 系列末章: 显示 "本系列已读完" + 回到目录按钮
+- 每 3 秒扫一次所有章完成状态, 整本书读完触发 showSeriesCelebration()
+- localStorage kg_series_celebrated 记录已庆祝的, 不重复弹
 
-UX: 用户搜过 RAG → 2 天后再想看, 打开 Q&A modal 一眼回看, 不必重新跑 TF-IDF
+系列完成庆祝 modal:
+- 半透明 backdrop + blur, 居中卡片
+- 大 emoji 弹跳动画 (1.2s loop)
+- 20 个 confetti emoji 从顶部掉落到屏幕底 (2.5s)
+- 标题: 《XX》全本读完! + X 章 · 完成度 100%
+- 3 个 action: 看其他系列 / 导出 Jekyll / 关闭
