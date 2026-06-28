@@ -1,23 +1,13 @@
-feat(tier4): Jekyll/Hugo 导出 + PWA shortcuts/share_target
+feat(kb-history): Q&A 历史回看 + 时间显示 + 缓存结果
 
-Tier 四 #5 (导出 Jekyll/Hugo) + #6 (移动 App / PWA wrapper) — 纯前端可做的 2 项
+UX #2: Q&A 搜索历史从纯文字升级, 点行可回看上次结果
 
-**#5 Jekyll/Hugo 导出**:
-- build_jekyll_export(books) 生成 _jekyll_export/_books/<slug>/<chapter>.md
-- 每章带 frontmatter (title / book / book_slug / chapter_num / chapter_slug / tags / date / layout)
-- 每书 _index.md 列章节链接
-- 根 README.md 写 Jekyll/Hugo 用法 (cp -r 到 _collections/books 或 content/books)
-- SKIP_JEKYLL=1 环境变量跳过 (默认生成)
-- .gitignore 排除 _jekyll_export/ (按需生成)
+- 存 {query, html, ts} 对象 (老 string[] 格式兼容, 第一次访问自动迁移)
+- 搜索后自动存 results.innerHTML 到 history
+- 点历史行 → 直接渲染缓存 HTML, 顶部 banner 提示从历史恢复
+- banner 有 "重新搜索" 按钮 (输入变化或想更新结果时用)
+- 显示相对时间 (刚刚 / 5 分钟前 / 2 天前 / 日期)
+- 状态提示: 已存结果 vs 再次搜索 (缓存缺失时)
+- 老数据平滑迁移
 
-**#6 PWA shortcuts + share_target**:
-- manifest 加 3 个 shortcuts (Q&A / 笔记 / Overview) — 长按 app 图标弹出菜单
-- manifest 加 share_target (action=GET) — 接收其他 app 分享的链接/文本, 自动打开 Q&A 搜索
-- handlePwaLaunch() 解析 URL ?action=xxx, 触发对应功能
-- share action: 自动把分享的 text+url 塞进 Q&A 搜索框 + 触发搜索 (用户从其他 app 分享到本站, 直接看到结果)
-- 处理完用 history.replaceState 清掉参数, 避免污染 URL
-
-Tier 四 #2/#3/#4 跳过:
-- 多用户 + 云同步: 需后端 (auth + DB), side project 不划算
-- AI 章节总结: 需 LLM API (有 cost), 不是这次能搞的
-- 公开分享页 /u/{hash}: 需后端路由 + abuse 防御
+UX: 用户搜过 RAG → 2 天后再想看, 打开 Q&A modal 一眼回看, 不必重新跑 TF-IDF

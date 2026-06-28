@@ -1778,21 +1778,29 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     padding: 12px 22px 6px;
 }
 .kb-history-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding: 10px 22px;
     cursor: pointer;
     border-bottom: 1px solid var(--border);
     transition: background .12s;
+    position: relative;
 }
 .kb-history-row:hover { background: var(--bg-soft); }
 .kb-history-row:last-child { border-bottom: none; }
 .kb-history-q {
     font-size: 13px;
     color: var(--text);
+    font-weight: 500;
+}
+.kb-history-meta {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 2px;
 }
 .kb-history-x {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 22px;
     height: 22px;
     display: flex;
@@ -1804,6 +1812,27 @@ body.sidebar-collapsed .sidebar { transform: translateX(-300px); }
     line-height: 1;
 }
 .kb-history-x:hover { background: var(--bg); color: var(--text); }
+.kb-cached-banner {
+    padding: 8px 16px;
+    background: var(--accent-soft);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.kb-cached-research {
+    padding: 3px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 11px;
+    color: var(--text);
+    cursor: pointer;
+}
+.kb-cached-research:hover { border-color: var(--accent); color: var(--accent); }
 /* Q&A 跳章节时的黄色闪高亮 (2.5s 后自动拆掉) */
 @keyframes kb-flash {
     0% { background: rgba(255, 215, 0, 0.85); }
@@ -9480,6 +9509,8 @@ async function kbRunSearch() {
                 '</a>'
             );
         }).join('');
+        // 缓存完整 HTML 到历史 (点历史行可回看)
+        saveKbQuery(query, results.innerHTML);
     } catch (e) {
         results.innerHTML = '<div class="kb-empty">搜索失败：' + e.message + '</div>';
     }
@@ -9499,14 +9530,18 @@ function kbClose() {
     if (modal) modal.classList.remove('visible');
 }
 
-// Q&A 搜索历史 (localStorage 最近 8 条)
+// Q&A 搜索历史 (localStorage 最近 8 条, 含完整结果缓存, 可点回去查看)
 function getKbHistory() {
-    try { return JSON.parse(localStorage.getItem('kg_kb_history') || '[]'); } catch (e) { return []; }
+    try {
+        const raw = JSON.parse(localStorage.getItem('kg_kb_history') || '[]');
+        // 老格式 (string[]) 兼容: 转为对象
+        return raw.map(item => typeof item === 'string' ? { query: item, html: '', ts: 0 } : item);
+    } catch (e) { return []; }
 }
-function saveKbQuery(query) {
+function saveKbQuery(query, resultsHtml) {
     if (!query || query.length < 2) return;
-    let h = getKbHistory().filter(q => q !== query);
-    h.unshift(query);
+    let h = getKbHistory().filter(item => item.query !== query);
+    h.unshift({ query: query, html: resultsHtml || '', ts: Date.now() });
     if (h.length > 8) h = h.slice(0, 8);
     try { localStorage.setItem('kg_kb_history', JSON.stringify(h)); } catch (e) {}
 }
@@ -9518,28 +9553,60 @@ function renderKbHistory() {
         results.innerHTML = '<div class="kb-empty kb-hint">键入问题后回车。默认走 TF-IDF + 同义词扩展 + 标题加权,勾选 AI 语义搜索可加载 BGE 中文模型做 dense embedding 混合检索。</div>';
         return;
     }
-    const html = h.map((q, i) => '<div class="kb-history-row" data-query="' + escapeAttr(q) + '">' +
-        '<span class="kb-history-q">' + q + '</span>' +
-        '<span class="kb-history-x" data-remove="' + escapeAttr(q) + '">×</span>' +
-        '</div>').join('');
-    results.innerHTML = '<div class="kb-history-label">最近搜索</div>' + html;
+    const html = h.map((item, i) => {
+        const timeAgo = item.ts ? ' · ' + formatTimeAgo(item.ts) : '';
+        return '<div class="kb-history-row" data-idx="' + i + '">' +
+            '<div class="kb-history-q">' + escapeAttr(item.query) + '</div>' +
+            '<div class="kb-history-meta">' + (item.html ? '已存结果' : '再次搜索') + timeAgo + '</div>' +
+            '<span class="kb-history-x" data-remove="' + escapeAttr(item.query) + '">×</span>' +
+            '</div>';
+    }).join('');
+    results.innerHTML = '<div class="kb-history-label">最近搜索 (点行回看)</div>' + html;
 }
-// 委托: 点击历史行 → 回填 + 搜索; 点 × → 删除
+function formatTimeAgo(ts) {
+    const diff = Date.now() - ts;
+    if (diff < 60000) return '刚刚';
+    if (diff < 3600000) return Math.floor(diff / 60000) + ' 分钟前';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + ' 小时前';
+    if (diff < 7 * 86400000) return Math.floor(diff / 86400000) + ' 天前';
+    return new Date(ts).toLocaleDateString('zh-CN');
+}
+function renderKbCachedResult(query, cachedHtml) {
+    const results = document.getElementById('kb-results');
+    if (!results) return;
+    document.getElementById('kb-input').value = query;
+    if (cachedHtml && cachedHtml.length > 50) {
+        // 用缓存的 HTML 直接渲染
+        results.innerHTML = '<div class="kb-cached-banner">从历史恢复 (再按回车可重新搜索)<button class="kb-cached-research">重新搜索</button></div>' + cachedHtml;
+    } else {
+        // 没缓存, 触发重新搜索
+        kbRunSearch();
+    }
+}
+// 委托: 点击历史行 → 回看; 点 × → 删除
 document.addEventListener('click', (e) => {
     const x = e.target.closest('.kb-history-x');
     if (x) {
         e.preventDefault(); e.stopPropagation();
         const q = x.dataset.remove;
-        let h = getKbHistory().filter(item => item !== q);
+        let h = getKbHistory().filter(item => item.query !== q);
         try { localStorage.setItem('kg_kb_history', JSON.stringify(h)); } catch (e) {}
         renderKbHistory();
+        return;
+    }
+    const reBtn = e.target.closest('.kb-cached-research');
+    if (reBtn) {
+        e.preventDefault();
+        kbRunSearch();
         return;
     }
     const row = e.target.closest('.kb-history-row');
     if (row) {
         e.preventDefault();
-        document.getElementById('kb-input').value = row.dataset.query;
-        kbRunSearch();
+        const idx = parseInt(row.dataset.idx);
+        const h = getKbHistory();
+        const item = h[idx];
+        if (item) renderKbCachedResult(item.query, item.html);
     }
 });
 
