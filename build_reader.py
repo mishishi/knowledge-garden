@@ -2274,6 +2274,42 @@ body.dark mark.search-highlight { background: rgba(196, 168, 124, 0.25); color: 
 
 body.dark .sidebar-toggle { background: rgba(40, 40, 44, 0.85); }
 
+/* 移动端 hamburger + backdrop (桌面端隐藏) */
+.mobile-menu-btn {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 99;
+    width: 40px;
+    height: 40px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.mobile-menu-btn:hover { border-color: var(--accent); color: var(--accent); }
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 49;
+    opacity: 0;
+    transition: opacity .25s ease;
+    pointer-events: none;
+}
+body.mobile-sidebar-open .sidebar-backdrop {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+}
+body.mobile-sidebar-open .mobile-menu-btn { display: flex; }
+
 .content {
     max-width: 680px;
     margin: 0 auto;
@@ -4853,17 +4889,21 @@ a:focus-visible {
 }
 
 @media (max-width: 900px) {
-    .sidebar { transform: translateX(-300px); }
-    body:not(.sidebar-collapsed) .sidebar { transform: translateX(0); }
-    body:not(.sidebar-collapsed) .sidebar-toggle { left: 8px; right: auto; background: var(--accent); color: #fff; border-color: var(--accent); }
-    .content { padding: 80px 24px; max-width: 100%; }
+    /* 移动端: sidebar 收起到屏幕外, hamburger 唤出 */
+    .sidebar { transform: translateX(-100%); width: 280px; box-shadow: none; transition: transform .3s ease, box-shadow .3s ease; z-index: 51; }
+    body.mobile-sidebar-open .sidebar { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.18); }
+    .mobile-menu-btn { display: flex; }
+    .sidebar-toggle { display: none; } /* 移动端用 hamburger 替代 */
+    .content { padding: 70px 20px 40px; max-width: 100%; }
     .chapter-title { font-size: 1.8em; }
     .chapter-num { font-size: 12px; letter-spacing: 5px; }
     .book-cover h1 { font-size: 1.8em; }
     .toolbar { top: 8px; right: 8px; }
     #more-btn { width: 36px; height: 36px; }
     .toolbar-menu { min-width: 320px; max-width: calc(100vw - 32px); }
-    .sidebar-toggle { top: 8px; left: 8px; right: auto; }
+    /* TOC 移到内容流, 不再 sticky */
+    .chapter-toc { position: static; max-height: none; margin: 24px 0; padding: 16px; }
+    .chapter-toc .toc-list { max-height: 300px; overflow-y: auto; }
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -6499,6 +6539,29 @@ document.getElementById('sidebar-toggle').addEventListener('click', () => {
     const collapsed = document.body.classList.contains('sidebar-collapsed');
     localStorage.setItem('sidebarCollapsed', collapsed);
     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', String(!collapsed));
+});
+
+// 移动端 sidebar: hamburger 唤起 + backdrop 关闭
+function toggleMobileSidebar() {
+    const open = document.body.classList.toggle('mobile-sidebar-open');
+    document.getElementById('mobile-menu-btn')?.setAttribute('aria-expanded', String(open));
+    // 打开时锁滚动
+    document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeMobileSidebar() {
+    document.body.classList.remove('mobile-sidebar-open');
+    document.getElementById('mobile-menu-btn')?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+}
+const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeMobileSidebar);
+// 点击 sidebar 内任意 chapter link 自动关闭 (移动端)
+document.querySelector('.sidebar')?.addEventListener('click', (e) => {
+    if (e.target.closest('a') && window.innerWidth <= 900) {
+        setTimeout(closeMobileSidebar, 200);
+    }
 });
 
 if (localStorage.getItem('sidebarCollapsed') === 'true') {
@@ -12066,6 +12129,10 @@ def build_html():
     <div class="progress"></div>
     <a class="skip-link" href="#main-content">跳到正文</a>
     <button class="focus-exit" id="focus-exit" title="退出专注模式 (F)" aria-label="退出专注模式">{svg_icon('close', size=18)}</button>
+
+    <!-- 移动端 hamburger 按钮 (桌面端隐藏) -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn" title="目录 (S)" aria-label="打开章节导航" aria-expanded="false">{svg_icon('menu', size=20)}</button>
+    <div class="sidebar-backdrop" id="sidebar-backdrop" aria-hidden="true"></div>
 
     <button class="sidebar-toggle" id="sidebar-toggle" title="目录 (S)" aria-label="切换侧边栏" aria-expanded="false">{svg_icon('menu')} 书架</button>
 
