@@ -1,16 +1,27 @@
-feat(next-cta): floating 浮窗常态 + 系列完成庆祝
+feat(today): 顶部一屏 今日推荐 + 最近书签
 
-UX #3: next-action 升级
+UX #5: Overview hero 区下加 today-panel, 2 列布局
 
-- 常态: 右下角 56px 圆按钮, hover 放大
-- 滚到章节末尾 (300px 内) → 展开成完整 sticky bar 显示下一章标题
-- 系列末章: 显示 "本系列已读完" + 回到目录按钮
-- 每 3 秒扫一次所有章完成状态, 整本书读完触发 showSeriesCelebration()
-- localStorage kg_series_celebrated 记录已庆祝的, 不重复弹
+**今日推荐** (3 章, 跨书 ≤2 章/书):
+- 在读 (0 < p < 0.9) 优先于未读 (p=0), 跳过已读 (p≥0.9)
+- 仅在用户有活动 (lastRead / completed / 任一 p>0) 时才推荐, 全新用户不打扰
+- 1 数字 badge + 标题 + 系列名 + 进度百分比 (在读时)
 
-系列完成庆祝 modal:
-- 半透明 backdrop + blur, 居中卡片
-- 大 emoji 弹跳动画 (1.2s loop)
-- 20 个 confetti emoji 从顶部掉落到屏幕底 (2.5s)
-- 标题: 《XX》全本读完! + X 章 · 完成度 100%
-- 3 个 action: 看其他系列 / 导出 Jekyll / 关闭
+**最近书签** (≤3 条):
+- 拍平 localStorage.bookmarks (按 chapterId 嵌套), 按 ts desc 排序
+- 显示书签文字 (截 40 字符) 或 fallback 章节标题
+- 元信息: 系列名 + 相对时间 (formatRelativeTime)
+
+**布局**:
+- desktop: 1fr 1fr grid, gap 16px, max-width 960px
+- mobile (≤700px): 1 列堆叠
+- 整体在 hero 与 我的阅读 看板之间, 1 屏可见
+
+**边界 case 3 个**:
+- 完全无数据: 整个 panel display:none (carousel 也 hide, 不显示空 panel)
+- 只有书签无 progress: 1 列 (最近书签)
+- 只有 progress 无书签: 1 列 (今日推荐)
+- 都有: 2 列, 5 项
+
+测试: tools/test_today.py (有数据) + tools/test_today_empty.py (无数据) + smoke 加 9b 统计项
+截图: today_panel.png (desktop) + today_panel_mobile.png (390x800)

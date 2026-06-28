@@ -3345,6 +3345,209 @@ body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
     font-size: 18px;
     line-height: 1;
 }
+/* 顶部一屏"今天"面板: 今日推荐 + 最近书签 */
+.today-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 960px;
+    margin: 24px auto 0;
+    padding: 0;
+}
+.today-col {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: left;
+}
+.today-col-title {
+    font-size: 12px;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0 0 12px;
+    font-weight: 600;
+}
+.today-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border);
+    cursor: pointer;
+    transition: color .12s;
+    color: var(--text);
+    text-decoration: none;
+}
+.today-item:last-child { border-bottom: none; padding-bottom: 0; }
+.today-item:first-of-type { padding-top: 0; }
+.today-item:hover { color: var(--accent); }
+.today-item:hover .today-item-title { color: var(--accent); }
+.today-item-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+.today-item-body { flex: 1; min-width: 0; }
+.today-item-title {
+    font-size: 14px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.today-item-meta {
+    font-size: 11px;
+    color: var(--text-soft);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.today-empty {
+    font-size: 12px;
+    color: var(--text-soft);
+    padding: 4px 0 0;
+    text-align: center;
+    font-style: italic;
+}
+@media (max-width: 700px) {
+    .today-panel { grid-template-columns: 1fr; gap: 12px; }
+    .today-col { padding: 14px; }
+}
+/* Next 按钮: 常态 compact (右下角小圆), 滚到章节末尾扩展 */
+.next-chapter-cta {
+    bottom: 80px;
+    right: 24px;
+    left: auto;
+    transform: none;
+    padding: 12px 16px;
+    border-radius: 999px;
+    max-width: 56px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width .3s ease, padding .3s ease, box-shadow .3s ease, transform .3s ease;
+}
+.next-chapter-cta.expanded {
+    bottom: 24px;
+    right: 24px;
+    max-width: 90vw;
+    padding: 12px 20px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+}
+.next-chapter-cta .next-cta-label,
+.next-chapter-cta .next-cta-title {
+    transition: max-width .3s ease, opacity .3s ease;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+}
+.next-chapter-cta.expanded .next-cta-label,
+.next-chapter-cta.expanded .next-cta-title {
+    max-width: 280px;
+    opacity: 1;
+}
+.next-chapter-cta:hover:not(.expanded) { transform: scale(1.08); }
+/* 系列完成庆祝 modal */
+.series-celebration {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9997;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .4s ease;
+}
+.series-celebration.visible { opacity: 1; pointer-events: auto; }
+.sc-confetti {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 80px;
+    animation: sc-bounce 1.2s ease-in-out infinite;
+}
+@keyframes sc-bounce {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.15); }
+}
+.sc-title {
+    position: relative;
+    background: var(--bg);
+    color: var(--text);
+    padding: 60px 48px 24px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 460px;
+    margin-top: -20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.series-celebration .sc-title {
+    position: static;
+    padding: 60px 48px 24px;
+}
+.series-celebration {
+    flex-direction: column;
+}
+.sc-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+}
+.sc-sub {
+    font-size: 14px;
+    color: var(--text-soft);
+    margin-bottom: 24px;
+}
+.sc-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.sc-btn {
+    padding: 8px 18px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .12s;
+}
+.sc-btn:hover { border-color: var(--accent); color: var(--accent); }
+.sc-btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+}
+.sc-btn-primary:hover { opacity: 0.9; color: var(--bg); }
+.sc-confetti-piece {
+    position: absolute;
+    top: -40px;
+    font-size: 24px;
+    animation: sc-fall 2.5s ease-in forwards;
+    pointer-events: none;
+}
+@keyframes sc-fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
 
 /* 章节底部"相关章节" */
 .related-chapters {
@@ -5614,6 +5817,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <div class="overview-stat"><span class="num" id="overview-read-pct">0</span><span class="lbl">已读</span></div>
   </div>
   <div class="resume-carousel" id="resume-carousel" style="display:none"><div class="resume-carousel-track" id="resume-carousel-track"></div></div>
+<div class="today-panel" id="today-panel"></div>
 </div>
 <div class="personal-dashboard" id="personal-dashboard">
 <h2 class="dashboard-title">我的阅读</h2>
@@ -8303,6 +8507,96 @@ function renderResumeCarousel() {
     wrap.style.display = '';
 }
 
+// ============================================================
+// "今天"面板: 今日推荐 3 章 + 最近书签
+// 优先级: 在读 (0 < p < 0.9) > 未读 (p=0) > 已读 (p>=0.9 跳过)
+// 每书最多 2 章, 跨书 3 章
+// ============================================================
+function renderTodayPanel() {
+    const panel = document.getElementById('today-panel');
+    if (!panel) return;
+    const prog = JSON.parse(localStorage.getItem('progress') || '{}');
+    const readPct = (prog && prog.readPct) || {};
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '{}');
+
+    // 今日推荐: 在读优先, 其次未读
+    // 但仅在用户有活动时 (有在读 / 已读 / lastRead) 才推荐; 全新用户不打扰
+    const allChapters = (typeof CHAPTERS !== 'undefined' && Array.isArray(CHAPTERS)) ? CHAPTERS : [];
+    const hasActivity = prog.lastRead
+        || Object.keys(prog.completed || {}).length > 0
+        || Object.values(readPct).some(p => p > 0);
+    const candidates = [];
+    if (hasActivity) {
+        allChapters.forEach((ch, idx) => {
+            const id = ch.id || ch;
+            const p = readPct[id] || 0;
+            if (p >= 0.9) return; // 跳过已读
+            const book = (typeof CHAPTER_BOOK_MAP !== 'undefined') ? (CHAPTER_BOOK_MAP[id] || '') : '';
+            const perBookCount = candidates.filter(c => c.book === book).length;
+            if (perBookCount >= 2) return;
+            const prio = (p > 0 && p < 0.9) ? 2 : 1; // 在读 > 未读
+            const title = (typeof CHAPTER_TITLES_MAP !== 'undefined' && CHAPTER_TITLES_MAP[id]) || ch.title || id;
+            candidates.push({id, title, book, pct: p, prio, idx});
+        });
+        candidates.sort((a, b) => b.prio - a.prio || a.idx - b.idx);
+    }
+    const recommended = candidates.slice(0, 3);
+
+    // 最近书签: 拍平 + sort ts desc + 3
+    const bmList = [];
+    Object.keys(bookmarks).forEach(chId => {
+        const list = bookmarks[chId] || [];
+        list.forEach(bm => {
+            bmList.push({chapterId: chId, text: bm.text || '', ts: bm.timestamp || 0, idx: bm.idx || 0});
+        });
+    });
+    bmList.sort((a, b) => b.ts - a.ts);
+    const recent = bmList.slice(0, 3);
+
+    if (recommended.length === 0 && recent.length === 0) {
+        panel.style.display = 'none';
+        return;
+    }
+    panel.style.display = '';
+
+    let html = '';
+    if (recommended.length > 0) {
+        html += '<div class="today-col">';
+        html += '<h3 class="today-col-title">今日推荐</h3>';
+        recommended.forEach((c, i) => {
+            const meta = (typeof BOOKS_META !== 'undefined' && BOOKS_META[c.book]) || {};
+            const bookTitle = meta.title || c.book;
+            const pctTxt = c.pct > 0 ? ' · ' + Math.round(c.pct * 100) + '%' : '';
+            html += '<a class="today-item" href="#' + escapeHtml(c.id) + '">'
+                  + '<div class="today-item-num">' + (i + 1) + '</div>'
+                  + '<div class="today-item-body">'
+                  +   '<div class="today-item-title">' + escapeHtml(c.title) + '</div>'
+                  +   '<div class="today-item-meta">' + escapeHtml(bookTitle) + pctTxt + '</div>'
+                  + '</div></a>';
+        });
+        html += '</div>';
+    }
+    if (recent.length > 0) {
+        html += '<div class="today-col">';
+        html += '<h3 class="today-col-title">最近书签</h3>';
+        recent.forEach((b, i) => {
+            const title = (typeof CHAPTER_TITLES_MAP !== 'undefined' && CHAPTER_TITLES_MAP[b.chapterId]) || b.chapterId;
+            const book = (typeof CHAPTER_BOOK_MAP !== 'undefined' && CHAPTER_BOOK_MAP[b.chapterId]) || '';
+            const bookTitle = ((typeof BOOKS_META !== 'undefined' && BOOKS_META[book]) || {}).title || book;
+            const ago = b.ts ? formatRelativeTime(b.ts) : '';
+            const text = b.text ? b.text.slice(0, 40) : '';
+            html += '<a class="today-item" href="#' + escapeHtml(b.chapterId) + '">'
+                  + '<div class="today-item-num">' + (i + 1) + '</div>'
+                  + '<div class="today-item-body">'
+                  +   '<div class="today-item-title">' + escapeHtml(text || title) + '</div>'
+                  +   '<div class="today-item-meta">' + escapeHtml(bookTitle) + (ago ? ' · ' + ago : '') + '</div>'
+                  + '</div></a>';
+        });
+        html += '</div>';
+    }
+    panel.innerHTML = html;
+}
+
 function renderOverview() {
     // 1. 章节 marker (✓ / ◐ / ○)
     document.querySelectorAll('.ov-ch-marker').forEach(el => {
@@ -8403,6 +8697,9 @@ function renderOverview() {
 
     // 4. 继续阅读 carousel (1 个 primary + 2-3 个 pick up next)
     renderResumeCarousel();
+
+    // 4b. 今日推荐 + 最近书签
+    renderTodayPanel();
 
     // 5. 学习路径 (基于 reading history / RELATED / 7 天书签 / 7 天笔记 / priority)
     renderLearningPath();
@@ -9463,17 +9760,46 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ============================================================
-// 读完 CTA: 滚到章节末尾 → 底部弹出 "继续读下一章" sticky bar
-// - 找当前 active chapter, 距离底部 < 300px → 显示
-// - 离开 (scroll up) → 隐藏
+// Next 浮窗 + 章节末尾 CTA:
+// - 永远在右下角的 small 圆按钮 (FAB), 显示下一章
+// - 滚到章节末尾 (300px 内) → 扩展成 sticky bar 显示完整标题
+// - 没有下一章 (系列末) → 显示"回到目录"按钮
+// - 全部完成最后章 → 触发系列完成庆祝
 // ============================================================
 (function() {
-    let cta = document.createElement('div');
+    const cta = document.createElement('div');
     cta.className = 'next-chapter-cta';
-    cta.innerHTML = '<span class="next-cta-label">继续读下一章</span><span class="next-cta-title"></span><span class="next-cta-arrow">→</span>';
+    cta.innerHTML = '<span class="next-cta-label">下一章</span><span class="next-cta-title"></span><span class="next-cta-arrow">→</span>';
     cta.style.display = 'none';
     document.body.appendChild(cta);
+
+    // 检测整本书是否完成 (用于系列完成庆祝)
+    function checkSeriesCompletion() {
+        const allChapters = document.querySelectorAll('article.chapter[data-book]');
+        const completed = new Set(Object.keys(progress.completed || {}));
+        // 按书分组, 检查是否所有章都完成
+        const byBook = {};
+        allChapters.forEach(c => {
+            const b = c.dataset.book;
+            if (!byBook[b]) byBook[b] = { total: 0, done: 0, slug: b };
+            byBook[b].total++;
+            if (completed.has(c.id)) byBook[b].done++;
+        });
+        for (const [slug, stat] of Object.entries(byBook)) {
+            if (stat.total > 0 && stat.done === stat.total) {
+                // 这本书刚完成? (用 localStorage 记录已庆祝的)
+                const celebrated = JSON.parse(localStorage.getItem('kg_series_celebrated') || '{}');
+                if (!celebrated[slug]) {
+                    celebrated[slug] = Date.now();
+                    localStorage.setItem('kg_series_celebrated', JSON.stringify(celebrated));
+                    showSeriesCelebration(slug);
+                    return;  // 一次只庆祝一个
+                }
+            }
+        }
+    }
     let currentActive = null;
+    let isExpanded = false;
     function update() {
         const chapters = document.querySelectorAll('article.chapter');
         const center = window.scrollY + window.innerHeight * 0.7;
@@ -9484,26 +9810,80 @@ document.addEventListener('keydown', (e) => {
             if (center >= top && center < bot) { active = art; break; }
         }
         if (!active) { cta.style.display = 'none'; return; }
-        // 距离章节底部 < 300px 才显示
+        // 距离章节底部 < 300px 才展开 (否则显示 compact FAB)
         const distToEnd = (active.offsetTop + active.offsetHeight) - (window.scrollY + window.innerHeight);
-        if (distToEnd > 300) { cta.style.display = 'none'; return; }
-        // 找下一章
+        const shouldExpand = distToEnd <= 300;
+        if (active !== currentActive) {
+            currentActive = active;
+            isExpanded = false;
+        }
+        // 找下一章 (可能没有 = 系列末)
         const nextLink = active.querySelector('.chap-nav-next');
-        if (!nextLink) { cta.style.display = 'none'; return; }
-        const title = nextLink.querySelector('.chap-nav-title')?.textContent || '下一章';
-        if (active === currentActive) return;  // 同一章不更新
-        currentActive = active;
+        const overviewLink = active.querySelector('.chap-nav-overview');
+        if (!nextLink && !overviewLink) { cta.style.display = 'none'; return; }
+        const isSeriesEnd = !nextLink && !!overviewLink;
+        const title = isSeriesEnd
+            ? '回到目录 / 下一本'
+            : (nextLink?.querySelector('.chap-nav-title')?.textContent || '下一章');
+        const label = isSeriesEnd ? '本系列已读完' : '下一章';
+        cta.querySelector('.next-cta-label').textContent = label;
         cta.querySelector('.next-cta-title').textContent = title;
+        // 切换 expanded class
+        if (shouldExpand !== isExpanded) {
+            isExpanded = shouldExpand;
+            cta.classList.toggle('expanded', isExpanded);
+        }
         cta.style.display = 'flex';
         cta.onclick = (e) => {
             e.preventDefault();
-            nextLink.click();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const target = nextLink || overviewLink;
+            if (target) {
+                target.click();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         };
     }
     window.addEventListener('scroll', update, { passive: true });
     setTimeout(update, 200);
+    // 每 3 秒检测一次系列完成 (因为 scroll 不触发 complete 检测)
+    setInterval(checkSeriesCompletion, 3000);
 })();
+
+// 系列完成庆祝 (大动画 + confetti emoji)
+function showSeriesCelebration(slug) {
+    const bookTitle = (BOOKS_META[slug] && BOOKS_META[slug].title) || slug;
+    const totalChapters = document.querySelectorAll(`article.chapter[data-book="${slug}"]`).length;
+    let modal = document.getElementById('series-celebration');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'series-celebration';
+        modal.className = 'series-celebration';
+        document.body.appendChild(modal);
+    }
+    modal.innerHTML = `
+        <div class="sc-confetti">🎉</div>
+        <div class="sc-title">《${escapeAttr(bookTitle)}》全本读完!</div>
+        <div class="sc-sub">${totalChapters} 章 · 完成度 100%</div>
+        <div class="sc-actions">
+            <a class="sc-btn sc-btn-primary" href="#overview">看其他系列</a>
+            <a class="sc-btn" href="#" id="sc-jekyll">导出 Jekyll / Hugo</a>
+            <button class="sc-btn sc-btn-close">关闭</button>
+        </div>
+    `;
+    modal.classList.add('visible');
+    // confetti animation
+    for (let i = 0; i < 20; i++) {
+        const c = document.createElement('div');
+        c.className = 'sc-confetti-piece';
+        c.textContent = ['🎉', '✨', '🌟', '🎊', '⭐'][i % 5];
+        c.style.left = (Math.random() * 100) + 'vw';
+        c.style.animationDelay = (Math.random() * 0.5) + 's';
+        modal.appendChild(c);
+    }
+    modal.querySelector('.sc-btn-close').addEventListener('click', () => {
+        modal.classList.remove('visible');
+    });
+}
 
 // overview-mode 切换：只看首页 TOC
 function showOverview() {

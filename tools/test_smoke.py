@@ -61,6 +61,11 @@ async def main():
         carousel = await page.evaluate("document.getElementById('resume-carousel')?.style.display")
         print(f"9. Resume carousel display: '{carousel}' (expected 'none' if no lastRead)")
 
+        # 11b. Today panel (data from existing localStorage, count varies)
+        today = await page.evaluate("document.querySelectorAll('#today-panel .today-item').length")
+        today_cols = await page.evaluate("document.querySelectorAll('#today-panel .today-col').length")
+        print(f"9b. Today panel items: {today} (cols: {today_cols})")
+
         # 12. Breadcrumb
         bc = await page.query_selector("#codex-cases__01-paradigm-shift .breadcrumb")
         print(f"10. Breadcrumb exists: {bc is not None}")
