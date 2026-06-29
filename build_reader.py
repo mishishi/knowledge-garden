@@ -4595,9 +4595,10 @@ body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
-    max-width: 960px;
+    max-width: 800px;
     margin: 24px auto 0;
-    padding: 0;
+    padding: 0 12px;
+    box-sizing: border-box;
 }
 .today-col {
     background: var(--bg-soft);
