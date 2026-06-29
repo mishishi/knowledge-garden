@@ -171,6 +171,7 @@ ICONS = {
     'volume-x': '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>',
     'qr':       '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/>',
     'disc':     '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><path d="M6 12c0-1.7 1.3-3 3-3"/>',
+    'bar-chart':'<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/><line x1="3" y1="20" x2="21" y2="20"/>',
     'coin':     '<circle cx="12" cy="12" r="9"/><path d="M12 6v12"/><path d="M15.5 9.5C15.5 8.5 14 8 12 8s-3.5.5-3.5 1.8c0 1.3 1.5 1.7 3.5 1.9 2 .2 3.5.6 3.5 1.9 0 1.3-1.5 2-3.5 2s-3.5-.7-3.5-2"/>',
     'rocket':   '<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
     'stack':    '<rect x="3" y="3" width="18" height="6" rx="1"/><rect x="3" y="9" width="18" height="6" rx="1"/><rect x="3" y="15" width="18" height="6" rx="1"/>',
@@ -934,32 +935,9 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     parts.append('<div class="today-panel" id="today-panel"></div>')
     parts.append('</div>')
 
-    # ---- 个人数据看板（运行时由 JS 填） ----
-    parts.append('<div class="personal-dashboard" id="personal-dashboard">')
-    parts.append('<h2 class="dashboard-title">我的阅读</h2>')
-    parts.append('<div class="dashboard-grid">')
-    parts.append('<div class="dashboard-card"><div class="d-num" id="d-read-count">0</div><div class="d-lbl">已读章节</div></div>')
-    parts.append('<div class="dashboard-card"><div class="d-num" id="d-reading-count">0</div><div class="d-lbl">在读</div></div>')
-    parts.append('<div class="dashboard-card"><div class="d-num" id="d-time-spent">0</div><div class="d-lbl">累计分钟</div></div>')
-    parts.append('<div class="dashboard-card"><div class="d-num" id="d-notes-count">0</div><div class="d-lbl">笔记数</div></div>')
-    parts.append('<div class="dashboard-card"><div class="d-num" id="d-bookmarks-count">0</div><div class="d-lbl">书签数</div></div>')
-    parts.append('<div class="dashboard-card"><div class="d-num" id="d-streak-days">0</div><div class="d-lbl">连续天数</div></div>')
-    parts.append('</div>')
-    parts.append('<div class="dashboard-streak" id="dashboard-streak"></div>')
-    parts.append('<div class="weekly-goal" id="weekly-goal">')
-    parts.append('<div class="weekly-goal-header"><span class="weekly-goal-title">本周阅读目标</span>')
-    parts.append('<button class="weekly-goal-edit" id="weekly-goal-edit" title="调整目标">编辑</button></div>')
-    parts.append('<div class="weekly-goal-progress">')
-    parts.append('<div class="weekly-goal-bar"><div class="weekly-goal-fill" id="weekly-goal-fill"></div></div>')
-    parts.append('<div class="weekly-goal-text"><span id="weekly-goal-current">0 分钟</span> · <span id="weekly-goal-percent">0%</span> · <span id="weekly-goal-target">目标 3 小时</span></div>')
-    parts.append('<div class="review-queue" id="review-queue" style="display:none"></div>')
-    parts.append('</div>')
-    parts.append('</div>')
-    # Streak 热度图 (GitHub-style) — 过去 16 周
-    parts.append('<div class="streak-heatmap" id="streak-heatmap"></div>')
-    # 里程碑 / 成就
-    parts.append('<div class="achievements" id="achievements"></div>')
-    parts.append('</div>')
+    # ---- 我的进度 popover (默认隐藏, 浮动按钮唤起) ----
+    # 4 sections: 我的阅读 / 本周目标 / 16周热力图 / 里程碑
+    # HTML 在 build_overview_html 之外 (放 body 末尾) — 这里是占位说明.
 
     # ---- 5 个 series 卡片 ----
     for book_idx, (book_slug, meta, chapters) in enumerate(books):
@@ -5971,6 +5949,152 @@ body.dark .help-modal .help-row kbd { background: rgba(255, 255, 255, 0.06); }
     transition: opacity 0.2s;
 }
 .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+
+/* 我的进度 popover (含 dashboard / weekly-goal / heatmap / achievements) */
+.progress-popover {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    z-index: 1001;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 24px 24px;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.progress-popover.visible { opacity: 1; pointer-events: auto; }
+body.progress-popover-open { overflow: hidden; }
+.progress-popover-backdrop {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+}
+.progress-popover-content {
+    position: relative;
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 16px;
+    max-width: 920px;
+    width: 100%;
+    max-height: calc(100vh - 84px);
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    padding: 0 0 32px;
+    transform: translateY(-12px);
+    transition: transform 0.2s;
+}
+.progress-popover.visible .progress-popover-content { transform: translateY(0); }
+.progress-popover-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 28px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+}
+.progress-popover-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.progress-popover-header h2 svg { color: var(--accent); }
+.progress-popover-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--text-soft);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    line-height: 1;
+}
+.progress-popover-close:hover { background: var(--bg-soft); color: var(--text); }
+/* 在 popover 内: dashboard / weekly-goal / heatmap / achievements 撑开 */
+.progress-popover-content .personal-dashboard {
+    padding: 24px 28px 0;
+    margin: 0;
+    text-align: left;
+}
+.progress-popover-content .dashboard-title { display: none; }
+.progress-popover-content .dashboard-grid { grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.progress-popover-content .dashboard-streak { margin-top: 24px; }
+.progress-popover-content .weekly-goal { margin-top: 24px; }
+.progress-popover-content .streak-heatmap { margin-top: 24px; }
+.progress-popover-content .achievements { margin-top: 24px; }
+
+/* 浮动按钮: 我的进度 */
+.progress-fab {
+    position: fixed;
+    bottom: 100px;
+    right: 24px;
+    z-index: 998;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px 12px 14px;
+    background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.35), 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform .15s, box-shadow .15s;
+    user-select: none;
+}
+.progress-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(217, 119, 6, 0.45), 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+.progress-fab:active { transform: translateY(0); }
+.progress-fab-icon { display: inline-flex; align-items: center; }
+.progress-fab-icon svg { stroke: #fff; }
+.progress-fab-text { white-space: nowrap; }
+.progress-fab-badge {
+    background: #fff;
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.progress-fab-badge[data-empty="1"] { display: none; }
+
+@media (max-width: 700px) {
+    .progress-fab {
+        bottom: 80px;
+        right: 16px;
+        padding: 10px 14px 10px 12px;
+        font-size: 13px;
+    }
+    .progress-fab-text { display: none; }
+    .progress-popover { padding: 24px 12px; }
+    .progress-popover-content { max-height: calc(100vh - 48px); }
+    .progress-popover-content .personal-dashboard { padding: 16px; }
+    .progress-popover-content .dashboard-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+}
 .modal-content {
     background: var(--bg);
     color: var(--text);
@@ -8532,7 +8656,78 @@ function renderAchievements() {
             setTimeout(() => showCompletionCelebration = showCompletionCelebration, 0); // noop
         });
     }
+    // 同步 progress-fab badge: 显示 "已解锁 N / 总 12"
+    const fabBadge = document.getElementById('progress-fab-badge');
+    if (fabBadge) {
+        const unlocked = ACHIEVEMENTS.filter(a => unlockedAt[a.id]).length;
+        const total = ACHIEVEMENTS.length;
+        if (unlocked > 0) {
+            fabBadge.textContent = unlocked + '/' + total;
+            fabBadge.setAttribute('data-empty', '0');
+        } else {
+            fabBadge.setAttribute('data-empty', '1');
+        }
+    }
 }
+
+// ============================================================
+// 我的进度 popover (右下角浮动按钮唤起)
+// ============================================================
+function openProgressPopover() {
+    const pop = document.getElementById('progress-popover');
+    if (!pop) return;
+    pop.classList.add('visible');
+    pop.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('progress-popover-open');
+    // 重渲 (确保最新数据)
+    if (typeof renderRecap === 'function') renderRecap();
+    if (typeof renderStreakHeatmap === 'function') renderStreakHeatmap();
+    if (typeof renderAchievements === 'function') renderAchievements();
+    if (typeof refreshWeeklyGoal === 'function') refreshWeeklyGoal();
+    // 更新 d-num 数字
+    updateDashboardCounters();
+}
+function closeProgressPopover() {
+    const pop = document.getElementById('progress-popover');
+    if (!pop) return;
+    pop.classList.remove('visible');
+    pop.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('progress-popover-open');
+}
+function updateDashboardCounters() {
+    const prog = JSON.parse(localStorage.getItem('progress') || '{}');
+    // 笔记/书签都从 localStorage 读 (不依赖 window.notes, 避免 reload 后空数组)
+    const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+    const bm = JSON.parse(localStorage.getItem('bookmarks') || '{}');
+    const bookmarks = Object.values(bm).reduce((s, arr) => s + (arr ? arr.length : 0), 0);
+    const readPct = prog.readPct || {};
+    const completed = prog.completed || {};
+    let read = 0, reading = 0, timeSpent = 0;
+    if (typeof CHAPTERS !== 'undefined') {
+        CHAPTERS.forEach(ch => {
+            const id = ch.id || ch;
+            const p = readPct[id] || 0;
+            if (completed[id] || p >= 0.9) read++;
+            else if (p > 0) reading++;
+        });
+    }
+    Object.values(prog.timeSpent || {}).forEach(v => { timeSpent += v || 0; });
+    const longest = (typeof longestStreakDays === 'function') ? longestStreakDays() : 0;
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('d-read-count', read);
+    set('d-reading-count', reading);
+    set('d-time-spent', timeSpent);
+    set('d-notes-count', notes.length);
+    set('d-bookmarks-count', bookmarks);
+    set('d-streak-days', longest);
+}
+document.getElementById('progress-fab')?.addEventListener('click', openProgressPopover);
+document.querySelectorAll('[data-progress-close]').forEach(el => {
+    el.addEventListener('click', closeProgressPopover);
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeProgressPopover();
+});
 
 function refreshWeeklyGoal(daily) {
     const fill = document.getElementById('weekly-goal-fill');
@@ -13147,6 +13342,47 @@ def build_html():
         {overview_html}
         {''.join(content_parts)}
     </main>
+
+    <!-- 我的进度 popover (默认隐藏, 浮动按钮唤起) -->
+    <div class="progress-popover" id="progress-popover" aria-hidden="true">
+        <div class="progress-popover-backdrop" data-progress-close></div>
+        <div class="progress-popover-content" role="dialog" aria-label="我的阅读进度">
+            <div class="progress-popover-header">
+                <h2>{svg_icon('bar-chart', size=20)} 我的阅读进度</h2>
+                <button class="progress-popover-close" data-progress-close aria-label="关闭">×</button>
+            </div>
+            <div class="personal-dashboard" id="personal-dashboard">
+                <h2 class="dashboard-title">我的阅读</h2>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card"><div class="d-num" id="d-read-count">0</div><div class="d-lbl">已读章节</div></div>
+                    <div class="dashboard-card"><div class="d-num" id="d-reading-count">0</div><div class="d-lbl">在读</div></div>
+                    <div class="dashboard-card"><div class="d-num" id="d-time-spent">0</div><div class="d-lbl">累计分钟</div></div>
+                    <div class="dashboard-card"><div class="d-num" id="d-notes-count">0</div><div class="d-lbl">笔记数</div></div>
+                    <div class="dashboard-card"><div class="d-num" id="d-bookmarks-count">0</div><div class="d-lbl">书签数</div></div>
+                    <div class="dashboard-card"><div class="d-num" id="d-streak-days">0</div><div class="d-lbl">连续天数</div></div>
+                </div>
+                <div class="dashboard-streak" id="dashboard-streak"></div>
+                <div class="weekly-goal" id="weekly-goal">
+                    <div class="weekly-goal-header"><span class="weekly-goal-title">本周阅读目标</span>
+                    <button class="weekly-goal-edit" id="weekly-goal-edit" title="调整目标">编辑</button></div>
+                    <div class="weekly-goal-progress">
+                        <div class="weekly-goal-bar"><div class="weekly-goal-fill" id="weekly-goal-fill"></div></div>
+                        <div class="weekly-goal-text"><span id="weekly-goal-current">0 分钟</span> · <span id="weekly-goal-percent">0%</span> · <span id="weekly-goal-target">目标 3 小时</span></div>
+                        <div class="review-queue" id="review-queue" style="display:none"></div>
+                    </div>
+                </div>
+                <div class="streak-heatmap" id="streak-heatmap"></div>
+                <div class="achievements" id="achievements"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 浮动按钮: 唤起 我的进度 popover -->
+    <button class="progress-fab" id="progress-fab" title="我的阅读进度 / 里程碑 / 16周热力图">
+        <span class="progress-fab-icon">{svg_icon('bar-chart', size=22)}</span>
+        <span class="progress-fab-text">我的进度</span>
+        <span class="progress-fab-badge" id="progress-fab-badge">0</span>
+    </button>
 
     <!-- 开发者彩蛋面板：连按 5 次 ? 开启 -->
     <aside id="dev-panel" class="dev-panel" role="dialog" aria-label="\u5f00\u53d1\u8005\u70ed\u529b\u56fe" aria-modal="false">
