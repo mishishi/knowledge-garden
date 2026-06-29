@@ -7,6 +7,62 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/01-why.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/02-basics.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/03-chapter.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/04-chapter.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/05-llm.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/06-chapter.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/07-chapter.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/08-chapter.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/09-in-practicecases.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/10-chapter.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/</loc>
     <lastmod>2026-06-29</lastmod>
     <changefreq>weekly</changefreq>

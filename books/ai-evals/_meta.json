@@ -1,0 +1,21 @@
+{
+  "title": "AI Evals 实战",
+  "description": "工程师实战手册: 30 天搭建可靠 AI 评估体系",
+  "icon": "qr",
+  "color": "#ec4899",
+  "priority": 1,
+  "level": 3,
+  "level_name": "进阶",
+  "order": [
+    "01-why",
+    "02-basics",
+    "03-chapter",
+    "04-chapter",
+    "05-llm",
+    "06-chapter",
+    "07-chapter",
+    "08-chapter",
+    "09-in-practicecases",
+    "10-chapter"
+  ]
+}
