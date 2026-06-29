@@ -279,6 +279,17 @@ body.dark .toolbar-menu { background: rgba(28, 28, 30, 0.95); }
     text-transform: uppercase;
     font-weight: 500;
 }
+.t-section {
+    padding: 6px 0 0;
+}
+.t-section-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
 .t-btns {
     display: flex;
     gap: 4px;
@@ -5514,55 +5525,61 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     </div>
 
     <div class="toolbar" role="toolbar" aria-label="工具栏">
-        <button id="more-btn" title="工具" aria-label="工具菜单"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <button id="more-btn" title="设置与工具" aria-label="设置与工具菜单"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
         <div class="toolbar-menu" id="toolbar-menu">
-            <div class="toolbar-grid">
-                <div class="t-row">
-                    <div class="t-group">
-                        <span class="t-lbl">字号</span>
-                        <div class="t-btns">
-                            <button class="opt-btn font-btn" data-size="small" title="小字号 (-)">A−</button>
-                            <button class="opt-btn font-btn" data-size="medium" title="中字号">A</button>
-                            <button class="opt-btn font-btn" data-size="large" title="大字号 (+)">A+</button>
+            <div class="t-section">
+                <div class="t-section-label">设置</div>
+                <div class="toolbar-grid">
+                    <div class="t-row">
+                        <div class="t-group">
+                            <span class="t-lbl">字号</span>
+                            <div class="t-btns">
+                                <button class="opt-btn font-btn" data-size="small" title="小字号 (-)">A−</button>
+                                <button class="opt-btn font-btn" data-size="medium" title="中字号">A</button>
+                                <button class="opt-btn font-btn" data-size="large" title="大字号 (+)">A+</button>
+                            </div>
+                        </div>
+                        <div class="t-group">
+                            <span class="t-lbl">宽度</span>
+                            <div class="t-btns">
+                                <button class="opt-btn width-btn" data-width="narrow" title="窄">窄</button>
+                                <button class="opt-btn width-btn" data-width="medium" title="中">中</button>
+                                <button class="opt-btn width-btn" data-width="wide" title="宽">宽</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="t-group">
-                        <span class="t-lbl">宽度</span>
-                        <div class="t-btns">
-                            <button class="opt-btn width-btn" data-width="narrow" title="窄">窄</button>
-                            <button class="opt-btn width-btn" data-width="medium" title="中">中</button>
-                            <button class="opt-btn width-btn" data-width="wide" title="宽">宽</button>
+                    <div class="t-row">
+                        <div class="t-group">
+                            <span class="t-lbl">字体</span>
+                            <div class="t-btns">
+                                <button class="opt-btn fam-btn" data-fam="serif" title="衬线">衬</button>
+                                <button class="opt-btn fam-btn" data-fam="sans" title="无衬线">黑</button>
+                                <button class="opt-btn fam-btn" data-fam="mono" title="等宽">等</button>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="t-row">
-                    <div class="t-group">
-                        <span class="t-lbl">字体</span>
-                        <div class="t-btns">
-                            <button class="opt-btn fam-btn" data-fam="serif" title="衬线">衬</button>
-                            <button class="opt-btn fam-btn" data-fam="sans" title="无衬线">黑</button>
-                            <button class="opt-btn fam-btn" data-fam="mono" title="等宽">等</button>
-                        </div>
-                    </div>
-                    <div class="t-group">
-                        <span class="t-lbl">主题</span>
-                        <div class="t-btns">
-                            <button class="opt-btn theme-btn" data-theme="light" title="亮">亮</button>
-                            <button class="opt-btn theme-btn" data-theme="dark" title="暗">暗</button>
-                            <button class="opt-btn theme-btn" data-theme="sepia" title="羊皮纸">纸</button>
-                            <button class="opt-btn theme-btn" data-theme="green" title="护眼绿">绿</button>
+                        <div class="t-group">
+                            <span class="t-lbl">主题</span>
+                            <div class="t-btns">
+                                <button class="opt-btn theme-btn" data-theme="light" title="亮">亮</button>
+                                <button class="opt-btn theme-btn" data-theme="dark" title="暗">暗</button>
+                                <button class="opt-btn theme-btn" data-theme="sepia" title="羊皮纸">纸</button>
+                                <button class="opt-btn theme-btn" data-theme="green" title="护眼绿">绿</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="toolbar-divider"></div>
-            <div class="toolbar-actions">
-                <button id="search-trigger-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>搜索</span><kbd>⌘K</kbd></button>
-                <button id="music-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>背景音乐</span><kbd>M</kbd></button>
-                <button id="notes-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg><span>笔记</span><kbd>N</kbd></button>
-                <button id="progress-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg><span>阅读进度</span><kbd>P</kbd></button>
-                <button id="qr-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/></svg><span>扫码阅读</span><kbd>Q</kbd></button>
-                <button id="dark-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span>暗色模式</span><kbd>D</kbd></button>
+            <div class="t-section">
+                <div class="t-section-label">工具</div>
+                <div class="toolbar-actions">
+                    <button id="search-trigger-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>搜索</span><kbd>⌘K</kbd></button>
+                    <button id="music-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span>背景音乐</span><kbd>M</kbd></button>
+                    <button id="notes-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg><span>笔记</span><kbd>N</kbd></button>
+                    <button id="progress-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="8 12 11 15 16 9"/></svg><span>阅读进度</span><kbd>P</kbd></button>
+                    <button id="qr-btn"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M5 5h.01"/><path d="M19 5h.01"/><path d="M5 19h.01"/><line x1="10" y1="5" x2="14" y2="5"/><line x1="10" y1="19" x2="14" y2="19"/><line x1="19" y1="10" x2="19" y2="14"/><line x1="5" y1="10" x2="5" y2="14"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/><line x1="10" y1="14" x2="10" y2="10"/></svg><span>扫码阅读</span><kbd>Q</kbd></button>
+                    <button id="dark-btn" style="display:none" aria-hidden="true"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><span>暗色模式</span><kbd>D</kbd></button>
+                </div>
             </div>
         </div>
     </div>

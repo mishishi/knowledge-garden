@@ -1,27 +1,15 @@
-feat(today): 顶部一屏 今日推荐 + 最近书签
+feat(settings): 顶部 menu 加 设置/工具 分区 + 去重
 
-UX #5: Overview hero 区下加 today-panel, 2 列布局
+UX #6: 已有 toolbar-menu 之前把 字号/宽度/字体/主题 + 5 个 action 全堆一起,
+没有视觉分隔, 入口 title 还叫"工具" (用户找不到设置入口).
 
-**今日推荐** (3 章, 跨书 ≤2 章/书):
-- 在读 (0 < p < 0.9) 优先于未读 (p=0), 跳过已读 (p≥0.9)
-- 仅在用户有活动 (lastRead / completed / 任一 p>0) 时才推荐, 全新用户不打扰
-- 1 数字 badge + 标题 + 系列名 + 进度百分比 (在读时)
+**3 个改动**:
 
-**最近书签** (≤3 条):
-- 拍平 localStorage.bookmarks (按 chapterId 嵌套), 按 ts desc 排序
-- 显示书签文字 (截 40 字符) 或 fallback 章节标题
-- 元信息: 系列名 + 相对时间 (formatRelativeTime)
+1. 入口 title: "工具" → "设置与工具" (明示菜单包含什么)
+2. 分区: 加 .t-section + .t-section-label, 上面"设置"区 (字号/宽度/字体/主题 4 组),
+   下面"工具"区 (搜索/音乐/笔记/进度/QR 5 个 action), 中间 divider
+3. 去重: 移除"暗色模式"按钮 (重复于主题=暗), 
+   元素保留但 display:none 让键盘 'D' 快捷键仍工作
 
-**布局**:
-- desktop: 1fr 1fr grid, gap 16px, max-width 960px
-- mobile (≤700px): 1 列堆叠
-- 整体在 hero 与 我的阅读 看板之间, 1 屏可见
-
-**边界 case 3 个**:
-- 完全无数据: 整个 panel display:none (carousel 也 hide, 不显示空 panel)
-- 只有书签无 progress: 1 列 (最近书签)
-- 只有 progress 无书签: 1 列 (今日推荐)
-- 都有: 2 列, 5 项
-
-测试: tools/test_today.py (有数据) + tools/test_today_empty.py (无数据) + smoke 加 9b 统计项
-截图: today_panel.png (desktop) + today_panel_mobile.png (390x800)
+测试: tools/test_settings.py + tools/test_settings_mobile.py
+截图: settings_panel_only.png (desktop) + settings_panel_mobile.png (390px)
