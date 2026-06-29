@@ -4887,7 +4887,11 @@ body.progress-popover-open { overflow: hidden; }
 .progress-popover-content .streak-heatmap { margin-top: 24px; }
 .progress-popover-content .achievements { margin-top: 24px; }
 
-/* 浮动按钮: 今天 (今日推荐 + 最近书签) */
+/* 浮动按钮: 今天 (今日推荐 + 最近书签) — 跟 progress-fab 强制等宽 */
+.today-fab, .progress-fab {
+    width: 168px;
+    box-sizing: border-box;
+}
 .today-fab {
     position: fixed;
     bottom: 160px;
@@ -4895,6 +4899,7 @@ body.progress-popover-open { overflow: hidden; }
     z-index: 998;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 12px 18px 12px 14px;
     background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
@@ -5020,7 +5025,7 @@ body.progress-popover-open { overflow: hidden; }
     .today-popover-content .today-panel { padding: 16px; }
 }
 
-/* 浮动按钮: 我的进度 */
+/* 浮动按钮: 我的进度 — 跟 today-fab 强制等宽 (在前面 .today-fab, .progress-fab 共享规则) */
 .progress-fab {
     position: fixed;
     bottom: 100px;
@@ -5028,6 +5033,7 @@ body.progress-popover-open { overflow: hidden; }
     z-index: 998;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 12px 18px 12px 14px;
     background: linear-gradient(135deg, var(--accent) 0%, #d97706 100%);
@@ -5066,13 +5072,16 @@ body.progress-popover-open { overflow: hidden; }
 .progress-fab-badge[data-empty="1"] { display: none; }
 
 @media (max-width: 700px) {
-    .progress-fab {
-        bottom: 80px;
+    /* 2 个 FAB 移动端同尺寸: width 110 + padding 12 = 134 总宽 */
+    .today-fab, .progress-fab {
+        width: 110px;
         right: 16px;
         padding: 10px 14px 10px 12px;
         font-size: 13px;
     }
-    .progress-fab-text { display: none; }
+    .today-fab { bottom: 132px; }
+    .progress-fab { bottom: 80px; }
+    .today-fab-text, .progress-fab-text { display: none; }
     .progress-popover { padding: 24px 12px; }
     .progress-popover-content { max-height: calc(100vh - 48px); }
     .progress-popover-content .personal-dashboard { padding: 16px; }
