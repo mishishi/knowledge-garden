@@ -931,8 +931,8 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
         '<div class="resume-carousel-track" id="resume-carousel-track"></div>'
         '</div>'
     )
-    # "今天" panel: 今日推荐 3 章 + 最近书签 (JS 填)
-    parts.append('<div class="today-panel" id="today-panel"></div>')
+    # "今天" panel: 今日推荐 3 章 + 最近书签
+    # 移到 today-popover (右下方浮动按钮唤起) — 这里不放
     parts.append('</div>')
 
     # ---- 我的进度 popover (默认隐藏, 浮动按钮唤起) ----
@@ -4568,7 +4568,7 @@ body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
     font-size: 18px;
     line-height: 1;
 }
-/* 顶部一屏"今天"面板: 今日推荐 + 最近书签 */
+/* 顶部一屏"今天"面板: 今日推荐 + 最近书签 (默认在 popover 内, 居中 800px) */
 .today-panel {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -6033,6 +6033,139 @@ body.progress-popover-open { overflow: hidden; }
 .progress-popover-content .weekly-goal { margin-top: 24px; }
 .progress-popover-content .streak-heatmap { margin-top: 24px; }
 .progress-popover-content .achievements { margin-top: 24px; }
+
+/* 浮动按钮: 今天 (今日推荐 + 最近书签) */
+.today-fab {
+    position: fixed;
+    bottom: 160px;
+    right: 24px;
+    z-index: 998;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px 12px 14px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.35), 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform .15s, box-shadow .15s;
+    user-select: none;
+}
+.today-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px rgba(14, 165, 233, 0.45), 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+.today-fab:active { transform: translateY(0); }
+.today-fab-icon { display: inline-flex; align-items: center; }
+.today-fab-icon svg { stroke: #fff; }
+.today-fab-text { white-space: nowrap; }
+.today-fab-badge {
+    background: #fff;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.today-fab-badge[data-empty="1"] { display: none; }
+/* "今天" popover (复用 modal-overlay 风格) */
+.today-popover {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    z-index: 1001;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 24px 24px;
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+.today-popover.visible { opacity: 1; pointer-events: auto; }
+.today-popover-backdrop {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+}
+.today-popover-content {
+    position: relative;
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 16px;
+    max-width: 800px;
+    width: 100%;
+    max-height: calc(100vh - 84px);
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    padding: 0 0 32px;
+    transform: translateY(-12px);
+    transition: transform 0.2s;
+}
+.today-popover.visible .today-popover-content { transform: translateY(0); }
+.today-popover-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 28px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+}
+.today-popover-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.today-popover-header h2 svg { color: #0ea5e9; }
+.today-popover-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: var(--text-soft);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    line-height: 1;
+}
+.today-popover-close:hover { background: var(--bg-soft); color: var(--text); }
+.today-popover-content .today-panel {
+    padding: 24px 28px 0;
+    margin: 0;
+    max-width: none;
+}
+
+@media (max-width: 700px) {
+    .today-fab {
+        bottom: 132px;
+        right: 16px;
+        padding: 10px 14px 10px 12px;
+        font-size: 13px;
+    }
+    .today-fab-text { display: none; }
+    .today-popover { padding: 24px 12px; }
+    .today-popover-content { max-height: calc(100vh - 48px); }
+    .today-popover-content .today-panel { padding: 16px; }
+}
 
 /* 浮动按钮: 我的进度 */
 .progress-fab {
@@ -8726,7 +8859,7 @@ document.querySelectorAll('[data-progress-close]').forEach(el => {
     el.addEventListener('click', closeProgressPopover);
 });
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeProgressPopover();
+    if (e.key === 'Escape') { closeProgressPopover(); closeTodayPopover(); }
 });
 
 function refreshWeeklyGoal(daily) {
@@ -9226,7 +9359,42 @@ function renderTodayPanel() {
         html += '</div>';
     }
     panel.innerHTML = html;
+    // 同步 today-fab badge: 显示 "推荐 + 书签" 总数 (空时隐藏)
+    const fabBadge = document.getElementById('today-fab-badge');
+    if (fabBadge) {
+        const total = (recommended?.length || 0) + (recent?.length || 0);
+        if (total > 0) {
+            fabBadge.textContent = total;
+            fabBadge.setAttribute('data-empty', '0');
+        } else {
+            fabBadge.setAttribute('data-empty', '1');
+        }
+    }
 }
+
+// ============================================================
+// "今天" popover (右下角浮动按钮唤起, 装 今日推荐+最近书签)
+// ============================================================
+function openTodayPopover() {
+    const pop = document.getElementById('today-popover');
+    if (!pop) return;
+    pop.classList.add('visible');
+    pop.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('today-popover-open');
+    // 重新渲染最新数据
+    if (typeof renderTodayPanel === 'function') renderTodayPanel();
+}
+function closeTodayPopover() {
+    const pop = document.getElementById('today-popover');
+    if (!pop) return;
+    pop.classList.remove('visible');
+    pop.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('today-popover-open');
+}
+document.getElementById('today-fab')?.addEventListener('click', openTodayPopover);
+document.querySelectorAll('[data-today-close]').forEach(el => {
+    el.addEventListener('click', closeTodayPopover);
+});
 
 // ============================================================
 // 反思区: 每本书底部 toggle, 自动摘要 + 个人 takeaway
@@ -13343,6 +13511,18 @@ def build_html():
         {''.join(content_parts)}
     </main>
 
+    <!-- "今天" popover (默认隐藏, 浮动按钮唤起) -->
+    <div class="today-popover" id="today-popover" aria-hidden="true">
+        <div class="today-popover-backdrop" data-today-close></div>
+        <div class="today-popover-content" role="dialog" aria-label="今天读什么">
+            <div class="today-popover-header">
+                <h2>{svg_icon('calendar', size=20)} 今天读什么</h2>
+                <button class="today-popover-close" data-today-close aria-label="关闭">×</button>
+            </div>
+            <div class="today-panel" id="today-panel"></div>
+        </div>
+    </div>
+
     <!-- 我的进度 popover (默认隐藏, 浮动按钮唤起) -->
     <div class="progress-popover" id="progress-popover" aria-hidden="true">
         <div class="progress-popover-backdrop" data-progress-close></div>
@@ -13376,6 +13556,13 @@ def build_html():
             </div>
         </div>
     </div>
+
+    <!-- 浮动按钮: 唤起 今天 popover (在 我的进度 上方) -->
+    <button class="today-fab" id="today-fab" title="今日推荐 + 最近书签">
+        <span class="today-fab-icon">{svg_icon('calendar', size=22)}</span>
+        <span class="today-fab-text">今天</span>
+        <span class="today-fab-badge" id="today-fab-badge" data-empty="1">0</span>
+    </button>
 
     <!-- 浮动按钮: 唤起 我的进度 popover -->
     <button class="progress-fab" id="progress-fab" title="我的阅读进度 / 里程碑 / 16周热力图">
