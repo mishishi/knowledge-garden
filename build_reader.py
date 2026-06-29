@@ -1012,6 +1012,21 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
                 f'</a></li>'
             )
         parts.append('  </ol>')
+        # 反思区: 自动摘要 + 个人 takeaway (localStorage kg_takeaways[bookSlug])
+        parts.append(
+            '<div class="reflection-zone">'
+            '<button class="reflection-toggle" data-reflection-toggle="' + book_slug + '">'
+            '<span class="reflection-toggle-label">反思</span>'
+            '<span class="reflection-toggle-icon">+</span>'
+            '</button>'
+            '<div class="reflection-panel" data-reflection-panel="' + book_slug + '" hidden>'
+            '<div class="reflection-summary" data-reflection-summary="' + book_slug + '"></div>'
+            '<textarea class="reflection-text" data-reflection-text="' + book_slug + '" '
+            'placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea>'
+            '<div class="reflection-meta" data-reflection-meta="' + book_slug + '"></div>'
+            '</div>'
+            '</div>'
+        )
         parts.append('</article>')
 
     # ============================================================
@@ -3620,6 +3635,71 @@ body.dark .review-grade-btn { background: #1f1f24; }
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 4px 24px;
 }
+/* 反思区: 每本书卡片底部 */
+.reflection-zone {
+    margin-top: 16px;
+    border-top: 1px dashed var(--border);
+    padding-top: 12px;
+}
+.reflection-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: var(--text-soft);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+    font-family: inherit;
+}
+.reflection-toggle:hover { color: var(--accent); }
+.reflection-toggle-icon {
+    font-size: 14px;
+    line-height: 1;
+    transition: transform .2s;
+}
+.reflection-toggle.open .reflection-toggle-icon { transform: rotate(45deg); }
+.reflection-toggle.has-takeaway::after {
+    content: '●';
+    color: var(--accent);
+    font-size: 8px;
+    margin-left: 4px;
+}
+.reflection-panel {
+    margin-top: 10px;
+    padding: 12px;
+    background: var(--bg-soft);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+.reflection-summary {
+    font-size: 12px;
+    color: var(--text-soft);
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+.reflection-summary strong { color: var(--text); font-weight: 600; }
+.reflection-text {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 60px;
+}
+.reflection-text:focus { outline: none; border-color: var(--accent); }
+.reflection-meta {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    text-align: right;
+}
 
 .overview-chapters li {
     min-width: 0;
@@ -5474,6 +5554,29 @@ body.dark .resume-toast { background: #2a2a2e; border-color: #444; }
     cursor: pointer;
     font-size: 18px;
     color: var(--text-soft);
+}
+.notes-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.notes-panel-actions button {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--text-soft);
+    transition: background .12s, color .12s;
+}
+.notes-panel-actions button:hover {
+    background: var(--bg-soft);
+    color: var(--accent);
+}
+.notes-panel-actions svg {
+    width: 16px;
+    height: 16px;
 }
 
 .notes-search {
@@ -8929,6 +9032,103 @@ function renderTodayPanel() {
     panel.innerHTML = html;
 }
 
+// ============================================================
+// 反思区: 每本书底部 toggle, 自动摘要 + 个人 takeaway
+// - takeaways 存 localStorage.kg_takeaways[bookSlug]
+// - 自动摘要从 progress / notes 算: 已读 X/Y 章 + 完成度 % + 笔记数 + 累计分钟
+// ============================================================
+function getTakeaways() {
+    try { return JSON.parse(localStorage.getItem('kg_takeaways') || '{}'); }
+    catch { return {}; }
+}
+function saveTakeaways(t) {
+    localStorage.setItem('kg_takeaways', JSON.stringify(t));
+}
+function renderReflections() {
+    const prog = JSON.parse(localStorage.getItem('progress') || '{}');
+    const readPct = prog.readPct || {};
+    const completed = prog.completed || {};
+    const timeSpent = prog.timeSpent || {};
+    const notes = (typeof window.notes !== 'undefined' && Array.isArray(window.notes))
+        ? window.notes
+        : JSON.parse(localStorage.getItem('notes') || '[]');
+    const takeaways = getTakeaways();
+
+    document.querySelectorAll('.reflection-zone').forEach(zone => {
+        const slug = zone.querySelector('[data-reflection-toggle]')?.dataset.reflectionToggle;
+        if (!slug) return;
+        const chapters = (typeof CHAPTERS_BY_BOOK !== 'undefined' && CHAPTERS_BY_BOOK[slug]) || [];
+        const total = chapters.length;
+        const done = chapters.filter(id => completed[id] || (readPct[id] || 0) >= 0.9).length;
+        const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        const mins = chapters.reduce((sum, id) => sum + (timeSpent[id] || 0), 0);
+        const noteCount = notes.filter(n => n.bookSlug === slug).length;
+        const summaryEl = zone.querySelector('[data-reflection-summary]');
+        const summaryParts = [];
+        summaryParts.push('<strong>' + done + ' / ' + total + '</strong> 章已读 · 完成度 ' + pct + '%');
+        if (mins > 0) summaryParts.push(' · 累计 ' + mins + ' 分钟');
+        if (noteCount > 0) summaryParts.push(' · ' + noteCount + ' 条笔记');
+        if (done === total && total > 0) summaryParts.unshift('🎉 <strong>已读完本系列</strong> · ');
+        summaryEl.innerHTML = summaryParts.join('');
+
+        const tEl = zone.querySelector('[data-reflection-text]');
+        const metaEl = zone.querySelector('[data-reflection-meta]');
+        const existing = takeaways[slug] || '';
+        if (tEl.value !== existing) tEl.value = existing;
+        if (existing) {
+            metaEl.textContent = '已保存 · ' + new Date(takeaways[slug + '_ts'] || Date.now()).toLocaleDateString('zh-CN');
+        } else {
+            metaEl.textContent = '';
+        }
+        // 标记有 takeaway 的 toggle
+        const toggle = zone.querySelector('[data-reflection-toggle]');
+        toggle.classList.toggle('has-takeaway', !!existing);
+    });
+
+    // toggle 点击 (用一次性的事件代理)
+    if (!renderReflections._bound) {
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-reflection-toggle]');
+            if (!btn) return;
+            const panel = btn.parentElement.querySelector('[data-reflection-panel]');
+            const open = panel.hasAttribute('hidden');
+            if (open) {
+                panel.removeAttribute('hidden');
+                btn.classList.add('open');
+                btn.querySelector('.reflection-toggle-icon').textContent = '−';
+            } else {
+                panel.setAttribute('hidden', '');
+                btn.classList.remove('open');
+                btn.querySelector('.reflection-toggle-icon').textContent = '+';
+            }
+        });
+        // 保存 (debounce)
+        let saveTimer = null;
+        document.addEventListener('input', (e) => {
+            const ta = e.target.closest('[data-reflection-text]');
+            if (!ta) return;
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => {
+                const slug = ta.dataset.reflectionText;
+                const t = getTakeaways();
+                if (ta.value.trim()) {
+                    t[slug] = ta.value;
+                    t[slug + '_ts'] = Date.now();
+                } else {
+                    delete t[slug];
+                    delete t[slug + '_ts'];
+                }
+                saveTakeaways(t);
+                const meta = ta.parentElement.querySelector('[data-reflection-meta]');
+                meta.textContent = ta.value.trim() ? '已保存 · ' + new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}) : '';
+                const toggle = ta.closest('.reflection-zone').querySelector('[data-reflection-toggle]');
+                toggle.classList.toggle('has-takeaway', !!ta.value.trim());
+            }, 400);
+        });
+        renderReflections._bound = true;
+    }
+}
+
 function renderOverview() {
     // 1. 章节 marker (✓ / ◐ / ○)
     document.querySelectorAll('.ov-ch-marker').forEach(el => {
@@ -9035,6 +9235,9 @@ function renderOverview() {
 
     // 5. 学习路径 (基于 reading history / RELATED / 7 天书签 / 7 天笔记 / priority)
     renderLearningPath();
+
+    // 6. 反思区 (每本书: 自动摘要 + 个人 takeaway)
+    renderReflections();
 }
 
 // ============================================================
@@ -11374,6 +11577,11 @@ function renderNotesGraph(modal) {
 }
 
 document.getElementById('show-notes-graph').addEventListener('click', openNotesGraph);
+document.getElementById('notes-graph-btn')?.addEventListener('click', () => {
+    // 关掉 notes panel 再开图谱, 避免双 panel
+    document.querySelector('.notes-panel').classList.remove('visible');
+    openNotesGraph();
+});
 
 // ---- Spaced Repetition 复习（FSRS-lite） ----
 // 卡片状态存储在 localStorage['reviewCards']，按 cardId 索引
@@ -12718,7 +12926,10 @@ def build_html():
     <aside class="notes-panel">
         <div class="notes-panel-header">
             <h2>{svg_icon('notes')} 我的笔记</h2>
-            <button class="close">×</button>
+            <div class="notes-panel-actions">
+                <button class="notes-graph-btn" id="notes-graph-btn" title="按章节聚合 + 跨章关联图谱">{svg_icon('network')}</button>
+                <button class="close">×</button>
+            </div>
         </div>
         <input type="text" class="notes-search" id="notes-search" placeholder="搜索笔记 (Cmd+Shift+F)" autocomplete="off">
         <div class="notes-filter" id="notes-filter">

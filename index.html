@@ -2465,6 +2465,71 @@ body.dark .review-grade-btn { background: #1f1f24; }
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 4px 24px;
 }
+/* 反思区: 每本书卡片底部 */
+.reflection-zone {
+    margin-top: 16px;
+    border-top: 1px dashed var(--border);
+    padding-top: 12px;
+}
+.reflection-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: var(--text-soft);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 0;
+    font-family: inherit;
+}
+.reflection-toggle:hover { color: var(--accent); }
+.reflection-toggle-icon {
+    font-size: 14px;
+    line-height: 1;
+    transition: transform .2s;
+}
+.reflection-toggle.open .reflection-toggle-icon { transform: rotate(45deg); }
+.reflection-toggle.has-takeaway::after {
+    content: '●';
+    color: var(--accent);
+    font-size: 8px;
+    margin-left: 4px;
+}
+.reflection-panel {
+    margin-top: 10px;
+    padding: 12px;
+    background: var(--bg-soft);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+.reflection-summary {
+    font-size: 12px;
+    color: var(--text-soft);
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+.reflection-summary strong { color: var(--text); font-weight: 600; }
+.reflection-text {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    min-height: 60px;
+}
+.reflection-text:focus { outline: none; border-color: var(--accent); }
+.reflection-meta {
+    font-size: 10px;
+    color: var(--text-faint);
+    margin-top: 4px;
+    text-align: right;
+}
 
 .overview-chapters li {
     min-width: 0;
@@ -4321,6 +4386,29 @@ body.dark .resume-toast { background: #2a2a2e; border-color: #444; }
     font-size: 18px;
     color: var(--text-soft);
 }
+.notes-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.notes-panel-actions button {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--text-soft);
+    transition: background .12s, color .12s;
+}
+.notes-panel-actions button:hover {
+    background: var(--bg-soft);
+    color: var(--accent);
+}
+.notes-panel-actions svg {
+    width: 16px;
+    height: 16px;
+}
 
 .notes-search {
     width: 100%;
@@ -5609,7 +5697,10 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <aside class="notes-panel">
         <div class="notes-panel-header">
             <h2><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg> 我的笔记</h2>
-            <button class="close">×</button>
+            <div class="notes-panel-actions">
+                <button class="notes-graph-btn" id="notes-graph-btn" title="按章节聚合 + 跨章关联图谱"><svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="4" r="2"/><circle cx="20" cy="4" r="2"/><circle cx="4" cy="20" r="2"/><circle cx="20" cy="20" r="2"/><line x1="6" y1="6" x2="9.5" y2="9.5"/><line x1="18" y1="6" x2="14.5" y2="9.5"/><line x1="6" y1="18" x2="9.5" y2="14.5"/><line x1="18" y1="18" x2="14.5" y2="14.5"/></svg></button>
+                <button class="close">×</button>
+            </div>
         </div>
         <input type="text" class="notes-search" id="notes-search" placeholder="搜索笔记 (Cmd+Shift+F)" autocomplete="off">
         <div class="notes-filter" id="notes-filter">
@@ -5881,6 +5972,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#multi-agent__09-code-review-project"><span class="ov-ch-num">09</span><span class="ov-ch-title">实战 CodeReviewer Multi-Agent</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__09-code-review-project"></span></a></li>
     <li><a href="#multi-agent__10-production-checklist"><span class="ov-ch-num">10</span><span class="ov-ch-title">生产化 Checklist</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__10-production-checklist"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="multi-agent"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="multi-agent" hidden><div class="reflection-summary" data-reflection-summary="multi-agent"></div><textarea class="reflection-text" data-reflection-text="multi-agent" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="multi-agent"></div></div></div>
 </article>
 <article class="overview-card" data-book="llm-prompt" style="--book-color: #b08968">
   <header class="overview-card-head">
@@ -5904,6 +5996,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#llm-prompt__09-eval-driven"><span class="ov-ch-num">09</span><span class="ov-ch-title">Eval-driven 迭代</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__09-eval-driven"></span></a></li>
     <li><a href="#llm-prompt__10-real-cases"><span class="ov-ch-num">10</span><span class="ov-ch-title">真实场景 4 案例</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__10-real-cases"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="llm-prompt"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="llm-prompt" hidden><div class="reflection-summary" data-reflection-summary="llm-prompt"></div><textarea class="reflection-text" data-reflection-text="llm-prompt" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="llm-prompt"></div></div></div>
 </article>
 <article class="overview-card" data-book="crewai" style="--book-color: #6c63ff">
   <header class="overview-card-head">
@@ -5927,6 +6020,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#crewai__09-side-projects"><span class="ov-ch-num">09</span><span class="ov-ch-title">实战：2 个 Side-Project 串起来</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="crewai__09-side-projects"></span></a></li>
     <li><a href="#crewai__10-prod-cases"><span class="ov-ch-num">10</span><span class="ov-ch-title">公司生产案例 + 社区实战拆解</span><span class="ov-ch-time">~6 分钟</span><span class="ov-ch-marker" data-chapter="crewai__10-prod-cases"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="crewai"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="crewai" hidden><div class="reflection-summary" data-reflection-summary="crewai"></div><textarea class="reflection-text" data-reflection-text="crewai" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="crewai"></div></div></div>
 </article>
 <article class="overview-card" data-book="rag" style="--book-color: #0d9488">
   <header class="overview-card-head">
@@ -5950,6 +6044,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#rag__09-advanced-patterns"><span class="ov-ch-num">09</span><span class="ov-ch-title">高级 RAG 模式</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__09-advanced-patterns"></span></a></li>
     <li><a href="#rag__10-prod-checklist"><span class="ov-ch-num">10</span><span class="ov-ch-title">RAG 生产化 Checklist</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="rag__10-prod-checklist"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="rag"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="rag" hidden><div class="reflection-summary" data-reflection-summary="rag"></div><textarea class="reflection-text" data-reflection-text="rag" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="rag"></div></div></div>
 </article>
 <article class="overview-card" data-book="harness-engineering" style="--book-color: #c2410c">
   <header class="overview-card-head">
@@ -5973,6 +6068,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#harness-engineering__09-eval-driven"><span class="ov-ch-num">09</span><span class="ov-ch-title">Eval-Driven Development：Harness 怎么测自己</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__09-eval-driven"></span></a></li>
     <li><a href="#harness-engineering__10-build-from-scratch"><span class="ov-ch-num">10</span><span class="ov-ch-title">从零造一个 Harness：把前 9 章串起来</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__10-build-from-scratch"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="harness-engineering"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="harness-engineering" hidden><div class="reflection-summary" data-reflection-summary="harness-engineering"></div><textarea class="reflection-text" data-reflection-text="harness-engineering" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="harness-engineering"></div></div></div>
 </article>
 <article class="overview-card" data-book="agent-cost" style="--book-color: #4f46e5">
   <header class="overview-card-head">
@@ -5996,6 +6092,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#agent-cost__09-tool-cost"><span class="ov-ch-num">09</span><span class="ov-ch-title">工具调用省钱模式</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="agent-cost__09-tool-cost"></span></a></li>
     <li><a href="#agent-cost__10-cost-dashboard"><span class="ov-ch-num">10</span><span class="ov-ch-title">Cost dashboard 自建</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="agent-cost__10-cost-dashboard"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="agent-cost"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="agent-cost" hidden><div class="reflection-summary" data-reflection-summary="agent-cost"></div><textarea class="reflection-text" data-reflection-text="agent-cost" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="agent-cost"></div></div></div>
 </article>
 <article class="overview-card" data-book="indie-ai-product" style="--book-color: #d97706">
   <header class="overview-card-head">
@@ -6019,6 +6116,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#indie-ai-product__09-first-paying-users"><span class="ov-ch-num">09</span><span class="ov-ch-title">第一个 10 个付费用户</span><span class="ov-ch-time">~5 分钟</span><span class="ov-ch-marker" data-chapter="indie-ai-product__09-first-paying-users"></span></a></li>
     <li><a href="#indie-ai-product__10-retention-vs-growth"><span class="ov-ch-num">10</span><span class="ov-ch-title">留存 vs 增长</span><span class="ov-ch-time">~5 分钟</span><span class="ov-ch-marker" data-chapter="indie-ai-product__10-retention-vs-growth"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="indie-ai-product"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="indie-ai-product" hidden><div class="reflection-summary" data-reflection-summary="indie-ai-product"></div><textarea class="reflection-text" data-reflection-text="indie-ai-product" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="indie-ai-product"></div></div></div>
 </article>
 <article class="overview-card" data-book="context-engineering" style="--book-color: #7c3aed">
   <header class="overview-card-head">
@@ -6042,6 +6140,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#context-engineering__09-agentic-rag"><span class="ov-ch-num">09</span><span class="ov-ch-title">自主 Agentic RAG</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="context-engineering__09-agentic-rag"></span></a></li>
     <li><a href="#context-engineering__10-production-antipatterns"><span class="ov-ch-num">10</span><span class="ov-ch-title">生产反模式与未来</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="context-engineering__10-production-antipatterns"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="context-engineering"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="context-engineering" hidden><div class="reflection-summary" data-reflection-summary="context-engineering"></div><textarea class="reflection-text" data-reflection-text="context-engineering" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="context-engineering"></div></div></div>
 </article>
 <article class="overview-card" data-book="agent-skills" style="--book-color: #ec4899">
   <header class="overview-card-head">
@@ -6065,6 +6164,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#agent-skills__09-marketplace-and-sharing"><span class="ov-ch-num">09</span><span class="ov-ch-title">Skills 市场与共享</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="agent-skills__09-marketplace-and-sharing"></span></a></li>
     <li><a href="#agent-skills__10-ecosystem-and-future"><span class="ov-ch-num">10</span><span class="ov-ch-title">生态与未来</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="agent-skills__10-ecosystem-and-future"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="agent-skills"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="agent-skills" hidden><div class="reflection-summary" data-reflection-summary="agent-skills"></div><textarea class="reflection-text" data-reflection-text="agent-skills" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="agent-skills"></div></div></div>
 </article>
 <article class="overview-card" data-book="claude-code" style="--book-color: #059669">
   <header class="overview-card-head">
@@ -6088,6 +6188,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#claude-code__09-cost-and-performance"><span class="ov-ch-num">09</span><span class="ov-ch-title">Token 成本与性能调优</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="claude-code__09-cost-and-performance"></span></a></li>
     <li><a href="#claude-code__10-limits-and-future"><span class="ov-ch-num">10</span><span class="ov-ch-title">局限 + 未来：Claude Code vs Cursor vs Codex vs TRAE</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="claude-code__10-limits-and-future"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="claude-code"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="claude-code" hidden><div class="reflection-summary" data-reflection-summary="claude-code"></div><textarea class="reflection-text" data-reflection-text="claude-code" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="claude-code"></div></div></div>
 </article>
 <article class="overview-card" data-book="vibe-coding" style="--book-color: #7c3aed">
   <header class="overview-card-head">
@@ -6111,6 +6212,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#vibe-coding__09-boundaries"><span class="ov-ch-num">09</span><span class="ov-ch-title">vibe coding 的边界：什么时候该停</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="vibe-coding__09-boundaries"></span></a></li>
     <li><a href="#vibe-coding__10-my-workflow"><span class="ov-ch-num">10</span><span class="ov-ch-title">我的 vibe coding 工作流模板</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="vibe-coding__10-my-workflow"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="vibe-coding"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="vibe-coding" hidden><div class="reflection-summary" data-reflection-summary="vibe-coding"></div><textarea class="reflection-text" data-reflection-text="vibe-coding" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="vibe-coding"></div></div></div>
 </article>
 <article class="overview-card" data-book="a2a-multi-agent" style="--book-color: #0ea5e9">
   <header class="overview-card-head">
@@ -6134,6 +6236,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#a2a-multi-agent__09-security-boundary"><span class="ov-ch-num">09</span><span class="ov-ch-title">A2A 安全边界</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="a2a-multi-agent__09-security-boundary"></span></a></li>
     <li><a href="#a2a-multi-agent__10-real-architecture"><span class="ov-ch-num">10</span><span class="ov-ch-title">真实生产架构：端到端 A2A 系统怎么搭</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="a2a-multi-agent__10-real-architecture"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="a2a-multi-agent"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="a2a-multi-agent" hidden><div class="reflection-summary" data-reflection-summary="a2a-multi-agent"></div><textarea class="reflection-text" data-reflection-text="a2a-multi-agent" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="a2a-multi-agent"></div></div></div>
 </article>
 <article class="overview-card" data-book="memory-architecture" style="--book-color: #f59e0b">
   <header class="overview-card-head">
@@ -6157,6 +6260,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#memory-architecture__09-memory-write-strategy"><span class="ov-ch-num">09</span><span class="ov-ch-title">Memory 写入策略：什么时候写、写什么</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="memory-architecture__09-memory-write-strategy"></span></a></li>
     <li><a href="#memory-architecture__10-real-system"><span class="ov-ch-num">10</span><span class="ov-ch-title">真实生产系统：端到端长期记忆架构</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="memory-architecture__10-real-system"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="memory-architecture"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="memory-architecture" hidden><div class="reflection-summary" data-reflection-summary="memory-architecture"></div><textarea class="reflection-text" data-reflection-text="memory-architecture" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="memory-architecture"></div></div></div>
 </article>
 <article class="overview-card" data-book="embodied-agent" style="--book-color: #dc2626">
   <header class="overview-card-head">
@@ -6180,6 +6284,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#embodied-agent__09-home-service"><span class="ov-ch-num">09</span><span class="ov-ch-title">家庭服务机器人：消费级具身智能</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="embodied-agent__09-home-service"></span></a></li>
     <li><a href="#embodied-agent__10-future-outlook"><span class="ov-ch-num">10</span><span class="ov-ch-title">具身智能未来 3-5 年展望</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="embodied-agent__10-future-outlook"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="embodied-agent"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="embodied-agent" hidden><div class="reflection-summary" data-reflection-summary="embodied-agent"></div><textarea class="reflection-text" data-reflection-text="embodied-agent" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="embodied-agent"></div></div></div>
 </article>
 <article class="overview-card" data-book="ai-content-economy" style="--book-color: #ec4899">
   <header class="overview-card-head">
@@ -6203,6 +6308,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#ai-content-economy__09-copyright-and-rights"><span class="ov-ch-num">09</span><span class="ov-ch-title">AI 时代的版权与权利</span><span class="ov-ch-time">~5 分钟</span><span class="ov-ch-marker" data-chapter="ai-content-economy__09-copyright-and-rights"></span></a></li>
     <li><a href="#ai-content-economy__10-future-creator"><span class="ov-ch-num">10</span><span class="ov-ch-title">AI 时代创作者的未来 3-5 年</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="ai-content-economy__10-future-creator"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="ai-content-economy"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="ai-content-economy" hidden><div class="reflection-summary" data-reflection-summary="ai-content-economy"></div><textarea class="reflection-text" data-reflection-text="ai-content-economy" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="ai-content-economy"></div></div></div>
 </article>
 <article class="overview-card" data-book="codex-cases" style="--book-color: #0891b2">
   <header class="overview-card-head">
@@ -6231,6 +6337,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#codex-cases__14-vs-cc-cursor"><span class="ov-ch-num">14</span><span class="ov-ch-title">Codex vs Claude Code vs Cursor：三种哲学 + 组合策略</span><span class="ov-ch-time">~6 分钟</span><span class="ov-ch-marker" data-chapter="codex-cases__14-vs-cc-cursor"></span></a></li>
     <li><a href="#codex-cases__15-indie-workflow"><span class="ov-ch-num">15</span><span class="ov-ch-title">独立开发者 Codex 工作流模板：5 套真实可复制</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="codex-cases__15-indie-workflow"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="codex-cases"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="codex-cases" hidden><div class="reflection-summary" data-reflection-summary="codex-cases"></div><textarea class="reflection-text" data-reflection-text="codex-cases" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="codex-cases"></div></div></div>
 </article>
 <article class="overview-card" data-book="cn-codex" style="--book-color: #dc2626">
   <header class="overview-card-head">
@@ -6254,6 +6361,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <li><a href="#cn-codex__09-account-billing"><span class="ov-ch-num">09</span><span class="ov-ch-title">账号 / 订阅 / 配额：15 款产品的选型决策树</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="cn-codex__09-account-billing"></span></a></li>
     <li><a href="#cn-codex__10-pick-geo"><span class="ov-ch-num">10</span><span class="ov-ch-title">独立开发者选型 + GEO 视角：6 个月赢家预测 + 引流打法</span><span class="ov-ch-time">~6 分钟</span><span class="ov-ch-marker" data-chapter="cn-codex__10-pick-geo"></span></a></li>
   </ol>
+<div class="reflection-zone"><button class="reflection-toggle" data-reflection-toggle="cn-codex"><span class="reflection-toggle-label">反思</span><span class="reflection-toggle-icon">+</span></button><div class="reflection-panel" data-reflection-panel="cn-codex" hidden><div class="reflection-summary" data-reflection-summary="cn-codex"></div><textarea class="reflection-text" data-reflection-text="cn-codex" placeholder="读完这个系列, 你的个人 takeaway… (留空也行)" rows="3"></textarea><div class="reflection-meta" data-reflection-meta="cn-codex"></div></div></div>
 </article>
 <div class="learning-path" id="learning-path"></div>
 <div class="weekly-recap" id="weekly-recap">
@@ -8614,6 +8722,103 @@ function renderTodayPanel() {
     panel.innerHTML = html;
 }
 
+// ============================================================
+// 反思区: 每本书底部 toggle, 自动摘要 + 个人 takeaway
+// - takeaways 存 localStorage.kg_takeaways[bookSlug]
+// - 自动摘要从 progress / notes 算: 已读 X/Y 章 + 完成度 % + 笔记数 + 累计分钟
+// ============================================================
+function getTakeaways() {
+    try { return JSON.parse(localStorage.getItem('kg_takeaways') || '{}'); }
+    catch { return {}; }
+}
+function saveTakeaways(t) {
+    localStorage.setItem('kg_takeaways', JSON.stringify(t));
+}
+function renderReflections() {
+    const prog = JSON.parse(localStorage.getItem('progress') || '{}');
+    const readPct = prog.readPct || {};
+    const completed = prog.completed || {};
+    const timeSpent = prog.timeSpent || {};
+    const notes = (typeof window.notes !== 'undefined' && Array.isArray(window.notes))
+        ? window.notes
+        : JSON.parse(localStorage.getItem('notes') || '[]');
+    const takeaways = getTakeaways();
+
+    document.querySelectorAll('.reflection-zone').forEach(zone => {
+        const slug = zone.querySelector('[data-reflection-toggle]')?.dataset.reflectionToggle;
+        if (!slug) return;
+        const chapters = (typeof CHAPTERS_BY_BOOK !== 'undefined' && CHAPTERS_BY_BOOK[slug]) || [];
+        const total = chapters.length;
+        const done = chapters.filter(id => completed[id] || (readPct[id] || 0) >= 0.9).length;
+        const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        const mins = chapters.reduce((sum, id) => sum + (timeSpent[id] || 0), 0);
+        const noteCount = notes.filter(n => n.bookSlug === slug).length;
+        const summaryEl = zone.querySelector('[data-reflection-summary]');
+        const summaryParts = [];
+        summaryParts.push('<strong>' + done + ' / ' + total + '</strong> 章已读 · 完成度 ' + pct + '%');
+        if (mins > 0) summaryParts.push(' · 累计 ' + mins + ' 分钟');
+        if (noteCount > 0) summaryParts.push(' · ' + noteCount + ' 条笔记');
+        if (done === total && total > 0) summaryParts.unshift('🎉 <strong>已读完本系列</strong> · ');
+        summaryEl.innerHTML = summaryParts.join('');
+
+        const tEl = zone.querySelector('[data-reflection-text]');
+        const metaEl = zone.querySelector('[data-reflection-meta]');
+        const existing = takeaways[slug] || '';
+        if (tEl.value !== existing) tEl.value = existing;
+        if (existing) {
+            metaEl.textContent = '已保存 · ' + new Date(takeaways[slug + '_ts'] || Date.now()).toLocaleDateString('zh-CN');
+        } else {
+            metaEl.textContent = '';
+        }
+        // 标记有 takeaway 的 toggle
+        const toggle = zone.querySelector('[data-reflection-toggle]');
+        toggle.classList.toggle('has-takeaway', !!existing);
+    });
+
+    // toggle 点击 (用一次性的事件代理)
+    if (!renderReflections._bound) {
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-reflection-toggle]');
+            if (!btn) return;
+            const panel = btn.parentElement.querySelector('[data-reflection-panel]');
+            const open = panel.hasAttribute('hidden');
+            if (open) {
+                panel.removeAttribute('hidden');
+                btn.classList.add('open');
+                btn.querySelector('.reflection-toggle-icon').textContent = '−';
+            } else {
+                panel.setAttribute('hidden', '');
+                btn.classList.remove('open');
+                btn.querySelector('.reflection-toggle-icon').textContent = '+';
+            }
+        });
+        // 保存 (debounce)
+        let saveTimer = null;
+        document.addEventListener('input', (e) => {
+            const ta = e.target.closest('[data-reflection-text]');
+            if (!ta) return;
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => {
+                const slug = ta.dataset.reflectionText;
+                const t = getTakeaways();
+                if (ta.value.trim()) {
+                    t[slug] = ta.value;
+                    t[slug + '_ts'] = Date.now();
+                } else {
+                    delete t[slug];
+                    delete t[slug + '_ts'];
+                }
+                saveTakeaways(t);
+                const meta = ta.parentElement.querySelector('[data-reflection-meta]');
+                meta.textContent = ta.value.trim() ? '已保存 · ' + new Date().toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'}) : '';
+                const toggle = ta.closest('.reflection-zone').querySelector('[data-reflection-toggle]');
+                toggle.classList.toggle('has-takeaway', !!ta.value.trim());
+            }, 400);
+        });
+        renderReflections._bound = true;
+    }
+}
+
 function renderOverview() {
     // 1. 章节 marker (✓ / ◐ / ○)
     document.querySelectorAll('.ov-ch-marker').forEach(el => {
@@ -8720,6 +8925,9 @@ function renderOverview() {
 
     // 5. 学习路径 (基于 reading history / RELATED / 7 天书签 / 7 天笔记 / priority)
     renderLearningPath();
+
+    // 6. 反思区 (每本书: 自动摘要 + 个人 takeaway)
+    renderReflections();
 }
 
 // ============================================================
@@ -11067,6 +11275,11 @@ function renderNotesGraph(modal) {
 }
 
 document.getElementById('show-notes-graph').addEventListener('click', openNotesGraph);
+document.getElementById('notes-graph-btn')?.addEventListener('click', () => {
+    // 关掉 notes panel 再开图谱, 避免双 panel
+    document.querySelector('.notes-panel').classList.remove('visible');
+    openNotesGraph();
+});
 
 // ---- Spaced Repetition 复习（FSRS-lite） ----
 // 卡片状态存储在 localStorage['reviewCards']，按 cardId 索引
