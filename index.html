@@ -175,12 +175,15 @@ body.font-mono  { --font-body: var(--font-mono); }
 .progress {
     position: fixed;
     top: 0; left: 0; right: 0;
-    height: 2px;
+    height: 3px;
     background: var(--accent);
     transform-origin: left;
     transform: scaleX(0);
     z-index: 200;
+    box-shadow: 0 1px 6px rgba(176, 137, 104, 0.35);
+    transition: transform 0.08s linear, opacity 0.2s;
 }
+body.dark .progress { box-shadow: 0 1px 6px rgba(196, 168, 124, 0.4); }
 
 .toolbar {
     position: fixed;
@@ -3413,50 +3416,115 @@ body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
 
 .chapter-end::before { content: "———"; color: var(--accent); letter-spacing: 8px; }
 
-/* 读完 CTA: 滚到章节末尾时底部弹 "继续读下一章" */
+/* 读完 CTA: 滚到章节末尾时底部弹 "继续读下一章"
+   compact = 小圆按钮 (右下角), 始终在; expanded = 距底部 < 300px 时扩展成
+   跟 today-card / resume-card 同样视觉 (色块条 + icon + 标题 + meta + 箭头) */
 .next-chapter-cta {
     position: fixed;
     bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--accent);
-    color: var(--bg);
-    padding: 12px 20px;
+    right: 24px;
+    background: var(--bg-soft);
+    color: var(--text);
+    border: 1px solid var(--border);
     border-radius: 999px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
     z-index: 100;
-    font-size: 14px;
-    font-weight: 500;
-    max-width: 90vw;
+    text-decoration: none;
     user-select: none;
-    transition: transform 0.2s, opacity 0.2s;
-    opacity: 0.95;
+    overflow: hidden;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    justify-content: center;
+    transition: width .3s ease, height .3s ease, padding .3s ease, border-radius .3s ease, box-shadow .3s ease, background .15s;
 }
-.next-chapter-cta:hover {
-    transform: translateX(-50%) translateY(-2px);
+.next-chapter-cta:hover { box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18); }
+.next-chapter-cta.expanded {
+    width: auto;
+    min-width: 320px;
+    max-width: 420px;
+    height: auto;
+    padding: 10px 14px 10px 16px;
+    border-radius: 12px;
+    background: var(--bg-soft);
+    gap: 12px;
+}
+.next-cta-bar {
+    display: none;
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--book-color, var(--accent));
+    transition: width .15s;
+}
+.next-chapter-cta.expanded .next-cta-bar { display: block; }
+.next-cta-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--book-color, var(--accent));
+    border: 1px solid var(--border);
+    margin-left: 0;
+}
+.next-chapter-cta:not(.expanded) .next-cta-icon { display: none; }
+.next-cta-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-width .3s ease, opacity .2s ease;
+}
+.next-chapter-cta.expanded .next-cta-body {
+    max-width: 240px;
     opacity: 1;
 }
 .next-cta-label {
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.7;
+    letter-spacing: 1.2px;
+    color: var(--text-soft);
+    font-weight: 600;
 }
 .next-cta-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
-    max-width: 280px;
+    color: var(--text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.3;
 }
 .next-cta-arrow {
-    font-size: 18px;
-    line-height: 1;
+    flex-shrink: 0;
+    color: var(--text-soft);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .15s;
+}
+.next-chapter-cta:hover .next-cta-arrow {
+    transform: translateX(2px);
+    color: var(--book-color, var(--accent));
+}
+/* compact 状态: 单独的圆按钮 + 箭头 (代替原来的 .next-cta-arrow 文字) */
+.next-chapter-cta:not(.expanded) .next-cta-body { display: none; }
+.next-chapter-cta:not(.expanded) .next-cta-arrow {
+    color: var(--text-soft);
 }
 /* "每日推荐" popover 内面板: 单列, 每张卡 = 色块条 + icon + 标题 + meta + 状态 + 箭头 */
 .today-panel {
@@ -3590,39 +3658,14 @@ body.dark .today-card-pill.in-progress {
     .today-card-title { font-size: 13px; }
     .today-card-pill { padding: 2px 7px; font-size: 10px; }
 }
-/* Next 按钮: 常态 compact (右下角小圆), 滚到章节末尾扩展 */
-.next-chapter-cta {
-    bottom: 80px;
-    right: 24px;
-    left: auto;
-    transform: none;
-    padding: 12px 16px;
-    border-radius: 999px;
-    max-width: 56px;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: max-width .3s ease, padding .3s ease, box-shadow .3s ease, transform .3s ease;
+/* Next 按钮: 常态 compact (右下角小圆), 滚到章节末尾扩展
+   (基样式在前面, 这里给 mobile 微调 — 让 expanded 状态在窄屏也放得下标题) */
+@media (max-width: 700px) {
+    .next-chapter-cta.expanded { min-width: 0; max-width: calc(100vw - 32px); }
+    .next-chapter-cta.expanded .next-cta-body { max-width: 160px; }
+    .next-chapter-cta.expanded .next-cta-icon { width: 28px; height: 28px; }
+    .next-chapter-cta:not(.expanded) { bottom: 80px; } /* 避开 progress-fab */
 }
-.next-chapter-cta.expanded {
-    bottom: 24px;
-    right: 24px;
-    max-width: 90vw;
-    padding: 12px 20px;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.22);
-}
-.next-chapter-cta .next-cta-label,
-.next-chapter-cta .next-cta-title {
-    transition: max-width .3s ease, opacity .3s ease;
-    max-width: 0;
-    opacity: 0;
-    overflow: hidden;
-}
-.next-chapter-cta.expanded .next-cta-label,
-.next-chapter-cta.expanded .next-cta-title {
-    max-width: 280px;
-    opacity: 1;
-}
-.next-chapter-cta:hover:not(.expanded) { transform: scale(1.08); }
 /* 系列完成庆祝 modal */
 .series-celebration {
     position: fixed;
@@ -10602,9 +10645,18 @@ document.addEventListener('keydown', (e) => {
 // - 全部完成最后章 → 触发系列完成庆祝
 // ============================================================
 (function() {
-    const cta = document.createElement('div');
+    const cta = document.createElement('a');
     cta.className = 'next-chapter-cta';
-    cta.innerHTML = '<span class="next-cta-label">下一章</span><span class="next-cta-title"></span><span class="next-cta-arrow">→</span>';
+    cta.href = '#';
+    cta.innerHTML = '<span class="next-cta-bar"></span>'
+        + '<span class="next-cta-icon"></span>'
+        + '<div class="next-cta-body">'
+        +   '<span class="next-cta-label">下一章</span>'
+        +   '<span class="next-cta-title"></span>'
+        + '</div>'
+        + '<span class="next-cta-arrow">'
+        +   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>'
+        + '</span>';
     cta.style.display = 'none';
     document.body.appendChild(cta);
 
@@ -10663,6 +10715,16 @@ document.addEventListener('keydown', (e) => {
         const label = isSeriesEnd ? '本系列已读完' : '下一章';
         cta.querySelector('.next-cta-label').textContent = label;
         cta.querySelector('.next-cta-title').textContent = title;
+        // 书的色块条 + icon (用当前章节所在书的色)
+        const bookSlug = active.dataset.book;
+        const bookMeta = (typeof BOOKS_META !== 'undefined' && BOOKS_META[bookSlug]) || {};
+        const color = bookMeta.color || '#b08968';
+        const icon = bookMeta.icon || 'book';
+        cta.style.setProperty('--book-color', color);
+        cta.querySelector('.next-cta-icon').innerHTML = svg_icon(icon, 14);
+        // href 跟点击
+        const targetHref = isSeriesEnd ? '#overview' : (nextLink?.getAttribute('href') || '#');
+        cta.setAttribute('href', targetHref);
         // 切换 expanded class
         if (shouldExpand !== isExpanded) {
             isExpanded = shouldExpand;
