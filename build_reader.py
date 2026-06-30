@@ -1465,8 +1465,9 @@ body.dark .toolbar-menu { background: rgba(28, 28, 30, 0.95); }
     color: var(--bg);
     border-color: var(--accent);
 }
-.toolbar-section .active,
-button.active {
+/* 只作用域 toolbar-section — 避免影响 recap-tab / related-tab / nf-chip / command-chip 等
+   也用 .active class 标识"选中"的元素 (button.active 太宽, 会把棕色背景盖到 tab 文字上) */
+.toolbar-section .active {
     background: var(--accent);
     color: var(--bg);
     border-color: var(--accent);
@@ -2513,7 +2514,7 @@ body.mobile-sidebar-open .mobile-menu-btn { display: flex; }
    ============================================================ */
 .weekly-recap {
     max-width: 920px;
-    margin: 0 auto;
+    margin: 40px auto 0;
     padding: 0 20px;
 }
 .recap-tabs {
@@ -3439,96 +3440,117 @@ body.dark .review-grade-btn { background: #1f1f24; }
 }
 .resume-carousel-track::-webkit-scrollbar { height: 4px; }
 .resume-carousel-track::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* 继续阅读 / 同系列下一章 / 主题相关 卡片: 跟 today-card 同一视觉语言
+   (色块条 + icon + 标题 + meta + 状态 + 箭头) */
 .resume-card {
     flex: 0 0 auto;
     width: 260px;
     min-width: 260px;
-    padding: 14px 18px;
-    background: var(--accent-soft);
+    padding: 10px 12px 10px 14px;
+    background: var(--bg-soft);
     border: 1px solid var(--border);
     border-radius: 10px;
     text-decoration: none;
     color: var(--text);
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
     scroll-snap-align: start;
-    transition: all .18s;
+    transition: transform .12s, border-color .12s, background .12s;
     position: relative;
+    overflow: hidden;
+}
+.resume-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--book-color, var(--accent));
+    transition: width .12s;
 }
 .resume-card:hover {
-    background: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    transform: translateX(2px);
+    border-color: var(--book-color, var(--accent));
+    background: var(--bg);
 }
-.resume-card.primary { width: 300px; min-width: 300px; border-color: var(--accent); }
-.resume-card-head {
+.resume-card:hover::before { width: 5px; }
+.resume-card.primary { width: 300px; min-width: 300px; }
+.resume-card-icon {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: var(--text-faint);
-    font-weight: 600;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--book-color, var(--accent));
+    border: 1px solid var(--border);
 }
-.resume-card:hover .resume-card-head { color: var(--bg); opacity: 0.85; }
-.resume-card-head .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
+.resume-card-icon svg { stroke: currentColor; }
+.resume-card-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
-.resume-card.primary .resume-card-head .dot { animation: resume-pulse 2s ease-in-out infinite; }
-@keyframes resume-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-.resume-card-book {
-    font-size: 11px;
-    color: var(--text-faint);
-}
-.resume-card:hover .resume-card-book { color: var(--bg); opacity: 0.7; }
 .resume-card-title {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.4;
+    font-size: 13px;
+    font-weight: 500;
     color: var(--text);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
 }
-.resume-card:hover .resume-card-title { color: var(--bg); }
-.resume-card-progress {
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-top: 2px;
-}
-.resume-card:hover .resume-card-progress { background: rgba(255,255,255,0.25); }
-.resume-card-progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-}
-.resume-card:hover .resume-card-progress-fill { background: var(--bg); }
 .resume-card-meta {
     font-size: 11px;
-    color: var(--text-faint);
+    color: var(--text-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.resume-card-right {
+    flex-shrink: 0;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 6px;
+    color: var(--text-soft);
 }
-.resume-card:hover .resume-card-meta { color: var(--bg); opacity: 0.8; }
-.resume-card .resume-arrow {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    color: var(--text-faint);
-    transform: rotate(45deg);
+.resume-card-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
 }
-.resume-card:hover .resume-arrow { color: var(--bg); }
+.resume-card-pill.in-progress {
+    background: rgba(14, 165, 233, 0.12);
+    color: #0284c7;
+}
+.resume-card-pill.unread {
+    background: var(--border);
+    color: var(--text-soft);
+}
+body.dark .resume-card-pill.in-progress {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+}
+.resume-card-arrow {
+    flex-shrink: 0;
+    opacity: 0.45;
+    transition: transform .12s, opacity .12s;
+    color: var(--text-soft);
+}
+.resume-card:hover .resume-card-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+    color: var(--book-color, var(--accent));
+}
 
 .overview-card {
     margin-bottom: 48px;
@@ -4568,74 +4590,124 @@ body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
     font-size: 18px;
     line-height: 1;
 }
-/* 顶部一屏"今天"面板: 今日推荐 + 最近书签 (默认在 popover 内, 居中 800px) */
+/* "每日推荐" popover 内面板: 单列, 每张卡 = 色块条 + icon + 标题 + meta + 状态 + 箭头 */
 .today-panel {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    max-width: 800px;
+    max-width: 720px;
     margin: 24px auto 0;
     padding: 0 12px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
-.today-col {
+.today-section { text-align: left; }
+.today-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px 12px 16px;
     background: var(--bg-soft);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 16px 18px;
-    text-align: left;
-}
-.today-col-title {
-    font-size: 12px;
-    color: var(--text-soft);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 0 0 12px;
-    font-weight: 600;
-}
-.today-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px dashed var(--border);
-    cursor: pointer;
-    transition: color .12s;
-    color: var(--text);
     text-decoration: none;
+    color: var(--text);
+    transition: transform .12s, border-color .12s, background .12s;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+    cursor: pointer;
 }
-.today-item:last-child { border-bottom: none; padding-bottom: 0; }
-.today-item:first-of-type { padding-top: 0; }
-.today-item:hover { color: var(--accent); }
-.today-item:hover .today-item-title { color: var(--accent); }
-.today-item-num {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: var(--bg);
+.today-card:last-child { margin-bottom: 0; }
+.today-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--book-color, var(--accent));
+    transition: width .12s;
+}
+.today-card:hover {
+    transform: translateX(2px);
+    border-color: var(--book-color, var(--accent));
+    background: var(--bg);
+}
+.today-card:hover::before { width: 6px; }
+.today-card-icon {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
-    font-weight: 600;
-    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--book-color, var(--accent));
+    border: 1px solid var(--border);
 }
-.today-item-body { flex: 1; min-width: 0; }
-.today-item-title {
+.today-card-icon svg { stroke: currentColor; }
+.today-card-body { flex: 1; min-width: 0; }
+.today-card-title {
     font-size: 14px;
     font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+.today-card-meta {
+    font-size: 11px;
+    color: var(--text-soft);
+    margin-top: 3px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.today-item-meta {
-    font-size: 11px;
+.today-card-right {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     color: var(--text-soft);
-    margin-top: 2px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+}
+.today-card-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.2;
     white-space: nowrap;
+}
+.today-card-pill.in-progress {
+    background: rgba(14, 165, 233, 0.12);
+    color: #0284c7;
+}
+.today-card-pill.unread {
+    background: var(--border);
+    color: var(--text-soft);
+}
+.today-card-pill.time {
+    background: transparent;
+    color: var(--text-soft);
+    font-weight: 500;
+    padding: 3px 0;
+}
+body.dark .today-card-pill.in-progress {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+}
+.today-card-arrow {
+    flex-shrink: 0;
+    opacity: 0.45;
+    transition: transform .12s, opacity .12s;
+    color: var(--text-soft);
+}
+.today-card:hover .today-card-arrow {
+    opacity: 1;
+    transform: translateX(2px);
+    color: var(--book-color, var(--accent));
 }
 .today-empty {
     font-size: 12px;
@@ -4645,8 +4717,10 @@ body.dark .chapter-toc .toc-list a.active { color: var(--accent); }
     font-style: italic;
 }
 @media (max-width: 700px) {
-    .today-panel { grid-template-columns: 1fr; gap: 12px; }
-    .today-col { padding: 14px; }
+    .today-card { padding: 10px 12px 10px 14px; gap: 10px; }
+    .today-card-icon { width: 28px; height: 28px; }
+    .today-card-title { font-size: 13px; }
+    .today-card-pill { padding: 2px 7px; font-size: 10px; }
 }
 /* Next 按钮: 常态 compact (右下角小圆), 滚到章节末尾扩展 */
 .next-chapter-cta {
@@ -9264,17 +9338,30 @@ function renderResumeCarousel() {
         wrap.style.display = 'none';
         return;
     }
-    // 渲染
-    const arrowSvg = '<svg class="icon resume-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>';
+    // 渲染 — 跟 today-card 同一视觉语言 (色块条 + icon + 标题 + meta + pill + 箭头)
+    const arrowSvg = '<svg class="resume-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
     track.innerHTML = cards.map(c => {
+        const meta = (typeof BOOKS_META !== 'undefined' && BOOKS_META[c.book]) || {};
+        const color = meta.color || '#b08968';
+        const icon = meta.icon || 'book';
         const cls = c.primary ? 'resume-card primary' : 'resume-card';
-        return '<a class="' + cls + '" href="#' + c.chapterId + '">' +
-            (c.primary ? arrowSvg : '') +
-            '<div class="resume-card-head"><span class="dot"></span><span>' + c.eyebrow + '</span></div>' +
-            '<div class="resume-card-book">' + c.bookTitle + '</div>' +
-            '<div class="resume-card-title">' + c.title + '</div>' +
-            (c.pct > 0 ? '<div class="resume-card-progress"><div class="resume-card-progress-fill" style="width:' + c.pct + '%"></div></div>' : '') +
-            '<div class="resume-card-meta">' + (c.meta || '<span>未开始</span>') + (c.pct > 0 ? '<span>' + c.pct + '%</span>' : '') + '</div>' +
+        // Pill: 在读 = 蓝色 X%, 未读 = 灰色 (c.pct 是 0-1 比例, 显示需 ×100)
+        const pctInt = c.pct > 0 ? Math.round(c.pct * 100) : 0;
+        const pillClass = pctInt > 0 ? 'in-progress' : 'unread';
+        const pillText = pctInt > 0 ? pctInt + '%' : '未读';
+        // Meta 第 2 行: 主卡 = "书名 · 上次 X 时间", 其他 = "书名 · 类型标签"
+        const metaTail = c.primary ? (c.meta || '') : (c.eyebrow || '');
+        const metaText = c.bookTitle + (metaTail ? ' · ' + metaTail : '');
+        return '<a class="' + cls + '" href="#' + c.chapterId + '" style="--book-color:' + color + '">' +
+            '<span class="resume-card-icon">' + svg_icon(icon, 14) + '</span>' +
+            '<div class="resume-card-body">' +
+                '<div class="resume-card-title">' + escapeHtml(c.title) + '</div>' +
+                '<div class="resume-card-meta">' + escapeHtml(metaText) + '</div>' +
+            '</div>' +
+            '<div class="resume-card-right">' +
+                '<span class="resume-card-pill ' + pillClass + '">' + pillText + '</span>' +
+                arrowSvg +
+            '</div>' +
             '</a>';
     }).join('');
     wrap.style.display = '';
@@ -9332,39 +9419,62 @@ function renderTodayPanel() {
     }
     panel.style.display = '';
 
+    // 单列卡片: 每条 = 色块条 + icon + 标题 + meta + 状态 + 箭头
+    const arrowSvg = '<svg class="today-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+
+    function renderRecCard(c) {
+        const meta = (typeof BOOKS_META !== 'undefined' && BOOKS_META[c.book]) || {};
+        const color = meta.color || '#b08968';
+        const icon = meta.icon || 'book';
+        const bookTitle = meta.title || c.book;
+        const pct = c.pct || 0;
+        const pillClass = pct > 0 ? 'in-progress' : 'unread';
+        const pillText = pct > 0 ? Math.round(pct * 100) + '%' : '未读';
+        const styleAttr = '--book-color:' + color;
+        return '<a class="today-card" href="#' + escapeHtml(c.id) + '" style="' + styleAttr + '">'
+            + '<span class="today-card-icon">' + svg_icon(icon, 16) + '</span>'
+            + '<div class="today-card-body">'
+            +   '<div class="today-card-title">' + escapeHtml(c.title) + '</div>'
+            +   '<div class="today-card-meta">' + escapeHtml(bookTitle) + '</div>'
+            + '</div>'
+            + '<div class="today-card-right">'
+            +   '<span class="today-card-pill ' + pillClass + '">' + pillText + '</span>'
+            +   arrowSvg
+            + '</div>'
+            + '</a>';
+    }
+
+    function renderBmCard(b) {
+        const title = (typeof CHAPTER_TITLES_MAP !== 'undefined' && CHAPTER_TITLES_MAP[b.chapterId]) || b.chapterId;
+        const book = (typeof CHAPTER_BOOK_MAP !== 'undefined' && CHAPTER_BOOK_MAP[b.chapterId]) || '';
+        const meta = (typeof BOOKS_META !== 'undefined' && BOOKS_META[book]) || {};
+        const bookTitle = meta.title || book;
+        const ago = b.ts ? formatRelativeTime(b.ts) : '';
+        const text = b.text ? b.text.slice(0, 40) : '';
+        const color = meta.color || '#b08968';
+        const styleAttr = '--book-color:' + color;
+        return '<a class="today-card" href="#' + escapeHtml(b.chapterId) + '" style="' + styleAttr + '">'
+            + '<span class="today-card-icon">' + svg_icon('bookmark', 16) + '</span>'
+            + '<div class="today-card-body">'
+            +   '<div class="today-card-title">' + escapeHtml(text || title) + '</div>'
+            +   '<div class="today-card-meta">' + escapeHtml(bookTitle) + '</div>'
+            + '</div>'
+            + '<div class="today-card-right">'
+            +   '<span class="today-card-pill time">' + escapeHtml(ago) + '</span>'
+            +   arrowSvg
+            + '</div>'
+            + '</a>';
+    }
+
     let html = '';
     if (recommended.length > 0) {
-        html += '<div class="today-col">';
-        html += '<h3 class="today-col-title">今日推荐</h3>';
-        recommended.forEach((c, i) => {
-            const meta = (typeof BOOKS_META !== 'undefined' && BOOKS_META[c.book]) || {};
-            const bookTitle = meta.title || c.book;
-            const pctTxt = c.pct > 0 ? ' · ' + Math.round(c.pct * 100) + '%' : '';
-            html += '<a class="today-item" href="#' + escapeHtml(c.id) + '">'
-                  + '<div class="today-item-num">' + (i + 1) + '</div>'
-                  + '<div class="today-item-body">'
-                  +   '<div class="today-item-title">' + escapeHtml(c.title) + '</div>'
-                  +   '<div class="today-item-meta">' + escapeHtml(bookTitle) + pctTxt + '</div>'
-                  + '</div></a>';
-        });
+        html += '<div class="today-section">';
+        recommended.forEach(c => { html += renderRecCard(c); });
         html += '</div>';
     }
     if (recent.length > 0) {
-        html += '<div class="today-col">';
-        html += '<h3 class="today-col-title">最近书签</h3>';
-        recent.forEach((b, i) => {
-            const title = (typeof CHAPTER_TITLES_MAP !== 'undefined' && CHAPTER_TITLES_MAP[b.chapterId]) || b.chapterId;
-            const book = (typeof CHAPTER_BOOK_MAP !== 'undefined' && CHAPTER_BOOK_MAP[b.chapterId]) || '';
-            const bookTitle = ((typeof BOOKS_META !== 'undefined' && BOOKS_META[book]) || {}).title || book;
-            const ago = b.ts ? formatRelativeTime(b.ts) : '';
-            const text = b.text ? b.text.slice(0, 40) : '';
-            html += '<a class="today-item" href="#' + escapeHtml(b.chapterId) + '">'
-                  + '<div class="today-item-num">' + (i + 1) + '</div>'
-                  + '<div class="today-item-body">'
-                  +   '<div class="today-item-title">' + escapeHtml(text || title) + '</div>'
-                  +   '<div class="today-item-meta">' + escapeHtml(bookTitle) + (ago ? ' · ' + ago : '') + '</div>'
-                  + '</div></a>';
-        });
+        html += '<div class="today-section">';
+        recent.forEach(b => { html += renderBmCard(b); });
         html += '</div>';
     }
     panel.innerHTML = html;
@@ -13523,9 +13633,9 @@ def build_html():
     <!-- "今天" popover (默认隐藏, 浮动按钮唤起) -->
     <div class="today-popover" id="today-popover" aria-hidden="true">
         <div class="today-popover-backdrop" data-today-close></div>
-        <div class="today-popover-content" role="dialog" aria-label="今天读什么">
+        <div class="today-popover-content" role="dialog" aria-label="每日推荐 + 最近书签">
             <div class="today-popover-header">
-                <h2>{svg_icon('calendar', size=20)} 今天读什么</h2>
+                <h2>{svg_icon('calendar', size=20)} 每日推荐</h2>
                 <button class="today-popover-close" data-today-close aria-label="关闭">×</button>
             </div>
             <div class="today-panel" id="today-panel"></div>
@@ -13567,9 +13677,9 @@ def build_html():
     </div>
 
     <!-- 浮动按钮: 唤起 今天 popover (在 我的进度 上方) -->
-    <button class="today-fab" id="today-fab" title="今日推荐 + 最近书签">
+    <button class="today-fab" id="today-fab" title="每日推荐 + 最近书签">
         <span class="today-fab-icon">{svg_icon('calendar', size=22)}</span>
-        <span class="today-fab-text">今天</span>
+        <span class="today-fab-text">每日推荐</span>
         <span class="today-fab-badge" id="today-fab-badge" data-empty="1">0</span>
     </button>
 
