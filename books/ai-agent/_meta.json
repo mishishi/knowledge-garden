@@ -1,0 +1,23 @@
+{
+  "title": "AI Agent 全景",
+  "description": "从 LLM 到 Agent 的范式迁移全景: 工具/Memory/Planning/RAG/Multi-Agent/评测/安全/趋势, 工程师视角的实操地图",
+  "icon": "bot",
+  "color": "#7c3aed",
+  "priority": 1,
+  "level": 3,
+  "level_name": "进阶",
+  "order": [
+    "01-what-is-agent",
+    "02-llm-foundation",
+    "03-prompt-engineering",
+    "04-tool-use",
+    "05-memory",
+    "06-planning",
+    "07-rag",
+    "08-multi-agent",
+    "09-evaluation",
+    "10-safety",
+    "11-applications",
+    "12-future"
+  ]
+}
