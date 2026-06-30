@@ -1,0 +1,19 @@
+{
+  "title": "AI 时代的产品经理",
+  "subtitle": "AI PM 实战: 调研 / PRD / 协作 / 评测 / 迭代 全流程",
+  "icon": "clipboard",
+  "color": "#6366f1",
+  "priority": 5,
+  "order": [
+    "01-what-is-ai-pm",
+    "02-ai-user-research",
+    "03-ai-prd",
+    "04-eng-collaboration",
+    "05-llm-as-judge",
+    "06-pm-agent",
+    "07-ai-native-team",
+    "08-okr-roadmap",
+    "09-iterate",
+    "10-future"
+  ]
+}

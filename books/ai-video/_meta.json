@@ -1,0 +1,21 @@
+{
+  "title": "AI 视频创作工业化",
+  "subtitle": "Sora 2 / Veo 3 / 可灵 / Kling 真实落地流水线",
+  "icon": "video",
+  "color": "#f43f5e",
+  "priority": 6,
+  "order": [
+    "01-landscape-2026",
+    "02-short-video-flow",
+    "03-script-writing",
+    "04-storyboard",
+    "05-audio-music",
+    "06-i2v-t2v",
+    "07-digital-human",
+    "08-post-production",
+    "09-platform-adapt",
+    "10-monetization",
+    "11-cases",
+    "12-future"
+  ]
+}
