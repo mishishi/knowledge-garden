@@ -923,7 +923,7 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
     parts.append(f'    <div class="overview-stat"><span class="num">{len(books)}</span><span class="lbl">系列</span></div>')
     parts.append(f'    <div class="overview-stat"><span class="num">{total_chapters}</span><span class="lbl">章节</span></div>')
     parts.append(f'    <div class="overview-stat"><span class="num">{total_chars:,}</span><span class="lbl">字</span></div>')
-    parts.append('    <div class="overview-stat"><span class="num" id="overview-read-pct">0</span><span class="lbl">已读</span></div>')
+    parts.append('    <div class="overview-stat"><span class="num" id="overview-reading-count">0</span><span class="lbl">在读</span></div>')
     parts.append('  </div>')
     # 继续阅读 carousel（运行时由 JS 填，没数据就隐藏整个 wrap）
     parts.append(
@@ -962,12 +962,13 @@ def build_overview_html(books, total_chapters, total_chars, total_minutes) -> st
             f'</div>'
         )
         parts.append('    </div>')
-        # 进度条（运行时由 JS 填宽度）
+        # 进度条（运行时由 JS 填宽度 + 当前章节名）
         parts.append(
             '    <div class="overview-card-progress">'
-            '<div class="progress-bar"><div class="progress-bar-fill" data-book-fill="'
+            + '<div class="progress-current" data-book-current="' + book_slug + '"></div>'
+            + '<div class="progress-bar"><div class="progress-bar-fill" data-book-fill="'
             + book_slug + '" style="width:0%"></div></div>'
-            '<div class="progress-label" data-book-label="' + book_slug + '">0 / '
+            + '<div class="progress-label" data-book-label="' + book_slug + '">0 / '
             + str(chap_count) + '</div>'
             '</div>'
         )
@@ -3602,16 +3603,16 @@ body.dark .resume-card-pill.in-progress {
 
 .overview-card-progress {
     text-align: right;
-    min-width: 140px;
+    min-width: 200px;
 }
 
 .overview-card-progress .progress-bar {
-    width: 120px;
-    height: 6px;
+    width: 200px;
+    height: 5px;
     background: var(--border);
     border-radius: 3px;
     overflow: hidden;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     margin-left: auto;
 }
 
@@ -3619,12 +3620,27 @@ body.dark .resume-card-pill.in-progress {
     height: 100%;
     background: var(--book-color, var(--accent));
     transition: width 0.3s;
+    opacity: 0.85;
+}
+
+.overview-card-progress .progress-current {
+    font-size: 11px;
+    color: var(--book-color, var(--accent));
+    margin-bottom: 4px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+    max-width: 200px;
+    margin-left: auto;
 }
 
 .overview-card-progress .progress-label {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-faint);
     font-family: Georgia, serif;
+    letter-spacing: 0.5px;
 }
 
 .overview-chapters {
@@ -9633,30 +9649,56 @@ function renderOverview() {
         }
     });
 
-    // 2. 每个 series 的进度条 + 文字
+    // 2. 每个 series 的进度条 + 文字 + 当前在读章节
     document.querySelectorAll('.overview-card').forEach(card => {
         const bookSlug = card.dataset.book;
         const chapters = card.querySelectorAll('.ov-ch-marker');
         let done = 0;
+        let inProgressChapter = null; // 0 < readPct < 90 (按 0-100 整数判定)
         chapters.forEach(m => {
             const id = m.dataset.chapter;
-            if (progress.completed[id]) done++;
+            if (progress.completed[id] || (progress.readPct[id] || 0) >= 90) {
+                done++;
+            } else if (!inProgressChapter) {
+                const p = progress.readPct[id] || 0;
+                if (p > 0) {
+                    // 取 .ov-ch-title 而非整个 link (link 还含 .ov-ch-num / .ov-ch-time)
+                    const titleEl = m.closest('a')?.querySelector('.ov-ch-title');
+                    inProgressChapter = { title: titleEl ? titleEl.textContent.trim() : id, pct: p };
+                }
+            }
         });
         const total = chapters.length;
         const pct = total > 0 ? Math.round(done / total * 100) : 0;
         const fill = card.querySelector('[data-book-fill="' + bookSlug + '"]');
         const label = card.querySelector('[data-book-label="' + bookSlug + '"]');
+        const current = card.querySelector('[data-book-current="' + bookSlug + '"]');
         if (fill) fill.style.width = pct + '%';
-        if (label) label.textContent = done + ' / ' + total;
+        if (label) {
+            if (done === total) label.textContent = '✓ 全部读完';
+            else if (done === 0 && !inProgressChapter) label.textContent = '0 / ' + total;
+            else label.textContent = done + ' / ' + total;
+        }
+        if (current) {
+            if (inProgressChapter) {
+                current.textContent = '在读 · ' + inProgressChapter.title;
+                current.style.display = '';
+            } else if (done === total) {
+                current.textContent = '已读完 ✓';
+                current.style.display = '';
+            } else {
+                current.textContent = '';
+                current.style.display = 'none';
+            }
+        }
     });
 
-    // 3. 顶部总览 "已读 %"
-    const overallPctEl = document.getElementById('overview-read-pct');
-    if (overallPctEl) {
-        const total = document.querySelectorAll('.ov-ch-marker').length;
-        const done = Object.keys(progress.completed).length;
-        const pct = total > 0 ? Math.round(done / total * 100) : 0;
-        overallPctEl.textContent = pct;
+    // 3. 顶部总览 "在读 N 章" (替代之前 "已读 0%", 0% 永远没故事)
+    //     in-progress = 0 < readPct < 100 (started but not fully scrolled)
+    const readingEl = document.getElementById('overview-reading-count');
+    if (readingEl) {
+        const inProgress = Object.values(progress.readPct || {}).filter(p => p > 0 && p < 100).length;
+        readingEl.textContent = inProgress;
     }
 
     // 4. 个人数据看板

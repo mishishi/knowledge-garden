@@ -2454,16 +2454,16 @@ body.dark .resume-card-pill.in-progress {
 
 .overview-card-progress {
     text-align: right;
-    min-width: 140px;
+    min-width: 200px;
 }
 
 .overview-card-progress .progress-bar {
-    width: 120px;
-    height: 6px;
+    width: 200px;
+    height: 5px;
     background: var(--border);
     border-radius: 3px;
     overflow: hidden;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     margin-left: auto;
 }
 
@@ -2471,12 +2471,27 @@ body.dark .resume-card-pill.in-progress {
     height: 100%;
     background: var(--book-color, var(--accent));
     transition: width 0.3s;
+    opacity: 0.85;
+}
+
+.overview-card-progress .progress-current {
+    font-size: 11px;
+    color: var(--book-color, var(--accent));
+    margin-bottom: 4px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+    max-width: 200px;
+    margin-left: auto;
 }
 
 .overview-card-progress .progress-label {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-faint);
     font-family: Georgia, serif;
+    letter-spacing: 0.5px;
 }
 
 .overview-chapters {
@@ -6285,7 +6300,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
     <div class="overview-stat"><span class="num">18</span><span class="lbl">系列</span></div>
     <div class="overview-stat"><span class="num">185</span><span class="lbl">章节</span></div>
     <div class="overview-stat"><span class="num">247,924</span><span class="lbl">字</span></div>
-    <div class="overview-stat"><span class="num" id="overview-read-pct">0</span><span class="lbl">已读</span></div>
+    <div class="overview-stat"><span class="num" id="overview-reading-count">0</span><span class="lbl">在读</span></div>
   </div>
   <div class="resume-carousel" id="resume-carousel" style="display:none"><div class="resume-carousel-track" id="resume-carousel-track"></div></div>
 </div>
@@ -6297,7 +6312,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">工程师实战手册: 30 天搭建可靠 AI 评估体系</p>
       <div class="overview-card-stats">10 章 · 23,644 字 · 约 59 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="ai-evals" style="width:0%"></div></div><div class="progress-label" data-book-label="ai-evals">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="ai-evals"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="ai-evals" style="width:0%"></div></div><div class="progress-label" data-book-label="ai-evals">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#ai-evals__01-why"><span class="ov-ch-num">01</span><span class="ov-ch-title">评估为什么重要</span><span class="ov-ch-time">~5 分钟</span><span class="ov-ch-marker" data-chapter="ai-evals__01-why"></span></a></li>
@@ -6321,7 +6336,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">从零到生产：手把手教你构建 Multi-Agent 系统</p>
       <div class="overview-card-stats">10 章 · 8,758 字 · 约 21 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="multi-agent" style="width:0%"></div></div><div class="progress-label" data-book-label="multi-agent">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="multi-agent"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="multi-agent" style="width:0%"></div></div><div class="progress-label" data-book-label="multi-agent">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#multi-agent__01-your-first-agent"><span class="ov-ch-num">01</span><span class="ov-ch-title">你的第一个 Agent</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="multi-agent__01-your-first-agent"></span></a></li>
@@ -6345,7 +6360,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">从基础到 2026 深度：4 元素 / Few-shot / CoT / Role / Structured / Tool / Cache / Injection / Eval</p>
       <div class="overview-card-stats">10 章 · 11,944 字 · 约 29 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="llm-prompt" style="width:0%"></div></div><div class="progress-label" data-book-label="llm-prompt">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="llm-prompt"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="llm-prompt" style="width:0%"></div></div><div class="progress-label" data-book-label="llm-prompt">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#llm-prompt__01-prompt-basics"><span class="ov-ch-num">01</span><span class="ov-ch-title">Prompt 基础 + Token 经济学</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="llm-prompt__01-prompt-basics"></span></a></li>
@@ -6369,7 +6384,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">用 CrewAI v1.14 搭建生产级 Multi-Agent 系统：核心 API + 实战项目 + 公司落地案例</p>
       <div class="overview-card-stats">10 章 · 12,371 字 · 约 30 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="crewai" style="width:0%"></div></div><div class="progress-label" data-book-label="crewai">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="crewai"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="crewai" style="width:0%"></div></div><div class="progress-label" data-book-label="crewai">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#crewai__01-getting-started"><span class="ov-ch-num">01</span><span class="ov-ch-title">上手：跑通第一个 Crew</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="crewai__01-getting-started"></span></a></li>
@@ -6393,7 +6408,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">检索增强生成：从 embedding 到向量数据库，从 chunking 到 reranking，从评测到生产化</p>
       <div class="overview-card-stats">10 章 · 7,102 字 · 约 17 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="rag" style="width:0%"></div></div><div class="progress-label" data-book-label="rag">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="rag"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="rag" style="width:0%"></div></div><div class="progress-label" data-book-label="rag">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#rag__01-why-rag"><span class="ov-ch-num">01</span><span class="ov-ch-title">为什么需要 RAG</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="rag__01-why-rag"></span></a></li>
@@ -6417,7 +6432,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">包裹 LLM 的整套工程基座：agent loop、tools、context、permissions、observability、memory、failure recovery、eval — 写给需要自己造 / 选 harness 的人</p>
       <div class="overview-card-stats">10 章 · 14,725 字 · 约 36 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="harness-engineering" style="width:0%"></div></div><div class="progress-label" data-book-label="harness-engineering">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="harness-engineering"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="harness-engineering" style="width:0%"></div></div><div class="progress-label" data-book-label="harness-engineering">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#harness-engineering__01-what-is-harness"><span class="ov-ch-num">01</span><span class="ov-ch-title">什么是 Harness：从裸 API 到能干活 Agent 的距离</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="harness-engineering__01-what-is-harness"></span></a></li>
@@ -6441,7 +6456,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">让你的 agent side project 活过 100 个用户：unit economics、model routing、caching、压缩、quota、熔断、cost dashboard</p>
       <div class="overview-card-stats">10 章 · 9,083 字 · 约 22 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="agent-cost" style="width:0%"></div></div><div class="progress-label" data-book-label="agent-cost">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="agent-cost"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="agent-cost" style="width:0%"></div></div><div class="progress-label" data-book-label="agent-cost">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#agent-cost__01-cost-economics"><span class="ov-ch-num">01</span><span class="ov-ch-title">为什么 Agent 经济学跟 SaaS 不一样</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="agent-cost__01-cost-economics"></span></a></li>
@@ -6465,7 +6480,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">写给非技术背景或不想写代码的个人开发者：用 AI 工具从 0 到 1 做出可实施 MVP 的产品方法论（idea 验证 / 设计 / 文案 / PMF / 渠道 / 定价 / 留存）</p>
       <div class="overview-card-stats">10 章 · 18,120 字 · 约 45 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="indie-ai-product" style="width:0%"></div></div><div class="progress-label" data-book-label="indie-ai-product">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="indie-ai-product"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="indie-ai-product" style="width:0%"></div></div><div class="progress-label" data-book-label="indie-ai-product">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#indie-ai-product__01-indie-math"><span class="ov-ch-num">01</span><span class="ov-ch-title">2026 一个人做产品的数学</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="indie-ai-product__01-indie-math"></span></a></li>
@@ -6489,7 +6504,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章从 prompt 跨进上下文工程体系：Write / Select / Compress / Isolate 四大原则 + RAG / 记忆 / MCP / Agent 生产线实战</p>
       <div class="overview-card-stats">10 章 · 15,084 字 · 约 37 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="context-engineering" style="width:0%"></div></div><div class="progress-label" data-book-label="context-engineering">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="context-engineering"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="context-engineering" style="width:0%"></div></div><div class="progress-label" data-book-label="context-engineering">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#context-engineering__01-why-context-engineering"><span class="ov-ch-num">01</span><span class="ov-ch-title">为什么需要 Context Engineering</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="context-engineering__01-why-context-engineering"></span></a></li>
@@ -6513,7 +6528,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章从 0 到 1 学会写 Claude Agent Skills：SKILL.md 结构 + 触发机制 + CLAUDE.md 分工 + 8 大实用 Skill 拆解 + 性能优化与生态</p>
       <div class="overview-card-stats">10 章 · 12,770 字 · 约 31 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="agent-skills" style="width:0%"></div></div><div class="progress-label" data-book-label="agent-skills">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="agent-skills"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="agent-skills" style="width:0%"></div></div><div class="progress-label" data-book-label="agent-skills">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#agent-skills__01-what-is-skill"><span class="ov-ch-num">01</span><span class="ov-ch-title">Skills 是什么</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="agent-skills__01-what-is-skill"></span></a></li>
@@ -6537,7 +6552,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章从 0 到上手 Claude Code：安装配置 + CLAUDE.md 项目记忆 + Skills/Hooks/SubAgent + MCP 集成 + 10 个实战场景 + 成本优化 + 与 Cursor/Codex/TRAE 的对比</p>
       <div class="overview-card-stats">10 章 · 11,506 字 · 约 28 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="claude-code" style="width:0%"></div></div><div class="progress-label" data-book-label="claude-code">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="claude-code"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="claude-code" style="width:0%"></div></div><div class="progress-label" data-book-label="claude-code">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#claude-code__01-what-is-claude-code"><span class="ov-ch-num">01</span><span class="ov-ch-title">Claude Code 是什么</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="claude-code__01-what-is-claude-code"></span></a></li>
@@ -6561,7 +6576,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章讲透 vibe coding：Karpathy 定义 + 工具全景 + 三段式口述 + 三个真坑（N+1 / 字段割裂 / 安全）+ 多文件重构 + 中文本地化 + 边界 + 个人工作流</p>
       <div class="overview-card-stats">10 章 · 7,914 字 · 约 19 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="vibe-coding" style="width:0%"></div></div><div class="progress-label" data-book-label="vibe-coding">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="vibe-coding"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="vibe-coding" style="width:0%"></div></div><div class="progress-label" data-book-label="vibe-coding">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#vibe-coding__01-what-is-vibe-coding"><span class="ov-ch-num">01</span><span class="ov-ch-title">什么是 vibe coding</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="vibe-coding__01-what-is-vibe-coding"></span></a></li>
@@ -6585,7 +6600,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章讲透 agent 间通信：A2A 协议 + Agent Card + 4 种协作范式（管道/辩论/分层/市场）+ 安全边界 + 真实落地架构</p>
       <div class="overview-card-stats">10 章 · 8,118 字 · 约 20 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="a2a-multi-agent" style="width:0%"></div></div><div class="progress-label" data-book-label="a2a-multi-agent">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="a2a-multi-agent"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="a2a-multi-agent" style="width:0%"></div></div><div class="progress-label" data-book-label="a2a-multi-agent">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#a2a-multi-agent__01-what-is-a2a"><span class="ov-ch-num">01</span><span class="ov-ch-title">什么是 A2A 协议</span><span class="ov-ch-time">~1 分钟</span><span class="ov-ch-marker" data-chapter="a2a-multi-agent__01-what-is-a2a"></span></a></li>
@@ -6609,7 +6624,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章讲透 agent 长期记忆：三层架构（工作/情景/语义）+ 向量数据库 + 知识图谱 + 混合检索 + 写入策略 + 真实生产系统</p>
       <div class="overview-card-stats">10 章 · 8,007 字 · 约 20 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="memory-architecture" style="width:0%"></div></div><div class="progress-label" data-book-label="memory-architecture">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="memory-architecture"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="memory-architecture" style="width:0%"></div></div><div class="progress-label" data-book-label="memory-architecture">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#memory-architecture__01-why-memory-matters"><span class="ov-ch-num">01</span><span class="ov-ch-title">为什么 agent 需要长期记忆</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="memory-architecture__01-why-memory-matters"></span></a></li>
@@ -6633,7 +6648,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章讲透 embodied agent：世界模型 + 仿真训练 + 真实机器人 + 机械臂 + 导航 + 家庭服务 + 未来 2-3 年趋势</p>
       <div class="overview-card-stats">10 章 · 12,898 字 · 约 32 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="embodied-agent" style="width:0%"></div></div><div class="progress-label" data-book-label="embodied-agent">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="embodied-agent"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="embodied-agent" style="width:0%"></div></div><div class="progress-label" data-book-label="embodied-agent">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#embodied-agent__01-what-is-embodied"><span class="ov-ch-num">01</span><span class="ov-ch-title">什么是具身智能</span><span class="ov-ch-time">~3 分钟</span><span class="ov-ch-marker" data-chapter="embodied-agent__01-what-is-embodied"></span></a></li>
@@ -6657,7 +6672,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章讲透 AI 重塑内容产业：AIGC 工具 + 工作流改造 + Newsletter 经济 + Substack / Beehiiv + 内容平台对比 + 变现路径 + AI 协作 + 版权问题 + 未来创作者</p>
       <div class="overview-card-stats">10 章 · 16,109 字 · 约 40 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="ai-content-economy" style="width:0%"></div></div><div class="progress-label" data-book-label="ai-content-economy">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="ai-content-economy"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="ai-content-economy" style="width:0%"></div></div><div class="progress-label" data-book-label="ai-content-economy">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#ai-content-economy__01-industry-reshuffle"><span class="ov-ch-num">01</span><span class="ov-ch-title">内容产业正在被 AI 重塑</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="ai-content-economy__01-industry-reshuffle"></span></a></li>
@@ -6681,7 +6696,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">15 章深挖 2026 最值得学的 Codex 实战案例：Codex 整合 ChatGPT 大爆发 + AGENTS.md 工程化 + CodexLoop 不偷懒 + spawn_agent 多 Agent 并行 + Windows Computer Use + CI/CD 自动化 + 飞书 CLI 接入办公 + AIGrader 半天全栈 + 未来 6 个月趋势 + 4 条官方线 3 个平替 + 个人 ECC 系统 + MCP 完整实战 + Codex vs Claude Code vs Cursor 横评 + 5 套可复制工作流</p>
       <div class="overview-card-stats">15 章 · 26,949 字 · 约 67 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="codex-cases" style="width:0%"></div></div><div class="progress-label" data-book-label="codex-cases">0 / 15</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="codex-cases"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="codex-cases" style="width:0%"></div></div><div class="progress-label" data-book-label="codex-cases">0 / 15</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#codex-cases__01-paradigm-shift"><span class="ov-ch-num">01</span><span class="ov-ch-title">AI Agent 实战案例库 — 2026 范式转移</span><span class="ov-ch-time">~2 分钟</span><span class="ov-ch-marker" data-chapter="codex-cases__01-paradigm-shift"></span></a></li>
@@ -6710,7 +6725,7 @@ body.dark .match-indicator { background: #2a2a2e; border-color: #444; }
       <p class="overview-card-desc">10 章拆解 2026 上半年 15 款国产 AI 编程 / 桌面 Agent 集体入场：字节 TRAE Work + 豆包、阿里 QoderWork + Qoder CN + 通义灵码、腾讯 WorkBuddy + Marvis + CodeBuddy、月之暗面 Kimi Work、百度文心快码、智谱 CodeGeeX、华为 CodeArts。从独立开发者视角真实使用 + 选型决策 + GEO 引流打法。</p>
       <div class="overview-card-stats">10 章 · 22,822 字 · 约 57 分钟</div>
     </div>
-    <div class="overview-card-progress"><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="cn-codex" style="width:0%"></div></div><div class="progress-label" data-book-label="cn-codex">0 / 10</div></div>
+    <div class="overview-card-progress"><div class="progress-current" data-book-current="cn-codex"></div><div class="progress-bar"><div class="progress-bar-fill" data-book-fill="cn-codex" style="width:0%"></div></div><div class="progress-label" data-book-label="cn-codex">0 / 10</div></div>
   </header>
   <ol class="overview-chapters">
     <li><a href="#cn-codex__01-battlefield"><span class="ov-ch-num">01</span><span class="ov-ch-title">中国版 Codex 大乱斗：6 个月 15 款产品集体入场</span><span class="ov-ch-time">~4 分钟</span><span class="ov-ch-marker" data-chapter="cn-codex__01-battlefield"></span></a></li>
@@ -9406,30 +9421,56 @@ function renderOverview() {
         }
     });
 
-    // 2. 每个 series 的进度条 + 文字
+    // 2. 每个 series 的进度条 + 文字 + 当前在读章节
     document.querySelectorAll('.overview-card').forEach(card => {
         const bookSlug = card.dataset.book;
         const chapters = card.querySelectorAll('.ov-ch-marker');
         let done = 0;
+        let inProgressChapter = null; // 0 < readPct < 90 (按 0-100 整数判定)
         chapters.forEach(m => {
             const id = m.dataset.chapter;
-            if (progress.completed[id]) done++;
+            if (progress.completed[id] || (progress.readPct[id] || 0) >= 90) {
+                done++;
+            } else if (!inProgressChapter) {
+                const p = progress.readPct[id] || 0;
+                if (p > 0) {
+                    // 取 .ov-ch-title 而非整个 link (link 还含 .ov-ch-num / .ov-ch-time)
+                    const titleEl = m.closest('a')?.querySelector('.ov-ch-title');
+                    inProgressChapter = { title: titleEl ? titleEl.textContent.trim() : id, pct: p };
+                }
+            }
         });
         const total = chapters.length;
         const pct = total > 0 ? Math.round(done / total * 100) : 0;
         const fill = card.querySelector('[data-book-fill="' + bookSlug + '"]');
         const label = card.querySelector('[data-book-label="' + bookSlug + '"]');
+        const current = card.querySelector('[data-book-current="' + bookSlug + '"]');
         if (fill) fill.style.width = pct + '%';
-        if (label) label.textContent = done + ' / ' + total;
+        if (label) {
+            if (done === total) label.textContent = '✓ 全部读完';
+            else if (done === 0 && !inProgressChapter) label.textContent = '0 / ' + total;
+            else label.textContent = done + ' / ' + total;
+        }
+        if (current) {
+            if (inProgressChapter) {
+                current.textContent = '在读 · ' + inProgressChapter.title;
+                current.style.display = '';
+            } else if (done === total) {
+                current.textContent = '已读完 ✓';
+                current.style.display = '';
+            } else {
+                current.textContent = '';
+                current.style.display = 'none';
+            }
+        }
     });
 
-    // 3. 顶部总览 "已读 %"
-    const overallPctEl = document.getElementById('overview-read-pct');
-    if (overallPctEl) {
-        const total = document.querySelectorAll('.ov-ch-marker').length;
-        const done = Object.keys(progress.completed).length;
-        const pct = total > 0 ? Math.round(done / total * 100) : 0;
-        overallPctEl.textContent = pct;
+    // 3. 顶部总览 "在读 N 章" (替代之前 "已读 0%", 0% 永远没故事)
+    //     in-progress = 0 < readPct < 100 (started but not fully scrolled)
+    const readingEl = document.getElementById('overview-reading-count');
+    if (readingEl) {
+        const inProgress = Object.values(progress.readPct || {}).filter(p => p > 0 && p < 100).length;
+        readingEl.textContent = inProgress;
     }
 
     // 4. 个人数据看板
