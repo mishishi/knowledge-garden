@@ -2647,6 +2647,16 @@ body.overview-mode .chapter {
     display: none;
 }
 
+/* 单章视图: 默认所有章节隐藏, 只 :target (URL hash 指向的) 可见.
+   切章节 hash 自动变, :target 自动切, 不需要 JS 手动 hide/show 旧章节.
+   包在 @media screen 里 — 打印时所有章节展开 (下方的 @media print 会覆盖) */
+@media screen {
+    .chapter { display: none; }
+    .chapter:target { display: block; }
+    /* 章节顶不被 navbar 遮, smooth scroll 到 :target 留出空间 */
+    .chapter:target { scroll-margin-top: 24px; }
+}
+
 body.overview-mode .content {
     padding: 0;
 }
