@@ -2767,6 +2767,11 @@ body.overview-mode .content {
     border-bottom: 1px solid var(--border);
     text-align: justify;
 }
+
+/* Overview 跟 chapter 一样, 默认隐藏. body.overview-mode 时显示.
+   修 sidebar 切章节 bug: 之前 .overview 默认 display: block, 切章节后还显示 */
+.overview { display: none; }
+body.overview-mode .overview { display: block; }
 .chapter-body {
     display: flex;
     align-items: flex-start;
@@ -8279,10 +8284,13 @@ document.querySelector('.pwa-prompt .close').addEventListener('click', () => {
 // 锚点平滑滚动
 links.forEach(link => {
     link.addEventListener('click', (e) => {
-        const target = document.querySelector(link.getAttribute('href'));
+        const href = link.getAttribute('href');
+        const target = document.querySelector(href);
         if (target) {
             e.preventDefault();
-            hideOverview();
+            // 用 location.hash (不是 history.pushState) 强制浏览器重新求值 :target
+            // pushState 改 URL 但 :target 不会重算, 章节还是 display: none
+            location.hash = href;
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             if (window.innerWidth < 900) {
                 document.body.classList.add('sidebar-collapsed');
@@ -10944,6 +10952,7 @@ function showSeriesCelebration(slug) {
 // overview-mode 切换：只看首页 TOC
 function showOverview() {
     document.body.classList.add('overview-mode');
+    document.body.classList.remove('notes-mode');  // 三视图互斥: 切 overview 同时清 notes-mode
     window.scrollTo({ top: 0, behavior: 'instant' });
     if (window.location.hash) history.replaceState(null, '', window.location.pathname);
 }
@@ -10953,7 +10962,8 @@ function hideOverview() {
 }
 
 // 笔记全站视图 (#notes-page): 跟 overview 类似, 独立 body class 控制
-// showNotesPage() — 渲染 + 进入; hideNotesPage() — 退出回 overview
+// showNotesPage() — 渲染 + 进入; hideNotesPage() — 只清 notes-mode, 不动 hash
+// (下一步去 overview / 章节 由 URL hash + hashchange 决定)
 function showNotesPage() {
     document.body.classList.add('notes-mode');
     document.body.classList.remove('overview-mode');
@@ -10963,8 +10973,7 @@ function showNotesPage() {
 }
 function hideNotesPage() {
     document.body.classList.remove('notes-mode');
-    // 回 overview
-    showOverview();
+    // 不调 showOverview, 不清 hash — caller 自己决定下一步
 }
 function renderNotesPage() {
     const notes = JSON.parse(localStorage.getItem('notes') || '[]');
@@ -11070,7 +11079,7 @@ function bindNotesPageEvents() {
     if (search) search.addEventListener('input', renderNotesPage);
     if (bookFilter) bookFilter.addEventListener('change', renderNotesPage);
     if (sort) sort.addEventListener('change', renderNotesPage);
-    if (back) back.addEventListener('click', hideNotesPage);
+    if (back) back.addEventListener('click', showOverview);
     // 点击 note / takeaway → 跳到原章
     const list = document.getElementById('np-list');
     if (list) list.addEventListener('click', (e) => {
