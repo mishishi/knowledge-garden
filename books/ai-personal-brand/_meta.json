@@ -1,0 +1,21 @@
+{
+  "title": "AI 个人品牌放大",
+  "subtitle": "工程师副业 0-1: 选题 / 写作 / 分发 / 变现 全流水线",
+  "icon": "user",
+  "color": "#dc2626",
+  "priority": 4,
+  "order": [
+    "01-essence",
+    "02-positioning",
+    "03-topic-engine",
+    "04-voice-tuning",
+    "05-content-matrix",
+    "06-cross-platform",
+    "07-cold-start",
+    "08-ai-pipeline",
+    "09-content-to-product",
+    "10-monetization",
+    "11-data-review",
+    "12-long-term"
+  ]
+}

@@ -2,1173 +2,1239 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/01-what-is-agent.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/02-llm-foundation.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/03-prompt-engineering.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/04-tool-use.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/05-memory.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/06-planning.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/07-rag.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/08-multi-agent.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/09-evaluation.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/10-safety.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/11-applications.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/12-future.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/01-why.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/02-basics.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/03-chapter.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/04-chapter.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/05-llm.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/06-chapter.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/07-chapter.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/08-chapter.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/09-in-practicecases.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/10-chapter.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/01-overview.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/02-java-basics.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/03-jvm.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/04-concurrency.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/05-mysql.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/06-redis.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/07-distributed.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/08-mq.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/09-system-design.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/10-project.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/11-career.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/12-reverse-q.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/01-your-first-agent.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/02-why-multi-agent.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/03-five-abstractions.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/04-orchestration-patterns.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/05-state-and-communication.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/06-failure-handling.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/07-framework-comparison.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/08-observability-and-cost.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/09-code-review-project.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/multi-agent/10-production-checklist.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/01-prompt-basics.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/02-few-shot.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/03-advanced-patterns.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/04-role-system-prompt.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/05-structured-output.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/06-tool-use.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/07-prompt-caching.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/08-prompt-injection.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/09-eval-driven.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/llm-prompt/10-real-cases.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/01-getting-started.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/02-crew-orchestration.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/03-agent-tuning.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/04-tools-and-mcp.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/05-memory-and-knowledge.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/06-structured-output.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/07-flows.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/08-skills-and-prod.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/09-side-projects.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/crewai/10-prod-cases.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/01-essence.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/02-positioning.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/03-topic-engine.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/04-voice-tuning.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/05-content-matrix.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/06-cross-platform.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/07-cold-start.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/08-ai-pipeline.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/09-content-to-product.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/10-monetization.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/11-data-review.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-personal-brand/12-long-term.html</loc>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/01-why-rag.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/02-embedding-models.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/03-vector-databases.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/04-chunking-strategies.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/05-retrieval-and-reranking.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/06-prompt-design.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/07-hybrid-search.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/08-evaluation.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/09-advanced-patterns.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/rag/10-prod-checklist.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/01-what-is-harness.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/02-agent-loop.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/03-tool-design.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/04-context-management.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/05-permissions-sandbox.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/06-observability.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/07-memory-layers.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/08-failure-recovery.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/09-eval-driven.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/harness-engineering/10-build-from-scratch.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/01-cost-economics.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/02-where-tokens-go.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/03-model-routing.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/04-caching-layers.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/05-prompt-compression.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/06-batch-vs-stream.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/07-user-quota.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/08-budget-circuit-breaker.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/09-tool-cost.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-cost/10-cost-dashboard.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/01-indie-math.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/02-idea-to-scope.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/03-validate-without-code.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/04-design-with-ai.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/05-write-with-ai.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/06-pmf-signals.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/07-distribution.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/08-pricing.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/09-first-paying-users.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/indie-ai-product/10-retention-vs-growth.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/01-why-context-engineering.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/02-context-window-tokens.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/03-write-storage-memory.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/04-select-rag-retrieval.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/05-compress-strategies.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/06-isolate-structure.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/07-tools-and-mcp.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/08-multi-agent-context.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/09-agentic-rag.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/context-engineering/10-production-antipatterns.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/01-what-is-skill.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/02-skill-md-structure.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/03-trigger-mechanism.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/04-claudemd-vs-skills.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/05-eight-essential-skills.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/06-write-your-first-skill.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/07-test-and-evaluate.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/08-token-cost-optimization.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/09-marketplace-and-sharing.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/agent-skills/10-ecosystem-and-future.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/01-what-is-claude-code.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/02-install-and-config.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/03-claudemd-deep-dive.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/04-skills-and-hooks.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/05-subagent-and-worktree.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/06-mcp-integration.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/07-slash-commands.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/08-ten-real-scenarios.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/09-cost-and-performance.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/claude-code/10-limits-and-future.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/01-what-is-vibe-coding.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/02-tools-landscape.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/03-three-stage-method.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/04-pitfall-n-plus-one.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/05-pitfall-naming.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/06-pitfall-security.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/07-multi-file-refactor.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/08-chinese-localized.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/09-boundaries.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/vibe-coding/10-my-workflow.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/01-what-is-a2a.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/02-a2a-vs-mcp.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/03-agent-card.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/04-four-collaboration-patterns.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/05-pipeline-mode.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/06-debate-mode.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/07-hierarchical-mode.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/08-market-mode.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/09-security-boundary.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/a2a-multi-agent/10-real-architecture.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/01-why-memory-matters.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/02-three-layer-memory.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/03-working-memory.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/04-episodic-memory.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/05-semantic-memory.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/06-vector-db.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/07-knowledge-graph.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/08-hybrid-retrieval.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/09-memory-write-strategy.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/memory-architecture/10-real-system.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/01-what-is-embodied.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/02-three-pillars.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/03-world-models.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/04-simulation-train.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/05-simulation-platforms.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/06-real-robot.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/07-manipulation.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/08-navigation.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/09-home-service.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/embodied-agent/10-future-outlook.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/01-industry-reshuffle.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/02-aigc-tools.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/03-workflow-rebuild.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/04-newsletter-economy.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/05-substack-beehiiv.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/06-content-platform-comparison.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/07-monetization-paths.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/08-ai-co-creation.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/09-copyright-and-rights.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-content-economy/10-future-creator.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/01-paradigm-shift.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/02-codex-explosion.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/03-agents-md.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/04-codex-loop.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/05-multi-agent.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/06-computer-use.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/07-cicd-git.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/08-office-flow.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/09-aigrader.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/10-future-pick.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/11-tools-ecosystem.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/12-skills-best-practices.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/13-mcp-playbook.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/14-vs-cc-cursor.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/codex-cases/15-indie-workflow.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/01-battlefield.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/02-bytedance.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/03-alibaba.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/04-tencent.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/05-kimi.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/06-baidu-zhipu-huawei.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/07-common-patterns.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/08-cn-api.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/09-account-billing.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/cn-codex/10-pick-geo.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <priority>0.8</priority>
   </url>
 </urlset>

@@ -1,0 +1,70 @@
+{
+  "slug": "ai-personal-brand",
+  "title": "AI 个人品牌放大",
+  "subtitle": "工程师副业 0-1: 选题 / 写作 / 分发 / 变现 全流水线",
+  "icon": "user",
+  "color": "#dc2626",
+  "chapters": 12,
+  "chapters_meta": [
+    {
+      "slug": "01-essence",
+      "title": "个人品牌的本质",
+      "desc": "为什么 2026 副业必须做个人品牌, 跟\"卖货 / 接单\"区别"
+    },
+    {
+      "slug": "02-positioning",
+      "title": "定位: 找到你的内容窄门",
+      "desc": "怎么避开红海, 工程师怎么转内容创作者, 细分领域方法论"
+    },
+    {
+      "slug": "03-topic-engine",
+      "title": "AI 选题引擎",
+      "desc": "用 LLM 找选题, RAG + Perplexity 调研, 怎么验证真需求"
+    },
+    {
+      "slug": "04-voice-tuning",
+      "title": "写作风格调教",
+      "desc": "怎么让 AI 帮你写但不丢\"人味\", prompt 调出你的口吻"
+    },
+    {
+      "slug": "05-content-matrix",
+      "title": "内容矩阵设计",
+      "desc": "一鱼多吃: 长文 → 短帖 / 视频脚本 / 教程, 1 篇扩 10 篇"
+    },
+    {
+      "slug": "06-cross-platform",
+      "title": "跨平台分发策略",
+      "desc": "公众号 / 即刻 / X / 小红书 / 知乎 / B 站 怎么选 + 适配"
+    },
+    {
+      "slug": "07-cold-start",
+      "title": "冷启动 0-100 订阅",
+      "desc": "前 100 个真粉怎么来, 主动外推 / 互推 / 评论区运营"
+    },
+    {
+      "slug": "08-ai-pipeline",
+      "title": "AI 提效流水线",
+      "desc": "周更 3 篇怎么做到, 工具链 + 模板 + 自动化实操"
+    },
+    {
+      "slug": "09-content-to-product",
+      "title": "从内容到产品",
+      "desc": "0-1 副业产品怎么选, 怎么用内容验证付费意愿"
+    },
+    {
+      "slug": "10-monetization",
+      "title": "付费转化与定价",
+      "desc": "知识星球 / 课程 / 咨询 / SaaS, 怎么定价 + 转化漏斗"
+    },
+    {
+      "slug": "11-data-review",
+      "title": "数据驱动的复盘",
+      "desc": "哪些指标真有用, 哪些是噪音, 怎么迭代内容"
+    },
+    {
+      "slug": "12-long-term",
+      "title": "长期主义与避坑",
+      "desc": "倦怠 / 抄袭 / 算法变化 / IP 风险, 怎么持续 3 年+"
+    }
+  ]
+}
