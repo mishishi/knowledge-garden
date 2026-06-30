@@ -1,0 +1,23 @@
+{
+  "title": "Java 高级开发工程师面试指南",
+  "description": "P6/P7 全景地图：技术深挖 + 项目经验 + 系统设计 + 反问团队, 30 天从候选人变成 offer 收割机",
+  "icon": "briefcase",
+  "color": "#d97706",
+  "priority": 1,
+  "level": 3,
+  "level_name": "进阶",
+  "order": [
+    "01-overview",
+    "02-java-basics",
+    "03-jvm",
+    "04-concurrency",
+    "05-mysql",
+    "06-redis",
+    "07-distributed",
+    "08-mq",
+    "09-system-design",
+    "10-project",
+    "11-career",
+    "12-reverse-q"
+  ]
+}
