@@ -2256,6 +2256,22 @@ body.dark .review-grade-btn { background: #1f1f24; }
     flex-wrap: wrap;
     margin-bottom: 36px;
 }
+/* Mobile: stats 2x2 网格, 避免 3+1 awkward 布局 */
+@media (max-width: 700px) {
+    .overview-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 12px;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .overview-stat .num { font-size: 28px; }
+    .overview-stat .lbl { font-size: 10px; letter-spacing: 1px; }
+}
+@media (max-width: 420px) {
+    .overview-stats { max-width: 280px; }
+}
 
 .overview-stat {
     display: flex;
@@ -3071,6 +3087,12 @@ body.overview-mode .overview { display: block; }
     min-width: 24px;
 }
 .series-toc-title { flex: 1; }
+@media (max-width: 700px) {
+    .series-intro { padding: 16px 18px; margin-bottom: 28px; }
+    .series-intro-desc { font-size: 13px; }
+    .series-toc { grid-template-columns: 1fr; gap: 4px; font-size: 13px; }
+    .series-toc li { padding: 4px 0; }
+}
 @media (max-width: 600px) {
     .series-toc { grid-template-columns: 1fr; }
 }
@@ -4279,7 +4301,9 @@ a:focus-visible {
     body.mobile-sidebar-open .sidebar { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.18); }
     .mobile-menu-btn { display: flex; }
     .sidebar-toggle { display: none; } /* 移动端用 hamburger 替代 */
-    .content { padding: 70px 20px 40px; max-width: 100%; }
+    .content { padding: 70px 20px 40px 20px; max-width: 100%; }
+    body.width-narrow .chapter-content, body.width-medium .chapter-content, body.width-wide .chapter-content, .chapter-content { max-width: 100%; padding-right: 130px; }
+    .overview { padding-right: 130px; }
     .chapter-title { font-size: 1.8em; }
     .chapter-num { font-size: 12px; letter-spacing: 5px; }
     .book-cover h1 { font-size: 1.8em; }
@@ -4289,6 +4313,7 @@ a:focus-visible {
     /* TOC 移到内容流, 不再 sticky */
     .chapter-toc { position: static; max-height: none; margin: 24px 0; padding: 16px; }
     .chapter-toc .toc-list { max-height: 300px; overflow-y: auto; }
+    .series-intro { padding-right: 130px; }
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }

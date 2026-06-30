@@ -7,6 +7,72 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/</loc>
+    <lastmod>2026-06-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/01-what-is-agent.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/02-llm-foundation.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/03-prompt-engineering.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/04-tool-use.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/05-memory.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/06-planning.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/07-rag.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/08-multi-agent.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/09-evaluation.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/10-safety.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/11-applications.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-agent/12-future.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/</loc>
     <lastmod>2026-06-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -59,6 +125,72 @@
   </url>
   <url>
     <loc>https://mishishi.github.io/knowledge-garden/books_pages/ai-evals/10-chapter.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/</loc>
+    <lastmod>2026-06-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/01-overview.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/02-java-basics.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/03-jvm.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/04-concurrency.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/05-mysql.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/06-redis.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/07-distributed.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/08-mq.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/09-system-design.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/10-project.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/11-career.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mishishi.github.io/knowledge-garden/books_pages/java-interview/12-reverse-q.html</loc>
     <lastmod>2026-06-30</lastmod>
     <priority>0.8</priority>
   </url>
