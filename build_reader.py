@@ -8923,7 +8923,7 @@ function updateDashboardCounters() {
         CHAPTERS.forEach(ch => {
             const id = ch.id || ch;
             const p = readPct[id] || 0;
-            if (completed[id] || p >= 0.9) read++;
+            if (completed[id] || p >= 90) read++;
             else if (p > 0) reading++;
         });
     }
@@ -9345,8 +9345,8 @@ function renderResumeCarousel() {
         const color = meta.color || '#b08968';
         const icon = meta.icon || 'book';
         const cls = c.primary ? 'resume-card primary' : 'resume-card';
-        // Pill: 在读 = 蓝色 X%, 未读 = 灰色 (c.pct 是 0-1 比例, 显示需 ×100)
-        const pctInt = c.pct > 0 ? Math.round(c.pct * 100) : 0;
+        // Pill: 在读 = 蓝色 X%, 未读 = 灰色 (c.pct 是 0-100 整数, 来自 progress.readPct)
+        const pctInt = c.pct > 0 ? Math.round(c.pct) : 0;
         const pillClass = pctInt > 0 ? 'in-progress' : 'unread';
         const pillText = pctInt > 0 ? pctInt + '%' : '未读';
         // Meta 第 2 行: 主卡 = "书名 · 上次 X 时间", 其他 = "书名 · 类型标签"
@@ -9369,7 +9369,8 @@ function renderResumeCarousel() {
 
 // ============================================================
 // "今天"面板: 今日推荐 3 章 + 最近书签
-// 优先级: 在读 (0 < p < 0.9) > 未读 (p=0) > 已读 (p>=0.9 跳过)
+// 优先级: 在读 (0 < p < 90) > 未读 (p=0) > 已读 (p>=90 跳过)
+// (readPct 是 0-100 整数, 阈值 90 表示 90% 已读)
 // 每书最多 2 章, 跨书 3 章
 // ============================================================
 function renderTodayPanel() {
@@ -9387,14 +9388,15 @@ function renderTodayPanel() {
         || Object.values(readPct).some(p => p > 0);
     const candidates = [];
     if (hasActivity) {
-        allChapters.forEach((ch, idx) => {
-            const id = ch.id || ch;
-            const p = readPct[id] || 0;
-            if (p >= 0.9) return; // 跳过已读
-            const book = (typeof CHAPTER_BOOK_MAP !== 'undefined') ? (CHAPTER_BOOK_MAP[id] || '') : '';
-            const perBookCount = candidates.filter(c => c.book === book).length;
-            if (perBookCount >= 2) return;
-            const prio = (p > 0 && p < 0.9) ? 2 : 1; // 在读 > 未读
+    allChapters.forEach((ch, idx) => {
+        const id = ch.id || ch;
+        // readPct 是 0-100 整数 (tracker 写 Math.round(... * 100)), 阈值用 90 不是 0.9
+        const p = readPct[id] || 0;
+        if (p >= 90) return; // 跳过已读 (>=90%)
+        const book = (typeof CHAPTER_BOOK_MAP !== 'undefined') ? (CHAPTER_BOOK_MAP[id] || '') : '';
+        const perBookCount = candidates.filter(c => c.book === book).length;
+        if (perBookCount >= 2) return;
+        const prio = (p > 0 && p < 90) ? 2 : 1; // 在读 (0 < p < 90) > 未读 (p=0)
             const title = (typeof CHAPTER_TITLES_MAP !== 'undefined' && CHAPTER_TITLES_MAP[id]) || ch.title || id;
             candidates.push({id, title, book, pct: p, prio, idx});
         });
@@ -9427,9 +9429,10 @@ function renderTodayPanel() {
         const color = meta.color || '#b08968';
         const icon = meta.icon || 'book';
         const bookTitle = meta.title || c.book;
+        // c.pct 来自 progress.readPct, 已经是 0-100 整数 (tracker 写的是 Math.round(... * 100))
         const pct = c.pct || 0;
         const pillClass = pct > 0 ? 'in-progress' : 'unread';
-        const pillText = pct > 0 ? Math.round(pct * 100) + '%' : '未读';
+        const pillText = pct > 0 ? Math.round(pct) + '%' : '未读';
         const styleAttr = '--book-color:' + color;
         return '<a class="today-card" href="#' + escapeHtml(c.id) + '" style="' + styleAttr + '">'
             + '<span class="today-card-icon">' + svg_icon(icon, 16) + '</span>'
@@ -9542,7 +9545,7 @@ function renderReflections() {
         if (!slug) return;
         const chapters = (typeof CHAPTERS_BY_BOOK !== 'undefined' && CHAPTERS_BY_BOOK[slug]) || [];
         const total = chapters.length;
-        const done = chapters.filter(id => completed[id] || (readPct[id] || 0) >= 0.9).length;
+        const done = chapters.filter(id => completed[id] || (readPct[id] || 0) >= 90).length;
         const pct = total > 0 ? Math.round(done / total * 100) : 0;
         const mins = chapters.reduce((sum, id) => sum + (timeSpent[id] || 0), 0);
         const noteCount = notes.filter(n => n.bookSlug === slug).length;
