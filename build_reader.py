@@ -1099,6 +1099,58 @@ f'</tr>'
     return "\n".join(parts)
 
 
+def build_notes_page_html(books):
+    """生成 <section id="notes-page"> — 笔记 + takeaway 全站视图
+    由 JS 在运行时从 localStorage 读 kg_takeaways / notes 填数据.
+    跟 overview 同级, 用 #notes-page 锚点 + showNotesPage() 显示. """
+    from html import escape as escape_html
+
+    parts = ['<section id="notes-page" class="notes-page">']
+    # Hero: 标题 + stats (4 块: 笔记数 / takeaway 数 / 涉及书数 / 总字数)
+    parts.append('<div class="notes-page-hero">')
+    parts.append('  <h1 class="notes-page-title">我的笔记</h1>')
+    parts.append('  <p class="notes-page-subtitle">所有书的高亮、个人 takeaway 和章节笔记, 一处看完</p>')
+    parts.append('  <div class="notes-page-stats">')
+    parts.append('    <div class="np-stat"><span class="num" id="np-stat-notes">0</span><span class="lbl">条笔记</span></div>')
+    parts.append('    <div class="np-stat"><span class="num" id="np-stat-takeaways">0</span><span class="lbl">条 takeaway</span></div>')
+    parts.append('    <div class="np-stat"><span class="num" id="np-stat-books">0</span><span class="lbl">本书</span></div>')
+    parts.append('    <div class="np-stat"><span class="num" id="np-stat-chars">0</span><span class="lbl">字</span></div>')
+    parts.append('  </div>')
+    parts.append('</div>')
+    # Controls: search + book filter + sort
+    parts.append('<div class="notes-page-controls">')
+    parts.append('  <input type="text" class="np-search" id="np-search" placeholder="搜笔记 / takeaway / 引用" autocomplete="off">')
+    parts.append('  <select class="np-book-filter" id="np-book-filter">')
+    parts.append('    <option value="all">全部书</option>')
+    for slug, meta, _ in books:
+        parts.append(f'    <option value="{slug}">{escape_html(meta["title"])}</option>')
+    parts.append('  </select>')
+    parts.append('  <select class="np-sort" id="np-sort">')
+    parts.append('    <option value="new">最新优先</option>')
+    parts.append('    <option value="old">最早优先</option>')
+    parts.append('  </select>')
+    parts.append('  <button class="np-back" id="np-back" title="返回首页">← 首页</button>')
+    parts.append('</div>')
+    # List: takeaway 在前 (per-book 总结), 笔记在后 (per-chapter 高亮)
+    parts.append('<div class="notes-page-list" id="np-list">')
+    parts.append('  <div class="np-section" id="np-takeaways-section">')
+    parts.append('    <div class="np-section-header">系列 takeaway <span class="np-section-count" id="np-takeaways-count">0</span></div>')
+    parts.append('    <div class="np-takeaway-list" id="np-takeaways"></div>')
+    parts.append('  </div>')
+    parts.append('  <div class="np-section" id="np-notes-section">')
+    parts.append('    <div class="np-section-header">章节笔记 <span class="np-section-count" id="np-notes-count">0</span></div>')
+    parts.append('    <div class="np-note-list" id="np-notes"></div>')
+    parts.append('  </div>')
+    parts.append('  <div class="np-empty" id="np-empty" style="display:none">')
+    parts.append('    <div class="np-empty-icon">✎</div>')
+    parts.append('    <div class="np-empty-title">还没有笔记</div>')
+    parts.append('    <div class="np-empty-hint">选中正文里的一段话 → 弹出工具栏 → 选颜色高亮或写笔记</div>')
+    parts.append('  </div>')
+    parts.append('</div>')
+    parts.append('</section>')
+    return "\n".join(parts)
+
+
 def svg_icon(name, size=16, stroke_width=1.5, classes=""):
     """生成 SVG icon HTML。颜色跟随 currentColor。"""
     if name not in ICONS:
@@ -3804,6 +3856,87 @@ body.overview-mode .chapter {
     .chapter:target { display: block; }
     /* 章节顶不被 navbar 遮, smooth scroll 到 :target 留出空间 */
     .chapter:target { scroll-margin-top: 24px; }
+}
+
+/* 笔记全站视图 (#notes-page) — body 跟 .notes-mode class 切换
+   默认隐藏, body.notes-mode 时显示. overview 跟 chapter 由
+   JS 切 .notes-mode 时一起 hide, 避免三视图同时出现. */
+#notes-page { display: none; }
+body.notes-mode #overview,
+body.notes-mode .chapter { display: none !important; }
+body.notes-mode #notes-page { display: block; }
+
+/* ---- 笔记全站视图 (#notes-page) ---- */
+.notes-page { max-width: 880px; margin: 0 auto; padding: 0 24px 80px; }
+.notes-page-hero { text-align: center; margin: 40px 0 36px; }
+.notes-page-title { font-size: 36px; font-weight: 500; margin: 0 0 8px; letter-spacing: -0.5px; }
+.notes-page-subtitle { font-size: 14px; color: var(--text-soft); margin: 0 0 28px; }
+.notes-page-stats { display: flex; justify-content: center; gap: 56px; flex-wrap: wrap; }
+.np-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.np-stat .num { font-size: 36px; font-weight: 300; color: var(--accent); font-feature-settings: "tnum"; }
+.np-stat .lbl { font-size: 11px; color: var(--text-soft); letter-spacing: 1.5px; text-transform: uppercase; }
+.notes-page-controls { display: flex; gap: 12px; margin-bottom: 32px; align-items: center; flex-wrap: wrap; }
+.np-search, .np-book-filter, .np-sort {
+    height: 36px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg-soft); color: var(--text); font-size: 13px; font-family: inherit;
+}
+.np-search { flex: 1; min-width: 200px; }
+.np-search:focus, .np-book-filter:focus, .np-sort:focus { outline: none; border-color: var(--accent); }
+.np-back { height: 36px; padding: 0 14px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--text); cursor: pointer; font-size: 13px; }
+.np-back:hover { border-color: var(--accent); color: var(--accent); }
+.np-section { margin-bottom: 40px; }
+.np-section-header {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-soft);
+    margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+}
+.np-section-count { background: var(--bg-soft); padding: 2px 8px; border-radius: 10px; font-size: 10px; }
+.np-takeaway-list { display: flex; flex-direction: column; gap: 10px; }
+.np-takeaway {
+    padding: 14px 16px 14px 20px; background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: 10px; position: relative; cursor: pointer; transition: border-color .15s;
+}
+.np-takeaway::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: var(--book-color, var(--accent)); border-radius: 10px 0 0 10px;
+}
+.np-takeaway:hover { border-color: var(--accent); }
+.np-takeaway-book { font-size: 11px; color: var(--text-soft); letter-spacing: 1px; margin-bottom: 6px; }
+.np-takeaway-text { font-size: 14px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+.np-takeaway-meta { font-size: 11px; color: var(--text-faint); margin-top: 6px; }
+.np-note-list { display: flex; flex-direction: column; gap: 8px; }
+.np-note {
+    padding: 12px 16px; background: var(--bg-soft); border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; transition: border-color .15s;
+    position: relative;
+}
+.np-note:hover { border-color: var(--accent); }
+.np-note-header { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-soft); margin-bottom: 6px; flex-wrap: wrap; }
+.np-note-book { font-weight: 500; }
+.np-note-tag { padding: 1px 7px; border-radius: 8px; font-size: 10px; background: var(--bg); }
+.np-note-tag[data-tag="重要"] { color: #b58a00; }
+.np-note-tag[data-tag="todo"] { color: #2d8659; }
+.np-note-tag[data-tag="问题"] { color: #2563b0; }
+.np-note-tag[data-tag="想法"] { color: #c2185b; }
+.np-note-quote {
+    border-left: 3px solid var(--border); padding: 4px 0 4px 12px; margin: 4px 0;
+    font-size: 13px; color: var(--text-soft); font-style: italic; line-height: 1.6;
+}
+.np-note-quote:empty { display: none; }
+.np-note-text { font-size: 14px; line-height: 1.6; color: var(--text); margin-top: 4px; }
+.np-note-text:empty { display: none; }
+.np-note-meta { font-size: 11px; color: var(--text-faint); margin-top: 6px; }
+.np-note mark { background: rgba(176, 137, 104, 0.25); color: var(--text); border-radius: 2px; padding: 0 2px; }
+.np-empty { text-align: center; padding: 80px 20px; color: var(--text-soft); }
+.np-empty-icon { font-size: 48px; opacity: 0.4; margin-bottom: 12px; }
+.np-empty-title { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+.np-empty-hint { font-size: 13px; line-height: 1.7; }
+@media (max-width: 700px) {
+    .notes-page { padding: 0 16px 60px; }
+    .notes-page-title { font-size: 28px; }
+    .notes-page-stats { gap: 24px; }
+    .np-stat .num { font-size: 28px; }
+    .notes-page-controls { flex-direction: column; align-items: stretch; }
+    .np-search, .np-book-filter, .np-sort, .np-back { width: 100%; }
 }
 
 body.overview-mode .content {
@@ -10713,6 +10846,8 @@ document.addEventListener('click', (e) => {
 // 事件绑定
 const kbLauncher = document.getElementById('kb-launcher');
 if (kbLauncher) kbLauncher.addEventListener('click', kbOpen);
+const notesPageLink = document.getElementById('notes-page-link');
+if (notesPageLink) notesPageLink.addEventListener('click', showNotesPage);
 const kbCloseBtn = document.querySelector('.kb-close');
 if (kbCloseBtn) kbCloseBtn.addEventListener('click', kbClose);
 const kbSearchBtn = document.getElementById('kb-search-btn');
@@ -11038,13 +11173,162 @@ function hideOverview() {
     document.body.classList.remove('overview-mode');
 }
 
+// 笔记全站视图 (#notes-page): 跟 overview 类似, 独立 body class 控制
+// showNotesPage() — 渲染 + 进入; hideNotesPage() — 退出回 overview
+function showNotesPage() {
+    document.body.classList.add('notes-mode');
+    document.body.classList.remove('overview-mode');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.location.hash = 'notes-page';
+    renderNotesPage();
+}
+function hideNotesPage() {
+    document.body.classList.remove('notes-mode');
+    // 回 overview
+    showOverview();
+}
+function renderNotesPage() {
+    const notes = JSON.parse(localStorage.getItem('notes') || '[]');
+    const t = JSON.parse(localStorage.getItem('kg_takeaways') || '{}');
+    const bookFilterEl = document.getElementById('np-book-filter');
+    const searchEl = document.getElementById('np-search');
+    const sortEl = document.getElementById('np-sort');
+    if (!bookFilterEl) return;
+    const bookFilter = bookFilterEl.value;
+    const query = (searchEl?.value || '').trim().toLowerCase();
+    const sort = sortEl?.value || 'new';
+    // 1) stats
+    const bookSlugsInNotes = new Set();
+    notes.forEach(n => { if (n.bookSlug) bookSlugsInNotes.add(n.bookSlug); });
+    Object.keys(t).filter(k => !k.endsWith('_ts') && t[k]?.trim()).forEach(s => bookSlugsInNotes.add(s));
+    const totalChars = notes.reduce((sum, n) => sum + (n.text || '').length + (n.quote || '').length, 0)
+        + Object.keys(t).filter(k => !k.endsWith('_ts')).reduce((sum, k) => sum + (t[k] || '').length, 0);
+    document.getElementById('np-stat-notes').textContent = notes.length;
+    document.getElementById('np-stat-takeaways').textContent = Object.keys(t).filter(k => !k.endsWith('_ts') && t[k]?.trim()).length;
+    document.getElementById('np-stat-books').textContent = bookSlugsInNotes.size;
+    document.getElementById('np-stat-chars').textContent = totalChars.toLocaleString();
+    // 2) 准备书籍元数据
+    const bookMeta = (slug) => (typeof BOOKS_META !== 'undefined' && BOOKS_META[slug]) || {};
+    const esc = (s) => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const highlight = (s) => {
+        const e = esc(s);
+        if (!query) return e;
+        // JS regex char class 双重转义坑 (Python source 里 \\ 处理): 用 per-char escape 函数避开
+        const escQ = query.split('').map(c => '.*+?^${}()|[]'.indexOf(c) >= 0 ? String.fromCharCode(92) + c : c).join('');
+        return e.replace(new RegExp('(' + escQ + ')', 'gi'), '<mark>$1</mark>');
+    };
+    // 3) Takeaways (per-book)
+    let tList = Object.keys(t).filter(k => !k.endsWith('_ts') && t[k]?.trim());
+    if (bookFilter !== 'all') tList = tList.filter(slug => slug === bookFilter);
+    if (query) tList = tList.filter(slug => (t[slug] || '').toLowerCase().includes(query));
+    tList.sort((a, b) => {
+        const ta = t[a + '_ts'] || 0, tb = t[b + '_ts'] || 0;
+        return sort === 'new' ? tb - ta : ta - tb;
+    });
+    const tHtml = tList.map(slug => {
+        const meta = bookMeta(slug);
+        const color = meta.color || 'var(--accent)';
+        const bookTitle = meta.title || slug;
+        const ts = t[slug + '_ts'] || 0;
+        return `<div class="np-takeaway" style="--book-color:${color}" data-book="${esc(slug)}">` +
+            `<div class="np-takeaway-book">${esc(bookTitle)}</div>` +
+            `<div class="np-takeaway-text">${highlight(t[slug])}</div>` +
+            `<div class="np-takeaway-meta">${ts ? new Date(ts).toLocaleDateString('zh-CN') + ' · ' + t[slug].length + ' 字' : t[slug].length + ' 字'}</div>` +
+            `</div>`;
+    }).join('');
+    const tContainer = document.getElementById('np-takeaways');
+    tContainer.innerHTML = tHtml || '';
+    document.getElementById('np-takeaways-count').textContent = tList.length;
+    document.getElementById('np-takeaways-section').style.display = tList.length ? '' : 'none';
+    // 4) 章节笔记 (per-chapter)
+    let filteredNotes = notes.slice();
+    if (bookFilter !== 'all') filteredNotes = filteredNotes.filter(n => n.bookSlug === bookFilter);
+    if (query) filteredNotes = filteredNotes.filter(n =>
+        (n.quote || '').toLowerCase().includes(query) || (n.text || '').toLowerCase().includes(query)
+    );
+    filteredNotes.sort((a, b) => sort === 'new' ? b.timestamp - a.timestamp : a.timestamp - b.timestamp);
+    const noteColorToTag = (color) => {
+        if (!color) return null;
+        if (color.endsWith('-yellow')) return '重要';
+        if (color.endsWith('-green')) return 'todo';
+        if (color.endsWith('-blue')) return '问题';
+        if (color.endsWith('-pink')) return '想法';
+        return null;
+    };
+    const nHtml = filteredNotes.map(n => {
+        const meta = bookMeta(n.bookSlug);
+        const bookTitle = meta.title || n.bookSlug || '未知书';
+        const chap = document.getElementById(n.chapterId);
+        const chapTitle = chap?.querySelector('.chapter-title')?.textContent || n.chapterId || '未知章';
+        const tag = noteColorToTag(n.color);
+        const tagHtml = tag ? `<span class="np-note-tag" data-tag="${tag}">${tag}</span>` : '';
+        return `<div class="np-note" data-chapter="${esc(n.chapterId)}">` +
+            `<div class="np-note-header">` +
+                `<span class="np-note-book">${esc(bookTitle)}</span>` +
+                `<span>·</span>` +
+                `<span>${esc(chapTitle)}</span>` +
+                tagHtml +
+            `</div>` +
+            `<div class="np-note-quote">${highlight(n.quote)}</div>` +
+            `<div class="np-note-text">${highlight(n.text)}</div>` +
+            `<div class="np-note-meta">${new Date(n.timestamp).toLocaleString('zh-CN')}</div>` +
+            `</div>`;
+    }).join('');
+    const nContainer = document.getElementById('np-notes');
+    nContainer.innerHTML = nHtml || '';
+    document.getElementById('np-notes-count').textContent = filteredNotes.length;
+    document.getElementById('np-notes-section').style.display = filteredNotes.length ? '' : 'none';
+    // 5) Empty state
+    document.getElementById('np-empty').style.display = (tList.length === 0 && filteredNotes.length === 0) ? '' : 'none';
+}
+
+// 笔记页 input 绑定 + 点击跳转
+function bindNotesPageEvents() {
+    const search = document.getElementById('np-search');
+    const bookFilter = document.getElementById('np-book-filter');
+    const sort = document.getElementById('np-sort');
+    const back = document.getElementById('np-back');
+    if (search) search.addEventListener('input', renderNotesPage);
+    if (bookFilter) bookFilter.addEventListener('change', renderNotesPage);
+    if (sort) sort.addEventListener('change', renderNotesPage);
+    if (back) back.addEventListener('click', hideNotesPage);
+    // 点击 note / takeaway → 跳到原章
+    const list = document.getElementById('np-list');
+    if (list) list.addEventListener('click', (e) => {
+        const takeaway = e.target.closest('.np-takeaway');
+        const note = e.target.closest('.np-note');
+        if (note) {
+            const chapterId = note.dataset.chapter;
+            if (chapterId) {
+                hideNotesPage();
+                window.location.hash = chapterId;
+            }
+        } else if (takeaway) {
+            const bookSlug = takeaway.dataset.book;
+            // 跳到该系列第一章
+            if (bookSlug && typeof CHAPTERS_BY_BOOK !== 'undefined' && CHAPTERS_BY_BOOK[bookSlug]) {
+                hideNotesPage();
+                window.location.hash = CHAPTERS_BY_BOOK[bookSlug][0];
+            }
+        }
+    });
+}
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindNotesPageEvents);
+} else {
+    bindNotesPageEvents();
+}
+
 // 初始模式：URL 有 hash 跳到章节，否则显示 overview
 function initOverviewMode() {
     const hash = window.location.hash;
-    if (!hash || hash === '#') {
+    if (hash === '#notes-page') {
+        showNotesPage();
+    } else if (!hash || hash === '#') {
         showOverview();
     } else {
         hideOverview();
+        hideNotesPage();
     }
 }
 
@@ -11062,8 +11346,11 @@ window.addEventListener('hashchange', () => {
         ttsCurrentAudio = null;
         ttsCurrentBtn = null;
     }
-    if (window.location.hash) {
+    if (window.location.hash === '#notes-page') {
+        showNotesPage();
+    } else if (window.location.hash) {
         hideOverview();
+        hideNotesPage();
         // 确保目标章节内容已加载 (深链 / 书签直跳)
         const id = window.location.hash.replace('#', '');
         const article = document.getElementById(id);
@@ -13308,6 +13595,8 @@ def build_html():
 
     # 生成首页 TOC (overview section)
     overview_html = build_overview_html(books, total_chapters, total_chars, total_minutes)
+    # 笔记全站视图 (跟 overview 同级, #notes-page 锚点 + showNotesPage() 显示)
+    notes_page_html = build_notes_page_html(books)
 
     # j/k 跳转的章节列表 (JSON array, 按文档顺序)
     import json as _json
@@ -13417,6 +13706,9 @@ def build_html():
             {''.join(bookshelf_html_parts)}
         </div>
         <div class="sidebar-bookmarks" id="sidebar-bookmarks"></div>
+        <button class="kb-launcher notes-page-link" id="notes-page-link" title="我的笔记全站视图" aria-label="笔记全站视图">
+            {svg_icon('notes', 14)} 我的笔记
+        </button>
         <button class="kb-launcher" id="kb-launcher" title="知识问答 (Ctrl+/)" aria-label="知识问答">
             {svg_icon('search', 14)} 知识问答
         </button>
@@ -13751,6 +14043,7 @@ def build_html():
 
     <main class="content" id="main-content" role="main">
         {overview_html}
+        {notes_page_html}
         {''.join(content_parts)}
     </main>
 
