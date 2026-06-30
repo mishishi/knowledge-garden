@@ -9170,7 +9170,11 @@ function renderResumeCarousel() {
         return;
     }
     // 渲染 — 跟 today-card 同一视觉语言 (色块条 + icon + 标题 + meta + pill + 箭头)
-    const arrowSvg = '<svg class="resume-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+    // 箭头按卡类型区分: primary + 同系列下一章 = chevron (连续读, 同一上下文);
+    // 主题相关 (跨书) = external link (提示换书了, 跨上下文)
+    const arrowChevron = '<svg class="resume-card-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+    const arrowExternal = '<svg class="resume-card-arrow arrow-external" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M21 14v7H3V3h7"/></svg>';
+    const primaryBook = (cards[0] && cards[0].book) || '';
     track.innerHTML = cards.map(c => {
         const meta = (typeof BOOKS_META !== 'undefined' && BOOKS_META[c.book]) || {};
         const color = meta.color || '#b08968';
@@ -9183,6 +9187,9 @@ function renderResumeCarousel() {
         // Meta 第 2 行: 主卡 = "书名 · 上次 X 时间", 其他 = "书名 · 类型标签"
         const metaTail = c.primary ? (c.meta || '') : (c.eyebrow || '');
         const metaText = c.bookTitle + (metaTail ? ' · ' + metaTail : '');
+        // 箭头: primary / 同系列下一章 (跟主卡同书) = chevron, 跨书 (RELATED) = external
+        const isCrossBook = !c.primary && c.book !== primaryBook;
+        const arrow = isCrossBook ? arrowExternal : arrowChevron;
         return '<a class="' + cls + '" href="#' + c.chapterId + '" style="--book-color:' + color + '">' +
             '<span class="resume-card-icon">' + svg_icon(icon, 14) + '</span>' +
             '<div class="resume-card-body">' +
@@ -9191,7 +9198,7 @@ function renderResumeCarousel() {
             '</div>' +
             '<div class="resume-card-right">' +
                 '<span class="resume-card-pill ' + pillClass + '">' + pillText + '</span>' +
-                arrowSvg +
+                arrow +
             '</div>' +
             '</a>';
     }).join('');
