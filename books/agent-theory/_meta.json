@@ -1,0 +1,23 @@
+{
+  "title": "Agent 原理深挖",
+  "subtitle": "LLM / ICL / ReAct / Reasoning / Memory / RAG / Multi-Agent / Safety / Self-Improvement",
+  "icon": "atom",
+  "color": "#1e40af",
+  "priority": 4,
+  "order": [
+    "01-transformer-llm",
+    "02-inference-opt",
+    "03-icl-theory",
+    "04-function-call",
+    "05-react-variants",
+    "06-reasoning-models",
+    "07-agent-training",
+    "08-memory-systems",
+    "09-rag-deep",
+    "10-multi-agent-theory",
+    "11-safety-theory",
+    "12-alignment",
+    "13-self-improvement",
+    "14-frontier"
+  ]
+}

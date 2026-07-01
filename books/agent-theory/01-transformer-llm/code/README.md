@@ -1,0 +1,3 @@
+# 01 Transformer 与 LLM 训练 — 代码与公式
+
+本章核心公式在文中 LaTeX, 关键算法用 PyTorch 伪代码. 完整实现需要参考论文.
